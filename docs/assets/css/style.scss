@@ -1,0 +1,15 @@
+---
+---
+
+@import "{{ site.theme }}";
+
+.container {
+  max-width: 1200px;
+  display: flex;
+}
+#sidebar {
+  flex: none;
+}
+#main_content {
+  flex: auto;
+}
