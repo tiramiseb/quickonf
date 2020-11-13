@@ -12,6 +12,9 @@
 }
 #sidebar {
   flex: none;
+  padding-right: 1rem;
+  margin-right: 1rem;
+  border-right: 1px solid #666;
 }
 #main_content {
   flex: auto;

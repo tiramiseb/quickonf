@@ -29,12 +29,12 @@
 
     <div class="container flex">
       <nav id="sidebar">
-          <h2>Modules</h2>
-          {% for module in site.modules.docs %}
+          <h3>Modules</h3>
+          {% for module in site.modules %}
           <a href="{{ module.url }}">{{ module.title }}</a>
           {% endfor %}
-          <h2>Recipes</h2>
-          {% for recipe in site.recipes.docs %}
+          <h3>Recipes</h3>
+          {% for recipe in site.recipes %}
           <a href="{{ recipe.url }}">{{ recipe.title }}</a>
           {% endfor %}
       </nav>
