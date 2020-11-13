@@ -10,7 +10,6 @@
   </head>
 
   <body>
-
     <header>
       <div class="container">
         <a id="a-title" href="{{ '/' | relative_url }}">
@@ -30,7 +29,14 @@
 
     <div class="container flex">
       <nav id="sidebar">
-          (test)
+          <h2>Modules</h2>
+          {% for module in site.modules.docs %}
+          <a href="{{ module.url }}">{{ module.title }}</a>
+          {% endfor %}
+          <h2>Recipes</h2>
+          {% for recipe in site.recipes.docs %}
+          <a href="{{ recipe.url }}">{{ recipe.title }}</a>
+          {% endfor %}
       </nav>
       <section id="main_content">
         {{ content }}
