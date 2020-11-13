@@ -7,3 +7,9 @@ collections:
     output: true
   recipes:
     output: true
+
+defaults:
+  - scope:
+      path: ""
+    values:
+      layout: "default"
