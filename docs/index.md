@@ -1,6 +1,6 @@
 Quickonf allows you to automate your environment configuration, instead of manually configure your apps every time you reinstall your system.
 
-It is especially useful if you reinstall Ubuntu at every release.
+It is especially useful if you reinstall Ubuntu every now and then.
 
 ## How it works
 
@@ -23,6 +23,4 @@ In this file, you create steps, with the following format:
 
 Yes, you guessed it, it's written in YAML.
 
-Details about available instructions are listed in this documentation.
-
-(well, they will be...)
+Instructions are grouped by modules, documented here (yay!).
