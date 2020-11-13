@@ -19,3 +19,9 @@
 #main_content {
   flex: auto;
 }
+
+@media screen and (max-width: 640px) {
+  .flex {
+    flex-wrap: wrap;
+  }
+}
