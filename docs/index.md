@@ -24,3 +24,7 @@ In this file, you create steps, with the following format:
 Yes, you guessed it, it's written in YAML.
 
 Instructions are grouped by modules, documented here (yay!).
+
+## Files paths
+
+Whenever an instruction needs a file path, it is either relative to the home directory, or absolute. A path is never relative to the current directory.
