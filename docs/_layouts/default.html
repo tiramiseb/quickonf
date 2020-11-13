@@ -32,12 +32,12 @@
         <hr/>
         <h3>Modules</h3>
         {% for module in site.modules %}
-          <a href="{{ module.url }}">{{ module.title }}</a>
+          <a href="{{ module.url | relative_url }}">{{ module.title }}</a>
         {% endfor %}
         <hr/>
         <h3>Recipes</h3>
         {% for recipe in site.recipes %}
-          <a href="{{ recipe.url }}">{{ recipe.title }}</a>
+          <a href="{{ recipe.url | relative_url }}">{{ recipe.title }}</a>
         {% endfor %}
         <hr/>
       </nav>
