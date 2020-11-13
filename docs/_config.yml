@@ -1,7 +1,5 @@
 theme: jekyll-theme-hacker
 
-show_downloads: true
-
 collections:
   modules:
     output: true
