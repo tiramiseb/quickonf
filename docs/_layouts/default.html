@@ -29,14 +29,17 @@
 
     <div class="container flex">
       <nav id="sidebar">
-          <h3>Modules</h3>
-          {% for module in site.modules %}
+        <hr/>
+        <h3>Modules</h3>
+        {% for module in site.modules %}
           <a href="{{ module.url }}">{{ module.title }}</a>
-          {% endfor %}
-          <h3>Recipes</h3>
-          {% for recipe in site.recipes %}
+        {% endfor %}
+        <hr/>
+        <h3>Recipes</h3>
+        {% for recipe in site.recipes %}
           <a href="{{ recipe.url }}">{{ recipe.title }}</a>
-          {% endfor %}
+        {% endfor %}
+        <hr/>
       </nav>
       <section id="main_content">
         {{ content }}
