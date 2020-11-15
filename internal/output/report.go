@@ -1,7 +1,5 @@
 package output
 
-import "fmt"
-
 type reportPartType int
 
 const (
@@ -73,8 +71,6 @@ func (r *Report) Alert(str string) {
 }
 
 func (r *Report) Error(str string) {
-	fmt.Println("---------")
-	fmt.Println(str)
 	if r.lastStep.lastModule != nil {
 		r.lastStep.lastModule.errors = append(r.lastStep.lastModule.errors, str)
 	} else {
