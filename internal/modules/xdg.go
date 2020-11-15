@@ -20,7 +20,24 @@ var xdgAllUserDirs = map[string]bool{
 }
 
 func init() {
+	Register("xdg-mime-default", XdgMimeDefault)
 	Register("xdg-user-dir", XdgUserDir)
+}
+
+// XdgMimeDefault sets default applications for mimetypes
+func XdgMimeDefault(in interface{}, out output.Output) error {
+	out.InstructionTitle("XDG mime default")
+	data, err := helper.MapStringString(in)
+	if err != nil {
+		return err
+	}
+	for mimetype, app := range data {
+		if _, err := helper.Exec("xdg-mime", "default", app+".desktop", mimetype); err != nil {
+			return err
+		}
+		out.Success("Changed default app for " + mimetype + " to " + app)
+	}
+	return nil
 }
 
 // XdgUserDir sets XDG user dirs
