@@ -24,7 +24,7 @@ Example:
         - stuff/magicapp.deb
 ```
 
-This instruction needs the sudo password to be set. See the [sudo]{% link _modules_/sudo.md %} module.
+This instruction needs the sudo password to be set. See the [sudo]{% link _modules/sudo.md %} module.
 
 ## dpkg-version
 
@@ -50,7 +50,7 @@ Install packages from apt repositories. If any installation fails, it fails.
 
 Each package is installed with a different call to `apt`.
 
-This instruction needs the sudo password to be set. See the [sudo]{% link _modules_/sudo.md %} module.
+This instruction needs the sudo password to be set. See the [sudo]{% link _modules/sudo.md %} module.
 
 Example:
 
@@ -67,7 +67,7 @@ Remove a deb package from the system.
 
 Each package is removed with a different call to `apt`.
 
-This instruction needs the sudo password to be set. See the [sudo]{% link _modules_/sudo.md %} module.
+This instruction needs the sudo password to be set. See the [sudo]{% link _modules/sudo.md %} module.
 
 Example:
 
@@ -82,7 +82,7 @@ Example:
 
 Upgrade all installed packages.
 
-This instruction needs the sudo password to be set. See the [sudo]{% link _modules_/sudo.md %} module.
+This instruction needs the sudo password to be set. See the [sudo]{% link _modules/sudo.md %} module.
 
 Example:
 
@@ -96,7 +96,7 @@ Example:
 
 Clean unneeded packages from the system.
 
-This instruction needs the sudo password to be set. See the [sudo]{% link _modules_/sudo.md %} module.
+This instruction needs the sudo password to be set. See the [sudo]{% link _modules/sudo.md %} module.
 
 Example:
 

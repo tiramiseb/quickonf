@@ -7,7 +7,7 @@ title: Flatpak
 | `flatpak`        | Install flatpak packages from known repositories | List of packages names          |
 | `flatpak-remote` | Add a flatpak remote repository                  | Map of repository names to URLs |
 
-All instructions in this module need the sudo password to be set. See the [sudo]{% link _modules_/sudo.md %} module.
+All instructions in this module need the sudo password to be set. See the [sudo]{% link _modules/sudo.md %} module.
 
 Example:
 

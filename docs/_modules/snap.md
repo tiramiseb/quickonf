@@ -14,7 +14,7 @@ Classic mode disables security confinement.
 
 ## snap, snap-classic, snap-dangerous
 
-These instructions need the sudo password to be set. See the [sudo]{% link _modules_/sudo.md %} module.
+These instructions need the sudo password to be set. See the [sudo]{% link _modules/sudo.md %} module.
 
 Example:
 
@@ -28,7 +28,7 @@ Example:
 
 Refresh Snap packages.
 
-This instruction needs the sudo password to be set. See the [sudo]{% link _modules_/sudo.md %} module.
+This instruction needs the sudo password to be set. See the [sudo]{% link _modules/sudo.md %} module.
 
 ```yaml
 - Snap packages:
