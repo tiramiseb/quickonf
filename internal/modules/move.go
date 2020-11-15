@@ -45,7 +45,7 @@ func move(in interface{}, out output.Output, force bool) error {
 			if !force {
 				return errors.New(to + " already exists")
 			}
-			if err := os.Remove(to); err != nil {
+			if err := os.RemoveAll(to); err != nil {
 				return err
 			}
 		} else {
