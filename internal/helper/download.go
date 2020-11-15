@@ -33,10 +33,10 @@ func DownloadFileWithPercent(url, path string, out output.Output) error {
 	return downloadFile(url, path, out)
 }
 
-// // DownloadFile downloads the given URL to the given path, without any output.
-// func DownloadFile(url, path string) error {
-// 	return downloadFile(url, path, nil)
-// }
+// DownloadFile downloads the given URL to the given path, without any output.
+func DownloadFile(url, path string) error {
+	return downloadFile(url, path, nil)
+}
 
 func downloadFile(url, path string, out output.Output) error {
 	if out != nil {
