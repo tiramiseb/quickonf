@@ -22,6 +22,7 @@ func Unzip(in interface{}, out output.Output) error {
 		return err
 	}
 	for zipFile, destPath := range data {
+		destPath = helper.Path(destPath)
 		r, err := zip.OpenReader(zipFile)
 		if err != nil {
 			return err
@@ -33,17 +34,24 @@ func Unzip(in interface{}, out output.Output) error {
 			}
 			defer content.Close()
 			fileDest := path.Join(destPath, f.FileHeader.Name)
-			dir := path.Dir(fileDest)
-			if err := os.MkdirAll(dir, 0755); err != nil {
-				return err
-			}
-			dest, err := os.Create(fileDest)
-			if err != nil {
-				return err
-			}
-			defer dest.Close()
-			if _, err = io.Copy(dest, content); err != nil {
-				return err
+			if f.FileInfo().IsDir() {
+				if err := os.MkdirAll(fileDest, 0755); err != nil {
+					return err
+				}
+				continue
+			} else {
+				dir := path.Dir(fileDest)
+				if err := os.MkdirAll(dir, 0755); err != nil {
+					return err
+				}
+				dest, err := os.Create(fileDest)
+				if err != nil {
+					return err
+				}
+				defer dest.Close()
+				if _, err = io.Copy(dest, content); err != nil {
+					return err
+				}
 			}
 		}
 		out.Info("Uncompressed " + zipFile)
