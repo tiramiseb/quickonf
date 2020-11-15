@@ -5,11 +5,6 @@ import (
 	"strings"
 )
 
-// import (
-// 	"fmt"
-// 	"strings"
-// )
-
 // String returns a string with values from store from an interface
 func String(v interface{}) (str string, err error) {
 	switch v.(type) {
