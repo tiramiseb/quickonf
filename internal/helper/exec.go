@@ -23,7 +23,7 @@ func ExecSudo(args ...string) error {
 	if SudoPassword == "" {
 		return errors.New("Sudo password is not set")
 	}
-	args = append([]string{"--prompt=", "--stdin", "--reset-timestamp"}, args...)
+	args = append([]string{"--prompt=", "--stdin"}, args...)
 	sudoCmd := exec.Command("sudo", args...)
 	sudoCmd.Env = []string{"LANG=C"}
 	sudoCmd.Stdin = strings.NewReader(SudoPassword)
