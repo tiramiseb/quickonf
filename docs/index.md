@@ -29,6 +29,18 @@ Instructions are grouped by modules, documented here (yay!).
 
 ## General knowledge
 
+### Command output
+
+Quickonf displays everything it does on the terminal, in green for successful operations and in red for failures.
+
+At the end of the execution, all failures are listed in a "Report" section. If this section is empty, it means that the configuration has been successfully applied.
+
+### Idempotence
+
+The goal of this app is to be idempotent. It means that you can execute it as many times as you want, the result will always be the same. Of course, you may break this logic in the configuration file, that's why you sometimes need to be vigilant about the instructions you use, and that's why there are some recipes.
+
+It will also allow you to run the command on a regular basis to ensure all applications are up-to-date, even if they are not installed with a package manager.
+
 ### Paths
 
 Whenever an instruction needs a file or directory path, it is either relative to the home directory, or absolute. A path is never relative to the current directory.
