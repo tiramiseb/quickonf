@@ -26,8 +26,9 @@ func GithubLatest(in interface{}, out output.Output) error {
 	}
 
 	result := struct {
-		Name   string `json:"name"`
-		Assets []struct {
+		Name    string `json:"name"`
+		TagName string `json:"tag_name"`
+		Assets  []struct {
 			URL  string `json:"browser_download_url"`
 			Name string `json:"name"`
 		} `json:"assets"`
@@ -39,9 +40,9 @@ func GithubLatest(in interface{}, out output.Output) error {
 	if err != nil {
 		return err
 	}
-	out.Info("Latest release for " + repository + " is " + result.Name)
+	out.Info("Latest release for " + repository + " is " + result.TagName)
 	if storeRelease, ok := data["store"]; ok {
-		helper.Store(storeRelease, result.Name)
+		helper.Store(storeRelease, result.TagName)
 	}
 	pattern, ok := data["pattern"]
 	if !ok {
