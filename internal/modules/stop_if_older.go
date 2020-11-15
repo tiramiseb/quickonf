@@ -40,7 +40,7 @@ func StopIfOlder(in interface{}, out output.Output) error {
 	}
 	candVersion, err := semver.NewVersion(candStr)
 	if err != nil {
-		return fmt.Errorf("With candidate as \"%s\": %w", curStr, err)
+		return fmt.Errorf("With candidate as \"%s\": %w", candStr, err)
 	}
 	diff := candVersion.Compare(curVersion)
 	switch diff {
