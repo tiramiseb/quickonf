@@ -45,4 +45,7 @@ You can use the same instruction multiple times in a step. For instance, if you 
 
 Sometimes, you want to store some data to be reused in another instruction. For this, some instructions allow storing data in a centralized key-value store. That data can then be reused by putting the data key anywhere in the keys or values, in the following form: `<key-name>`. If a key with that name exists, that string is replaced with the associated value.
 
-By default, the `home` key contains the user's home directory path.
+The following keys are set by default in the store:
+
+- `home`: user's home directory path
+- `oscodename`: Linux distribution codename (result of `lsb_release --codename --short`)
