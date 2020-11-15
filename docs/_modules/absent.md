@@ -2,9 +2,13 @@
 title: Absent
 ---
 
-This module provides one instruction, `absent`, which makes sure files or directories are absent from the system. **It does not remove non-empty directories.**
+| Instruction | Action                      | Arguments                    |
+| ----------- | --------------------------- | ---------------------------- |
+| `absent`    | Delete files or directories | List of files or directories |
 
-## Example
+If a directory targeted by `absent` is not empty, it fails.
+
+Example:
 
 ```yaml
 - Custom personal directories tree:
