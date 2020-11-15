@@ -1,6 +1,7 @@
 package modules
 
 import (
+	"bytes"
 	"errors"
 
 	"github.com/tiramiseb/quickonf/internal/helper"
@@ -79,17 +80,26 @@ func SnapVersion(in interface{}, out output.Output) error {
 	if !ok {
 		return errors.New("Missing package name")
 	}
-	cmdout, err := helper.Exec("snap", "list", pkg)
+	cmdout, err := helper.Exec("snap", "info", pkg)
 	if err != nil {
 		out.Info("Package " + pkg + " is not installed")
 		if storeAs, ok := data["store"]; ok {
-			helper.Store(storeAs, "0.0.0")
+			helper.Store(storeAs, "")
 		}
-	} else {
-		out.Info("Package " + pkg + " version is " + string(cmdout))
-		if storeAs, ok := data["store"]; ok {
-			helper.Store(storeAs, string(cmdout))
+	}
+	for _, l := range bytes.Split(cmdout, []byte{'\n'}) {
+		fields := bytes.Fields(l)
+		if bytes.Equal(fields[0], []byte("installed:")) {
+			out.Info("Package " + pkg + " version is " + string(fields[1]))
+			if storeAs, ok := data["store"]; ok {
+				helper.Store(storeAs, string(fields[1]))
+			}
+			return nil
 		}
+	}
+	out.Info("Could not determine package " + pkg + " version")
+	if storeAs, ok := data["store"]; ok {
+		helper.Store(storeAs, "")
 	}
 	return nil
 }
