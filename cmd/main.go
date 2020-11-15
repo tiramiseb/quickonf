@@ -7,7 +7,7 @@ import (
 
 	"gopkg.in/yaml.v3"
 
-	"github.com/tiramiseb/quickonf"
+	"github.com/tiramiseb/quickonf/internal/quickonf"
 )
 
 const conf = "quickonf.yaml"
