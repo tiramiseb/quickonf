@@ -77,6 +77,8 @@ Here are some of my preferences, don't hesitate to dig into the dconf database t
         <pop-shell-url>: /tmp/quickonf-pop-shell.zip
     - unzip:
         /tmp/quickonf-pop-shell.zip: .local/share/gnome-shell/extensions/pop-shell@system76.com
+    - remove:
+        - /tmp/quickonf-pop-shell.zip
     - gnome-shell-extension:
         - pop-shell@system76.com
     - gnome-shell-restart:
