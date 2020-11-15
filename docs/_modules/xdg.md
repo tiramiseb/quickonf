@@ -1,5 +1,5 @@
 ---
-title: XDG user dirs
+title: XDG
 ---
 
 | Instruction    | Action             | Arguments             |
