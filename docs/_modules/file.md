@@ -13,7 +13,7 @@ title: File
 
 All these instructions are variants for the same action.
 
-Instructions for root need the sudo password to be set. See the [sudo]{% link _modules/sudo.md %} module.
+Instructions for root need the sudo password to be set. See the [sudo]({% link _modules/sudo.md %}) module.
 
 Example:
 
