@@ -17,6 +17,9 @@
   border-right: 1px solid #666;
   a {
     text-decoration: none;
+    &:hover {
+      text-decoration: underline;
+    }
   }
 }
 #main_content {
