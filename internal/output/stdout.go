@@ -8,6 +8,7 @@ import (
 	"github.com/gookit/color"
 )
 
+// Stdout is an output writer which writes on stdout
 type Stdout struct {
 	report *Report
 
@@ -15,6 +16,7 @@ type Stdout struct {
 	stopLoading    chan bool
 }
 
+// NewStdout returns a new output writer which writes on stdout
 func NewStdout() Output {
 	return &Stdout{
 		report:      &Report{},
@@ -53,37 +55,44 @@ var (
 	stdoutReportErrorTitle = color.New(color.FgWhite, color.BgRed, color.Bold)
 )
 
+// StepTitle writes a step title
 func (s *Stdout) StepTitle(str string) {
 	stdoutStepTitle.Printf("\n" + str + "\n" + strings.Repeat("=", len(str)) + "\n")
-	s.report.Step(str)
+	s.report.step(str)
 }
 
+// InstructionTitle writes an instruction title
 func (s *Stdout) InstructionTitle(str string) {
 	stdoutInstructionTitle.Println("  " + str)
-	s.report.Module(str)
+	s.report.instruction(str)
 }
 
+// Info writes an informational message
 func (s *Stdout) Info(str string) {
 	color.Info.Println("    ⚠  " + str)
-	s.report.Info(str)
+	s.report.info(str)
 }
 
+// Success writes a successful message
 func (s *Stdout) Success(str string) {
 	color.Info.Println("    ✓  " + str)
-	s.report.Success(str)
+	s.report.success(str)
 }
 
+// Alert writes an alert message
 func (s *Stdout) Alert(str string) {
 	color.Danger.Println("    ⊖  " + str)
-	s.report.Alert(str)
+	s.report.alert(str)
 }
 
+// Error writes an error message
 func (s *Stdout) Error(err error) {
 	fmt.Print("     ")
 	color.Error.Println(" " + err.Error() + " ")
-	s.report.Error(err.Error())
+	s.report.error(err.Error())
 }
 
+// ShowLoader displays the loader
 func (s *Stdout) ShowLoader() {
 	tick := time.Tick(100 * time.Millisecond)
 	go func() {
@@ -102,11 +111,13 @@ func (s *Stdout) ShowLoader() {
 	}()
 }
 
+// HideLoader hides the loader
 func (s *Stdout) HideLoader() {
 	s.stopLoading <- true
 	fmt.Print(loaderClear)
 }
 
+// ShowPercentage displays the loader with percentage
 func (s *Stdout) ShowPercentage(p int) {
 	switch {
 	case p < 5:
@@ -134,15 +145,17 @@ func (s *Stdout) ShowPercentage(p int) {
 	}
 }
 
+// HidePercentage hidles the loader with percentage
 func (s *Stdout) HidePercentage() {
 	fmt.Print(loaderClear)
 }
 
+// Report writes the summary
 func (s *Stdout) Report() {
 	fmt.Println("")
 	stdoutReportTitle.Println(" Report ")
 	stdoutReportTitle.Println(" ====== ")
-	alerts, errors := s.report.AlertsAndErrors()
+	alerts, errors := s.report.alertsAndErrors()
 
 	if len(alerts) > 0 {
 		fmt.Print("  ")
@@ -156,7 +169,7 @@ func (s *Stdout) Report() {
 					color.Danger.Println("      " + alert)
 				}
 			}
-			for _, module := range step.modules {
+			for _, module := range step.instructions {
 				stdoutInstructionTitle.Println("      " + module.name)
 				for _, alert := range module.alerts {
 					color.Danger.Println("        " + alert)
@@ -176,7 +189,7 @@ func (s *Stdout) Report() {
 					color.Danger.Println("      " + err)
 				}
 			}
-			for _, module := range step.modules {
+			for _, module := range step.instructions {
 				stdoutInstructionTitle.Println("      " + module.name)
 				for _, err := range module.errors {
 					color.Danger.Println("        " + err)
