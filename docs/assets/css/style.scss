@@ -15,6 +15,9 @@
   padding-right: 1rem;
   margin-right: 1rem;
   border-right: 1px solid #666;
+  a {
+    text-decoration: none;
+  }
 }
 #main_content {
   flex: auto;
@@ -24,4 +27,8 @@
   .flex {
     flex-wrap: wrap-reverse;
   }
+}
+
+td {
+  border-bottom: 1px dashed #b5e853;
 }
