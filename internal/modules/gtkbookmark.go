@@ -2,6 +2,7 @@ package modules
 
 import (
 	"os"
+	"path/filepath"
 	"strings"
 
 	"github.com/tiramiseb/quickonf/internal/helper"
@@ -26,7 +27,8 @@ func GtkBookmarks(in interface{}, out output.Output) error {
 		return err
 	}
 	defer f.Close()
-	for _, bookmark := range data {
+	result := make([][2]string, len(data))
+	for i, bookmark := range data {
 		splat := strings.SplitN(bookmark, "=", 2)
 		if len(splat) == 0 {
 			continue
@@ -49,10 +51,19 @@ func GtkBookmarks(in interface{}, out output.Output) error {
 			if _, err := f.WriteString(" " + name); err != nil {
 				return err
 			}
+			name = filepath.Base(path)
 		}
+		result[i] = [2]string{name, path}
 		if _, err := f.Write([]byte{'\n'}); err != nil {
 			return err
 		}
 	}
-	return f.Close()
+	if err := f.Close(); err != nil {
+		return err
+	}
+	for _, d := range result {
+		out.Success("Bookmark " + d[0] + " → " + d[1])
+	}
+
+	return nil
 }
