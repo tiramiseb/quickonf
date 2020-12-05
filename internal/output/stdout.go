@@ -69,7 +69,7 @@ func (s *Stdout) InstructionTitle(str string) {
 
 // Info writes an informational message
 func (s *Stdout) Info(str string) {
-	color.Info.Println("    ⚠  " + str)
+	color.Info.Println("    ⬩  " + str)
 	s.report.info(str)
 }
 
