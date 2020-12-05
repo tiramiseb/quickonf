@@ -68,17 +68,13 @@ func file(in interface{}, out output.Output, root bool, permission os.FileMode) 
 	}
 	for path, content := range data {
 		path = helper.Path(path)
-		content, err = helper.String(content)
 		bcontent := []byte(content)
-		if err != nil {
-			return err
-		}
 		info, err := os.Stat(path)
 		if err == nil {
 			if info.IsDir() {
 				return errors.New(path + " is a directory")
 			}
-			// TODO Read content root restricted content...
+			// TODO Read root restricted content...
 			current, err := ioutil.ReadFile(path)
 			if err != nil {
 				return err
