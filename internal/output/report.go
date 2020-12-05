@@ -43,39 +43,49 @@ func (r *Report) step(title string) {
 
 func (r *Report) instruction(name string) {
 	instruction := &reportInstruction{name: name}
-	r.lastStep.instructions = append(r.lastStep.instructions, instruction)
-	r.lastStep.lastInstruction = instruction
+	if r.lastStep != nil {
+		r.lastStep.instructions = append(r.lastStep.instructions, instruction)
+		r.lastStep.lastInstruction = instruction
+	}
 }
 
 func (r *Report) info(str string) {
-	if r.lastStep.lastInstruction != nil {
-		r.lastStep.lastInstruction.infos = append(r.lastStep.lastInstruction.infos, str)
-	} else {
-		r.lastStep.infos = append(r.lastStep.infos, str)
+	if r.lastStep != nil {
+		if r.lastStep.lastInstruction != nil {
+			r.lastStep.lastInstruction.infos = append(r.lastStep.lastInstruction.infos, str)
+		} else {
+			r.lastStep.infos = append(r.lastStep.infos, str)
+		}
 	}
 }
 
 func (r *Report) success(str string) {
-	if r.lastStep.lastInstruction != nil {
-		r.lastStep.lastInstruction.successes = append(r.lastStep.lastInstruction.successes, str)
-	} else {
-		r.lastStep.successes = append(r.lastStep.successes, str)
+	if r.lastStep != nil {
+		if r.lastStep.lastInstruction != nil {
+			r.lastStep.lastInstruction.successes = append(r.lastStep.lastInstruction.successes, str)
+		} else {
+			r.lastStep.successes = append(r.lastStep.successes, str)
+		}
 	}
 }
 
 func (r *Report) alert(str string) {
-	if r.lastStep.lastInstruction != nil {
-		r.lastStep.lastInstruction.alerts = append(r.lastStep.lastInstruction.alerts, str)
-	} else {
-		r.lastStep.alerts = append(r.lastStep.alerts, str)
+	if r.lastStep != nil {
+		if r.lastStep.lastInstruction != nil {
+			r.lastStep.lastInstruction.alerts = append(r.lastStep.lastInstruction.alerts, str)
+		} else {
+			r.lastStep.alerts = append(r.lastStep.alerts, str)
+		}
 	}
 }
 
 func (r *Report) error(str string) {
-	if r.lastStep.lastInstruction != nil {
-		r.lastStep.lastInstruction.errors = append(r.lastStep.lastInstruction.errors, str)
-	} else {
-		r.lastStep.errors = append(r.lastStep.errors, str)
+	if r.lastStep != nil {
+		if r.lastStep.lastInstruction != nil {
+			r.lastStep.lastInstruction.errors = append(r.lastStep.lastInstruction.errors, str)
+		} else {
+			r.lastStep.errors = append(r.lastStep.errors, str)
+		}
 	}
 }
 

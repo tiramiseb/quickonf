@@ -19,7 +19,15 @@ func New(steps []Step) (*Service, error) {
 // Run runs the steps contained in the quickonf service
 func (s *Service) Run() {
 	for _, step := range s.steps {
-		step.run(s.output)
+		step.run(s.output, "action")
 	}
 	s.output.Report()
+}
+
+// List lists the steps contained in the quickonf service
+func (s *Service) List() {
+	s.output.StepTitle("List of steps")
+	for _, step := range s.steps {
+		step.run(s.output, "title")
+	}
 }

@@ -16,15 +16,20 @@ type message struct {
 // Step is a step definition, which includes instructions
 type Step map[string][]map[string]interface{}
 
-func (step Step) run(out output.Output) {
+func (step Step) run(out output.Output, mode string) {
 	for title, instructions := range step {
-		out.StepTitle(title)
-		for _, instruction := range instructions {
-			if err := runAction(instruction, out); err != nil {
-				if err != quickonfErrors.NoError {
-					out.Error(err)
+		switch mode {
+		case "title":
+			out.Info(title)
+		case "action":
+			out.StepTitle(title)
+			for _, instruction := range instructions {
+				if err := runAction(instruction, out); err != nil {
+					if err != quickonfErrors.NoError {
+						out.Error(err)
+					}
+					return
 				}
-				return
 			}
 		}
 		return

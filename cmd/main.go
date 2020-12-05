@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"io/ioutil"
 	"os"
@@ -13,6 +14,11 @@ import (
 const conf = "quickonf.yaml"
 
 func main() {
+	var list bool
+	flag.BoolVar(&list, "list", false, "List all steps")
+	flag.BoolVar(&list, "l", false, "List all steps (shorthand)")
+	flag.Parse()
+
 	yamlFile, err := ioutil.ReadFile(conf)
 	if err != nil {
 		fmt.Println("Could not read " + conf)
@@ -35,5 +41,9 @@ func main() {
 		os.Exit(1)
 	}
 
+	if list {
+		q.List()
+		return
+	}
 	q.Run()
 }
