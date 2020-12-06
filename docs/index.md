@@ -27,6 +27,14 @@ Yes, you guessed it, it's written in YAML.
 
 Instructions are grouped by modules, documented here (yay!).
 
+## Flags and arguments
+
+When run with the `-list` or `-l` flag, `quickonf` lists all defined steps, without changing or setting anything.
+
+When run with the `-dry-run` or `-r` flag, `quickonf` runs in dry-run mode, without modifying the system, allowing to test the configuration.
+
+Of course, `-help` or `-h` displays the flags list.
+
 ## General knowledge
 
 ### Command output
