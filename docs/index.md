@@ -6,7 +6,7 @@ Think Ansible, but as a single binary command tailored for local desktop usage.
 
 ## How it works
 
-You create a `quickonf.yaml` file in your system. For instance in your home folder. Then you execute `quickonf`. It reads this file and executes all instructions in it.
+You create a file, named `quickonf.yaml` by default, in your system. For instance in your home folder. Then you execute `quickonf` or `quickonf -c your-file.yaml`. It reads this file and executes all instructions in it.
 
 In this file, you create steps, with the following format:
 
@@ -28,6 +28,8 @@ Yes, you guessed it, it's written in YAML.
 Instructions are grouped by modules, documented here (yay!).
 
 ## Flags and arguments
+
+The `-config` or `-c` flag, associated with a file name, defines the configuration file to read. Its default value is `quickonf.yaml`.
 
 When run with the `-list` or `-l` flag, `quickonf` lists all defined steps, without changing or setting anything.
 

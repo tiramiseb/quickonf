@@ -11,11 +11,12 @@ import (
 	"github.com/tiramiseb/quickonf/internal/quickonf"
 )
 
-const conf = "quickonf.yaml"
-
 func main() {
+	var conf string
 	var list bool
 	var dryrun bool
+	flag.StringVar(&conf, "config", "quickonf.yaml", "List all steps")
+	flag.StringVar(&conf, "c", "quickonf.yaml", "List all steps (shorthand)")
 	flag.BoolVar(&list, "list", false, "List all steps")
 	flag.BoolVar(&list, "l", false, "List all steps (shorthand)")
 	flag.BoolVar(&dryrun, "dry-run", false, "Try all steps without modifying the system")
