@@ -31,8 +31,12 @@ func Symlink(in interface{}, out output.Output) error {
 					out.Info("Link from " + path + " to " + target + " already exists")
 					return nil
 				}
-				if err := os.Remove(path); err != nil {
-					return err
+				if Dryrun {
+					out.Info("Would remove " + path)
+				} else {
+					if err := os.Remove(path); err != nil {
+						return err
+					}
 				}
 			} else if !os.IsNotExist(err) {
 				return err
@@ -40,6 +44,10 @@ func Symlink(in interface{}, out output.Output) error {
 
 		} else if !os.IsNotExist(err) {
 			return err
+		}
+		if Dryrun {
+			out.Info("Would create link from " + path + " to " + target)
+			continue
 		}
 		if err := os.Symlink(target, path); err != nil {
 			return err

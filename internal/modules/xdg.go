@@ -32,6 +32,10 @@ func XdgMimeDefault(in interface{}, out output.Output) error {
 		return err
 	}
 	for mimetype, app := range data {
+		if Dryrun {
+			out.Info("Would change default app for " + mimetype + " to " + app)
+			continue
+		}
 		if _, err := helper.Exec("xdg-mime", "default", app+".desktop", mimetype); err != nil {
 			return err
 		}
@@ -53,6 +57,10 @@ func XdgUserDir(in interface{}, out output.Output) error {
 			return errors.New("User dir \"" + name + "\" does not exist")
 		}
 		path = helper.Path(path)
+		if Dryrun {
+			out.Info("Would change user dir " + name + " to " + path)
+			continue
+		}
 		if _, err := helper.Exec("xdg-user-dirs-update", "--set", name, path); err != nil {
 			return err
 		}

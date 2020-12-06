@@ -1,6 +1,9 @@
 package quickonf
 
-import "github.com/tiramiseb/quickonf/internal/output"
+import (
+	"github.com/tiramiseb/quickonf/internal/modules"
+	"github.com/tiramiseb/quickonf/internal/output"
+)
 
 // Service is a quickonf service
 type Service struct {
@@ -17,9 +20,10 @@ func New(steps []Step) (*Service, error) {
 }
 
 // Run runs the steps contained in the quickonf service
-func (s *Service) Run() {
+func (s *Service) Run(dryrun bool) {
+	modules.Dryrun = dryrun
 	for _, step := range s.steps {
-		step.run(s.output, "action")
+		step.run(s.output)
 	}
 	s.output.Report()
 }
@@ -28,6 +32,6 @@ func (s *Service) Run() {
 func (s *Service) List() {
 	s.output.StepTitle("List of steps")
 	for _, step := range s.steps {
-		step.run(s.output, "title")
+		step.list(s.output)
 	}
 }

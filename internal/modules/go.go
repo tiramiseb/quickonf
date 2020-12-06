@@ -18,6 +18,10 @@ func GoEnv(in interface{}, out output.Output) error {
 		return err
 	}
 	for param, value := range data {
+		if Dryrun {
+			out.Info("Would set " + param + " to " + value)
+			continue
+		}
 		if _, err := helper.Exec("go", "env", "-w", param+"="+value); err != nil {
 			return err
 		}
@@ -34,6 +38,10 @@ func GoPackage(in interface{}, out output.Output) error {
 		return err
 	}
 	for _, pkg := range data {
+		if Dryrun {
+			out.Info("Would install " + pkg)
+			continue
+		}
 		out.Info("Installing " + pkg)
 		out.ShowLoader()
 		_, err := helper.Exec("go", "get", pkg)

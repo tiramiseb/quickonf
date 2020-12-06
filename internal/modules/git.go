@@ -17,6 +17,10 @@ func GitConfig(in interface{}, out output.Output) error {
 		return err
 	}
 	for param, value := range data {
+		if Dryrun {
+			out.Info("Would set " + param + " to " + value)
+			continue
+		}
 		if _, err := helper.Exec("git", "config", "--global", param, value); err != nil {
 			return err
 		}

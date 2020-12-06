@@ -45,13 +45,21 @@ func move(in interface{}, out output.Output, force bool) error {
 			if !force {
 				return errors.New(to + " already exists")
 			}
-			if err := os.RemoveAll(to); err != nil {
-				return err
+			if Dryrun {
+				out.Info("Would remove " + to)
+			} else {
+				if err := os.RemoveAll(to); err != nil {
+					return err
+				}
 			}
 		} else {
 			if !os.IsNotExist(err) {
 				return err
 			}
+		}
+		if Dryrun {
+			out.Info("Would move " + from + " to " + to)
+			continue
 		}
 		if err = os.Rename(from, to); err != nil {
 			return err

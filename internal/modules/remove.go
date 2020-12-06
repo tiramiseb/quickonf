@@ -27,6 +27,10 @@ func Remove(in interface{}, out output.Output) error {
 			}
 			return err
 		}
+		if Dryrun {
+			out.Info("Would remove " + path)
+			continue
+		}
 		if err := os.Remove(path); err != nil {
 			return err
 		}

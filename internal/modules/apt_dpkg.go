@@ -27,6 +27,10 @@ func Dpkg(in interface{}, out output.Output) error {
 		return err
 	}
 	for _, path := range data {
+		if Dryrun {
+			out.Info("Would install " + path)
+			continue
+		}
 		out.Info("Installing " + path)
 		out.ShowLoader()
 		err := helper.ExecSudo("dpkg", "--install", path)
@@ -81,6 +85,10 @@ func Apt(in interface{}, out output.Output) error {
 			out.Info(pkg + " is already installed")
 			continue
 		}
+		if Dryrun {
+			out.Info("Would install " + pkg)
+			continue
+		}
 		out.Info("Installing " + pkg)
 		out.ShowLoader()
 		err = helper.ExecSudo("apt-get", "--yes", "--quiet", "install", "--no-install-recommends", pkg)
@@ -108,6 +116,10 @@ func AptRemove(in interface{}, out output.Output) error {
 			out.Info(pkg + " is not installed")
 			continue
 		}
+		if Dryrun {
+			out.Info("Would remove " + pkg)
+			continue
+		}
 		out.Info("Removing " + pkg)
 		out.ShowLoader()
 		err = helper.ExecSudo("apt-get", "--yes", "--quiet", "remove", pkg)
@@ -122,6 +134,10 @@ func AptRemove(in interface{}, out output.Output) error {
 // AptUpgrade upgrades all packages in the system
 func AptUpgrade(in interface{}, out output.Output) error {
 	out.InstructionTitle("APT upgrade")
+	if Dryrun {
+		out.Info("Would update packages list and upgrade packages")
+		return nil
+	}
 	out.Info("Updating packages list")
 	out.ShowLoader()
 	err := helper.ExecSudo("apt-get", "--yes", "update")
@@ -142,6 +158,10 @@ func AptUpgrade(in interface{}, out output.Output) error {
 // AptAutoremovePurge cleans unneeded packages from the system
 func AptAutoremovePurge(in interface{}, out output.Output) error {
 	out.InstructionTitle("APT autoremove")
+	if Dryrun {
+		out.Info("Would clean the system from unneeded packages")
+		return nil
+	}
 	out.Info("Removing unneeded dependencies")
 	out.ShowLoader()
 	err := helper.ExecSudo("apt-get", "--yes", "autoremove", "--purge")

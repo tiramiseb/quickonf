@@ -18,6 +18,10 @@ func SystemdEnable(in interface{}, out output.Output) error {
 		return err
 	}
 	for _, service := range data {
+		if Dryrun {
+			out.Info("Would enable and start " + service)
+			continue
+		}
 		err = helper.ExecSudo("systemctl", "enable", service)
 		if err != nil {
 			return err
@@ -39,6 +43,10 @@ func SystemdDisable(in interface{}, out output.Output) error {
 		return err
 	}
 	for _, service := range data {
+		if Dryrun {
+			out.Info("Would stop and disable " + service)
+			continue
+		}
 		err = helper.ExecSudo("systemctl", "stop", service)
 		if err != nil {
 			return err

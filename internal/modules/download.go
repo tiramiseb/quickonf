@@ -17,6 +17,10 @@ func Download(in interface{}, out output.Output) error {
 		return err
 	}
 	for url, path := range data {
+		if Dryrun {
+			out.Info("Would download " + url + " to " + path)
+			continue
+		}
 		out.Info("Downloading " + url + " to " + path)
 		if err := helper.DownloadFileWithPercent(url, path, out); err != nil {
 			return err

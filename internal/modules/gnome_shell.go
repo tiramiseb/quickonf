@@ -24,6 +24,10 @@ func GnomeShellExtension(in interface{}, out output.Output) error {
 		return err
 	}
 	for _, extension := range data {
+		if Dryrun {
+			out.Info("Would enable " + extension)
+			continue
+		}
 		if _, err := helper.Exec("gnome-shell-extension-tool", "--enable-extension", extension); err != nil {
 			return err
 		}
@@ -32,7 +36,7 @@ func GnomeShellExtension(in interface{}, out output.Output) error {
 	return nil
 }
 
-// LocalGnomeShellExtensionVersion chekcs a locally installed GNOME Shell extension version
+// LocalGnomeShellExtensionVersion checks a locally installed GNOME Shell extension version
 func LocalGnomeShellExtensionVersion(in interface{}, out output.Output) error {
 	out.InstructionTitle("Checking GNOME Shell extension version")
 	data, err := helper.MapStringString(in)
@@ -89,6 +93,10 @@ func LocalGnomeShellExtensionVersion(in interface{}, out output.Output) error {
 // GnomeShellRestart restarts GNOME Shell
 func GnomeShellRestart(in interface{}, out output.Output) error {
 	out.InstructionTitle("Restart GNOME Shell")
+	if Dryrun {
+		out.Info("Would restart GNOME Shell")
+		return nil
+	}
 	if _, err := helper.Exec("busctl", "--user", "call", "org.gnome.Shell", "/org/gnome/Shell", "org.gnome.Shell", "Eval", "s", `Meta.restart("Restarting Gnome...")`); err != nil {
 		return err
 	}

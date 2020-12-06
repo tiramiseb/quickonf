@@ -24,6 +24,10 @@ func Unzip(in interface{}, out output.Output) error {
 	for zipFile, destPath := range data {
 		zipFile = helper.Path(zipFile)
 		destPath = helper.Path(destPath)
+		if Dryrun {
+			out.Info("Would extract " + zipFile + " to " + destPath)
+			continue
+		}
 		r, err := zip.OpenReader(zipFile)
 		if err != nil {
 			return err
@@ -55,7 +59,7 @@ func Unzip(in interface{}, out output.Output) error {
 				}
 			}
 		}
-		out.Info("Uncompressed " + zipFile)
+		out.Info("Extracted " + zipFile + " to " + destPath)
 	}
 	return nil
 }

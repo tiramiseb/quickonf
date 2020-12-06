@@ -1,6 +1,8 @@
 package modules
 
 import (
+	"io"
+	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
@@ -22,11 +24,18 @@ func GtkBookmarks(in interface{}, out output.Output) error {
 	if err != nil {
 		return err
 	}
-	f, err := os.Create(helper.Path(gtkBookmarkPath))
-	if err != nil {
-		return err
+	var w io.Writer
+	if Dryrun {
+		w = ioutil.Discard
+
+	} else {
+		f, err := os.Create(helper.Path(gtkBookmarkPath))
+		if err != nil {
+			return err
+		}
+		defer f.Close()
+		w = f
 	}
-	defer f.Close()
 	result := make([][2]string, len(data))
 	for i, bookmark := range data {
 		splat := strings.SplitN(bookmark, "=", 2)
@@ -44,24 +53,26 @@ func GtkBookmarks(in interface{}, out output.Output) error {
 		if !strings.Contains(path, "://") {
 			path = "file://" + helper.Path(path)
 		}
-		if _, err := f.WriteString(path); err != nil {
+		if _, err := w.Write([]byte(path)); err != nil {
 			return err
 		}
 		if name != "" {
-			if _, err := f.WriteString(" " + name); err != nil {
+			if _, err := w.Write([]byte(" " + name)); err != nil {
 				return err
 			}
+		} else {
 			name = filepath.Base(path)
 		}
 		result[i] = [2]string{name, path}
-		if _, err := f.Write([]byte{'\n'}); err != nil {
+		if _, err := w.Write([]byte{'\n'}); err != nil {
 			return err
 		}
 	}
-	if err := f.Close(); err != nil {
-		return err
-	}
 	for _, d := range result {
+		if Dryrun {
+			out.Info("Would set bookmark " + d[0] + " → " + d[1])
+			continue
+		}
 		out.Success("Bookmark " + d[0] + " → " + d[1])
 	}
 

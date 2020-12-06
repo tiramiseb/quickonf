@@ -15,8 +15,11 @@ const conf = "quickonf.yaml"
 
 func main() {
 	var list bool
+	var dryrun bool
 	flag.BoolVar(&list, "list", false, "List all steps")
 	flag.BoolVar(&list, "l", false, "List all steps (shorthand)")
+	flag.BoolVar(&dryrun, "dry-run", false, "Try all steps without modifying the system")
+	flag.BoolVar(&dryrun, "r", false, "Try all steps without modifying the system (shorthand)")
 	flag.Parse()
 
 	yamlFile, err := ioutil.ReadFile(conf)
@@ -45,5 +48,5 @@ func main() {
 		q.List()
 		return
 	}
-	q.Run()
+	q.Run(dryrun)
 }

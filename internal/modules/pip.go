@@ -19,9 +19,12 @@ func PIP(in interface{}, out output.Output) error {
 		return err
 	}
 	for _, pkg := range data {
+		if Dryrun {
+			out.Info("Would install " + pkg)
+			continue
+		}
 		if err = helper.ExecSudo("pip3", "install", "--upgrade", pkg); err != nil {
 			if strings.Contains(err.Error(), "command not found") {
-				// Install pip if it is not already installed
 				out.Info("Installing PIP first")
 				out.ShowLoader()
 				err = helper.ExecSudo("apt-get", "--yes", "--quiet", "install", "--no-install-recommends", "python3-pip")

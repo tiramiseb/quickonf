@@ -38,6 +38,10 @@ func snap(in interface{}, out output.Output, classic bool, dangerous bool) error
 		return err
 	}
 	for _, pkg := range data {
+		if Dryrun {
+			out.Info("Would install " + pkg)
+			continue
+		}
 		out.Info("Installing " + pkg)
 		out.ShowLoader()
 		var err error
@@ -59,6 +63,10 @@ func snap(in interface{}, out output.Output, classic bool, dangerous bool) error
 // SnapRefresh refreshes Snap packages
 func SnapRefresh(in interface{}, out output.Output) error {
 	out.InstructionTitle("Refreshing snap packages")
+	if Dryrun {
+		out.Info("Would refresh packages")
+		return nil
+	}
 	out.ShowLoader()
 	err := helper.ExecSudo("snap", "refresh")
 	if err != nil {

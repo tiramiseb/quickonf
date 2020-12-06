@@ -17,6 +17,10 @@ func Dconf(in interface{}, out output.Output) error {
 		return err
 	}
 	for k, v := range data {
+		if Dryrun {
+			out.Info("Would set " + k + " to " + v)
+			continue
+		}
 		_, err := helper.Exec("dconf", "write", k, v)
 		if err != nil {
 			return err

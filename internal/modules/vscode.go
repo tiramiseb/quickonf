@@ -27,6 +27,10 @@ func vscodeExtension(in interface{}, out output.Output, cmd string) error {
 		return err
 	}
 	for _, extension := range data {
+		if Dryrun {
+			out.Info("Would install " + extension)
+			continue
+		}
 		out.Info("Installing " + extension)
 		out.ShowLoader()
 		_, err := helper.Exec(cmd, "--install-extension", extension)

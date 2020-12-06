@@ -7,6 +7,9 @@ type Instruction func(in interface{}, out output.Output) error
 
 var registry = map[string]Instruction{}
 
+// Dryrun allows running instructions without system modification
+var Dryrun = false
+
 // Register adds an instruction
 func Register(name string, instruction Instruction) {
 	registry[name] = instruction

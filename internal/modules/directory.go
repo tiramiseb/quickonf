@@ -34,6 +34,10 @@ func Directory(in interface{}, out output.Output) error {
 		if !os.IsNotExist(err) {
 			return err
 		}
+		if Dryrun {
+			out.Info("Would create " + path)
+			continue
+		}
 		err = os.MkdirAll(path, 0755)
 		if err != nil {
 			return err

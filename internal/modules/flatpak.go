@@ -20,6 +20,10 @@ func Flatpak(in interface{}, out output.Output) error {
 		return err
 	}
 	for _, pkg := range data {
+		if Dryrun {
+			out.Info("Would install " + pkg)
+			continue
+		}
 		out.Info("Installing " + pkg)
 		out.ShowLoader()
 		err := helper.ExecSudo("flatpak", "install", "--noninteractive", "--assumeyes", pkg)
@@ -39,6 +43,10 @@ func FlatpakRemote(in interface{}, out output.Output) error {
 		return err
 	}
 	for name, url := range data {
+		if Dryrun {
+			out.Info("Would add " + name + " (" + url + ")")
+			continue
+		}
 		out.Info("Adding " + name + " (" + url + ")")
 		out.ShowLoader()
 		err := helper.ExecSudo("flatpak", "remote-add", "--if-not-exists", name, url)

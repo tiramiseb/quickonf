@@ -82,15 +82,21 @@ func file(in interface{}, out output.Output, root bool, permission os.FileMode) 
 			if bytes.Compare(bcontent, current) == 0 {
 				out.Info(path + " already has the needed content")
 				if !root {
-					err := os.Chmod(path, permission)
-					if err != nil {
-						return err
+					if !Dryrun {
+						err := os.Chmod(path, permission)
+						if err != nil {
+							return err
+						}
 					}
 				}
 				return nil
 			}
 		} else if !os.IsNotExist(err) {
 			return err
+		}
+		if Dryrun {
+			out.Info("Would create or modify " + path)
+			continue
 		}
 		if root {
 			f, err := ioutil.TempFile("", "quickonf-root-file")

@@ -44,6 +44,10 @@ func Absent(in interface{}, out output.Output) error {
 				return err
 			}
 		}
+		if Dryrun {
+			out.Info("Would remove " + path)
+			continue
+		}
 		err = os.Remove(path)
 		if err != nil {
 			return err

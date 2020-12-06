@@ -16,6 +16,10 @@ func AddUserToGroup(in interface{}, out output.Output) error {
 		return err
 	}
 	for user, group := range data {
+		if Dryrun {
+			out.Info("Would add user " + user + " to group " + group)
+			continue
+		}
 		helper.ExecSudo("adduser", user, group)
 		if err != nil {
 			return err
