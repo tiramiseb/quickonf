@@ -17,7 +17,7 @@ const (
 
 // Symlink creates a symbolic link
 func Symlink(path, target string) (status SymlinkStatus, err error) {
-	if stat, err := os.Lstat(target); err == nil {
+	if stat, err := os.Lstat(path); err == nil {
 		if stat.Mode()&os.ModeSymlink != os.ModeSymlink {
 			return SymlinkError, errors.New(path + " already exists but is not a symlink")
 		}
