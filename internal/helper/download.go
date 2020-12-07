@@ -39,6 +39,11 @@ func DownloadFile(url, path string) error {
 }
 
 func downloadFile(url, path string, out output.Output) error {
+	if Dryrun {
+		out.Info("Would download " + url + " to " + path)
+		return nil
+	}
+	out.Info("Downloading " + url + " to " + path)
 	if out != nil {
 		out.ShowLoader()
 	}

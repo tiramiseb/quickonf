@@ -1,6 +1,7 @@
 package quickonf
 
 import (
+	"github.com/tiramiseb/quickonf/internal/helper"
 	"github.com/tiramiseb/quickonf/internal/modules"
 	"github.com/tiramiseb/quickonf/internal/output"
 )
@@ -22,6 +23,7 @@ func New(steps []Step) (*Service, error) {
 // Run runs the steps contained in the quickonf service
 func (s *Service) Run(dryrun bool) {
 	modules.Dryrun = dryrun
+	helper.Dryrun = dryrun
 	for _, step := range s.steps {
 		step.run(s.output)
 	}
