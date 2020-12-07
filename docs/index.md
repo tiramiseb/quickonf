@@ -1,6 +1,6 @@
 Quickonf allows you to automate your environment configuration, instead of manually configuring your apps every time you reinstall your system.
 
-It is especially useful if you reinstall Ubuntu every now and then.
+It is especially useful if you reinstall Ubuntu every now and then and do not want to use the same user environment over and over (because sometimes, when keeping older configuration files, some app may disfunction).
 
 Think Ansible, but as a single binary command tailored for local desktop usage.
 
@@ -54,6 +54,12 @@ It will also allow you to run the command on a regular basis to ensure all appli
 ### Paths
 
 Whenever an instruction needs a file or directory path, it is either relative to the home directory, or absolute. A path is never relative to the current directory.
+
+### Migration
+
+The [move]({% link _modules/move.md %}) module includes two instructions for migration, called `migration-source` and `migrate`.
+
+Let's say you have moved your previous home directory to `/home/previous` before reinstalling your system, in order to have a clean all-new environment. You still want to keep some directories or files as-is. That's what migration is about.
 
 ### Failures
 
