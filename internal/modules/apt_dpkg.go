@@ -1,14 +1,18 @@
 package modules
 
 import (
-	// 	"bytes"
 	"bytes"
 	"errors"
+	"os"
 	"os/exec"
+	"path/filepath"
+	"strings"
 
 	"github.com/tiramiseb/quickonf/internal/helper"
 	"github.com/tiramiseb/quickonf/internal/output"
 )
+
+const aptArchiveDir = "/var/cache/apt/archives/"
 
 func init() {
 	Register("dpkg", Dpkg)
@@ -17,6 +21,7 @@ func init() {
 	Register("apt-remove", AptRemove)
 	Register("apt-upgrade", AptUpgrade)
 	Register("apt-autoremove-purge", AptAutoremovePurge)
+	Register("apt-flush-archive", AptFlushArchive)
 }
 
 // Dpkg installs a .deb package
@@ -167,4 +172,33 @@ func AptAutoremovePurge(in interface{}, out output.Output) error {
 	err := helper.ExecSudo("apt-get", "--yes", "autoremove", "--purge")
 	out.HideLoader()
 	return err
+}
+
+// AptFlushArchive remove archives .deb files
+func AptFlushArchive(in interface{}, out output.Output) error {
+	out.InstructionTitle("APT flush archived .deb files")
+	if Dryrun {
+		out.Info("Would remove all .deb files in " + aptArchiveDir)
+		return nil
+	}
+	out.Info("Removing all .deb files in " + aptArchiveDir)
+
+	f, err := os.Open(aptArchiveDir)
+	if err != nil {
+		return err
+	}
+	defer f.Close()
+	files, err := f.Readdirnames(1)
+	if err != nil {
+		return err
+	}
+	for _, oneFile := range files {
+		if !strings.HasSuffix(oneFile, ".deb") {
+			continue
+		}
+		if err := os.Remove(filepath.Join(aptArchiveDir, oneFile)); err != nil {
+			return err
+		}
+	}
+	return nil
 }

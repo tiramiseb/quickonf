@@ -10,21 +10,9 @@ title: Apt and dpkg
 | `apt-remove`           | Remove installed packages              | List of packages names          |
 | `apt-upgrade`          | Upgrade all installed packages         | none                            |
 | `apt-autoremove-purge` | Clean unneeded packages                | none                            |
+| `apt-flush-archive`    | Remove archived .deb packages          | none                            |
 
-## dpkg
-
-Install .deb packages. If any installation fails, it fails.
-
-Example:
-
-```yaml
-- Install wonderfulsoft and magicapp:
-    - dpkg:
-        - /tmp/wonderfulsoft.deb
-        - stuff/magicapp.deb
-```
-
-This instruction needs the sudo password to be set. See the [sudo]({% link _modules/sudo.md %}) module.
+Instructions in this module, except `dpkg-version`, need the sudo password to be set. See the [sudo]({% link _modules/sudo.md %}) module.
 
 ## dpkg-version
 
@@ -42,66 +30,4 @@ Example:
     - dpkg-version:
         package: inkscape
         store: inkscape-version
-```
-
-## apt
-
-Install packages from apt repositories. If any installation fails, it fails.
-
-Each package is installed with a different call to `apt`.
-
-This instruction needs the sudo password to be set. See the [sudo]({% link _modules/sudo.md %}) module.
-
-Example:
-
-```yaml
-- Install graphical tools:
-    - apt:
-        - gimp
-        - inkscape
-```
-
-### apt-remove
-
-Remove a deb package from the system.
-
-Each package is removed with a different call to `apt`.
-
-This instruction needs the sudo password to be set. See the [sudo]({% link _modules/sudo.md %}) module.
-
-Example:
-
-```yaml
-- I do not want graphical toolss:
-    - apt-remove:
-        - gimp
-        - inkscape
-```
-
-### apt-upgrade
-
-Upgrade all installed packages.
-
-This instruction needs the sudo password to be set. See the [sudo]({% link _modules/sudo.md %}) module.
-
-Example:
-
-```yaml
-- Upgrade and clean the system:
-    - apt-upgrade:
-    - apt-autoremove-purge:
-```
-
-### apt-autoremove-purge
-
-Clean unneeded packages from the system.
-
-This instruction needs the sudo password to be set. See the [sudo]({% link _modules/sudo.md %}) module.
-
-Example:
-
-```yaml
-- Upgrade and clean the system:
-    - apt-upgrade:
-    - apt-autoremove-purge:
 ```
