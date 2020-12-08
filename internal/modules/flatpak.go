@@ -26,16 +26,20 @@ func Flatpak(in interface{}, out output.Output) error {
 		}
 		out.Info("Installing " + pkg)
 		out.ShowLoader()
-		err := helper.ExecSudo("flatpak", "install", "--noninteractive", "--assumeyes", pkg)
+		_, err := helper.ExecSudo("flatpak", "install", "--noninteractive", "--assumeyes", pkg)
 		out.HideLoader()
-		if err != nil && strings.Index(err.Error(), "already installed") == -1 {
+		if err != nil {
+			if strings.Contains(err.Error(), "already installed") {
+				out.Info("... already installed")
+				continue
+			}
 			return err
 		}
 	}
 	return nil
 }
 
-// FlatpakRemote installs a flatpack package from a remote location
+// FlatpakRemote adds a flatpak remote repository
 func FlatpakRemote(in interface{}, out output.Output) error {
 	out.InstructionTitle("Adding flatpak repository")
 	data, err := helper.MapStringString(in)
@@ -49,7 +53,7 @@ func FlatpakRemote(in interface{}, out output.Output) error {
 		}
 		out.Info("Adding " + name + " (" + url + ")")
 		out.ShowLoader()
-		err := helper.ExecSudo("flatpak", "remote-add", "--if-not-exists", name, url)
+		_, err := helper.ExecSudo("flatpak", "remote-add", "--if-not-exists", name, url)
 		out.HideLoader()
 		if err != nil {
 			return err

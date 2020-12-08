@@ -20,8 +20,7 @@ func AddUserToGroup(in interface{}, out output.Output) error {
 			out.Info("Would add user " + user + " to group " + group)
 			continue
 		}
-		helper.ExecSudo("adduser", user, group)
-		if err != nil {
+		if _, err := helper.ExecSudo("adduser", user, group); err != nil {
 			return err
 		}
 		out.Success("User " + user + " added to group " + group)

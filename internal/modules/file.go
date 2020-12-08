@@ -106,16 +106,13 @@ func file(in interface{}, out output.Output, root bool, permission os.FileMode) 
 			fName := f.Name()
 			defer os.Remove(fName)
 			defer f.Close()
-			_, err = f.Write(bcontent)
-			if err != nil {
+			if _, err = f.Write(bcontent); err != nil {
 				return err
 			}
-			err = os.Chmod(fName, permission)
-			if err != nil {
+			if err := os.Chmod(fName, permission); err != nil {
 				return err
 			}
-			err = helper.ExecSudo("cp", fName, path)
-			if err != nil {
+			if _, err := helper.ExecSudo("cp", fName, path); err != nil {
 				return err
 			}
 		} else {

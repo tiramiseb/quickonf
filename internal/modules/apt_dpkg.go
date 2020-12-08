@@ -38,11 +38,11 @@ func Dpkg(in interface{}, out output.Output) error {
 		}
 		out.Info("Installing " + path)
 		out.ShowLoader()
-		err := helper.ExecSudo("dpkg", "--install", path)
+		_, err := helper.ExecSudo("dpkg", "--install", path)
+		out.HideLoader()
 		if err != nil {
 			return err
 		}
-		out.HideLoader()
 	}
 	return nil
 }
@@ -86,7 +86,7 @@ func Apt(in interface{}, out output.Output) error {
 		if err != nil {
 			return errors.New(string(cmdout))
 		}
-		if bytes.Index(cmdout, []byte("install")) >= 0 {
+		if bytes.Contains(cmdout, []byte("install")) {
 			out.Info(pkg + " is already installed")
 			continue
 		}
@@ -96,7 +96,7 @@ func Apt(in interface{}, out output.Output) error {
 		}
 		out.Info("Installing " + pkg)
 		out.ShowLoader()
-		err = helper.ExecSudo("apt-get", "--yes", "--quiet", "install", "--no-install-recommends", pkg)
+		_, err = helper.ExecSudo("apt-get", "--yes", "--quiet", "install", "--no-install-recommends", pkg)
 		out.HideLoader()
 		if err != nil {
 			return err
@@ -115,9 +115,9 @@ func AptRemove(in interface{}, out output.Output) error {
 	for _, pkg := range data {
 		cmdout, err := helper.Exec("dpkg", "--get-selections", pkg)
 		if err != nil {
-			return errors.New(string(cmdout))
+			return err
 		}
-		if bytes.Index(cmdout, []byte("install")) == -1 {
+		if !bytes.Contains(cmdout, []byte("install")) {
 			out.Info(pkg + " is not installed")
 			continue
 		}
@@ -127,7 +127,7 @@ func AptRemove(in interface{}, out output.Output) error {
 		}
 		out.Info("Removing " + pkg)
 		out.ShowLoader()
-		err = helper.ExecSudo("apt-get", "--yes", "--quiet", "remove", pkg)
+		_, err = helper.ExecSudo("apt-get", "--yes", "--quiet", "remove", pkg)
 		out.HideLoader()
 		if err != nil {
 			return err
@@ -145,14 +145,14 @@ func AptUpgrade(in interface{}, out output.Output) error {
 	}
 	out.Info("Updating packages list")
 	out.ShowLoader()
-	err := helper.ExecSudo("apt-get", "--yes", "update")
+	_, err := helper.ExecSudo("apt-get", "--yes", "update")
 	out.HideLoader()
 	if err != nil {
 		return err
 	}
 	out.Info("Upgrading packages")
 	out.ShowLoader()
-	err = helper.ExecSudo("apt-get", "--yes", "upgrade")
+	_, err = helper.ExecSudo("apt-get", "--yes", "upgrade")
 	out.HideLoader()
 	if err != nil {
 		return err
@@ -169,7 +169,7 @@ func AptAutoremovePurge(in interface{}, out output.Output) error {
 	}
 	out.Info("Removing unneeded dependencies")
 	out.ShowLoader()
-	err := helper.ExecSudo("apt-get", "--yes", "autoremove", "--purge")
+	_, err := helper.ExecSudo("apt-get", "--yes", "autoremove", "--purge")
 	out.HideLoader()
 	return err
 }

@@ -19,9 +19,9 @@ func Exec(cmd string, args ...string) ([]byte, error) {
 }
 
 // ExecSudo executes a command as root by using sudo
-func ExecSudo(args ...string) error {
+func ExecSudo(args ...string) ([]byte, error) {
 	if SudoPassword == "" {
-		return errors.New("Sudo password is not set")
+		return nil, errors.New("Sudo password is not set")
 	}
 	args = append([]string{"--prompt=", "--stdin"}, args...)
 	sudoCmd := exec.Command("sudo", args...)
@@ -29,7 +29,7 @@ func ExecSudo(args ...string) error {
 	sudoCmd.Stdin = strings.NewReader(SudoPassword)
 	cmdout, err := sudoCmd.CombinedOutput()
 	if err != nil && len(cmdout) > 0 {
-		return errors.New(string(cmdout))
+		return nil, errors.New(string(cmdout))
 	}
-	return err
+	return cmdout, err
 }

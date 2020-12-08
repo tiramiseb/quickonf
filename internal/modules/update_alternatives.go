@@ -21,8 +21,7 @@ func UpdateAlternatives(in interface{}, out output.Output) error {
 			out.Info("Would change alternative for " + alt + " to " + path)
 			continue
 		}
-		err := helper.ExecSudo("update-alternatives", "--set", alt, path)
-		if err != nil {
+		if _, err := helper.ExecSudo("update-alternatives", "--set", alt, path); err != nil {
 			return err
 		}
 		out.Success("Changed alternative for " + alt + " to " + path)

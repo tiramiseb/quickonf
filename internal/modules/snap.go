@@ -46,11 +46,11 @@ func snap(in interface{}, out output.Output, classic bool, dangerous bool) error
 		out.ShowLoader()
 		var err error
 		if classic {
-			err = helper.ExecSudo("snap", "install", "--classic", pkg)
+			_, err = helper.ExecSudo("snap", "install", "--classic", pkg)
 		} else if dangerous {
-			err = helper.ExecSudo("snap", "install", "--dangerous", pkg)
+			_, err = helper.ExecSudo("snap", "install", "--dangerous", pkg)
 		} else {
-			err = helper.ExecSudo("snap", "install", pkg)
+			_, err = helper.ExecSudo("snap", "install", pkg)
 		}
 		if err != nil {
 			return err
@@ -68,11 +68,11 @@ func SnapRefresh(in interface{}, out output.Output) error {
 		return nil
 	}
 	out.ShowLoader()
-	err := helper.ExecSudo("snap", "refresh")
+	_, err := helper.ExecSudo("snap", "refresh")
+	out.HideLoader()
 	if err != nil {
 		return err
 	}
-	out.HideLoader()
 	out.Success("Refreshed")
 	return nil
 }

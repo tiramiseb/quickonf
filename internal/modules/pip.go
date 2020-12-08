@@ -23,20 +23,20 @@ func PIP(in interface{}, out output.Output) error {
 			out.Info("Would install " + pkg)
 			continue
 		}
-		if err = helper.ExecSudo("pip3", "install", "--upgrade", pkg); err != nil {
+		if _, err := helper.ExecSudo("pip3", "install", "--upgrade", pkg); err != nil {
 			if strings.Contains(err.Error(), "command not found") {
 				out.Info("Installing PIP first")
 				out.ShowLoader()
-				err = helper.ExecSudo("apt-get", "--yes", "--quiet", "install", "--no-install-recommends", "python3-pip")
+				_, err = helper.ExecSudo("apt-get", "--yes", "--quiet", "install", "--no-install-recommends", "python3-pip")
 				out.HideLoader()
 				if err != nil {
 					return err
 				}
-				if err := helper.ExecSudo("pip3", "install", "--upgrade", pkg); err != nil {
+				if _, err := helper.ExecSudo("pip3", "install", "--upgrade", pkg); err != nil {
 					return err
 				}
 			}
 		}
 	}
-	return err
+	return nil
 }
