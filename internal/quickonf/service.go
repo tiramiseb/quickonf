@@ -1,6 +1,9 @@
 package quickonf
 
 import (
+	"path"
+	"strings"
+
 	"github.com/tiramiseb/quickonf/internal/helper"
 	"github.com/tiramiseb/quickonf/internal/modules"
 	"github.com/tiramiseb/quickonf/internal/output"
@@ -28,6 +31,23 @@ func (s *Service) Run(dryrun bool) {
 		step.run(s.output)
 	}
 	s.output.Report()
+}
+
+// Steps runs the selected steps
+func (s *Service) Steps(steps []string, dryrun bool) {
+	modules.Dryrun = dryrun
+	helper.Dryrun = dryrun
+	s.output.StepTitle("Running steps matching:")
+	for _, step := range steps {
+		s.output.Info(step)
+	}
+	for _, step := range s.steps {
+		for _, wanted := range steps {
+			if ok, _ := path.Match(wanted, strings.ToLower(step.Name())); ok {
+				step.run(s.output)
+			}
+		}
+	}
 }
 
 // List lists the steps contained in the quickonf service

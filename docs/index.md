@@ -1,3 +1,5 @@
+# Intro
+
 Quickonf allows you to automate your environment configuration, instead of manually configuring your apps every time you reinstall your system.
 
 It is especially useful if you reinstall Ubuntu every now and then and do not want to use the same user environment over and over (because sometimes, when keeping older configuration files, some app may disfunction).
@@ -35,7 +37,9 @@ When run with the `-list` or `-l` flag, `quickonf` lists all defined steps, with
 
 When run with the `-dry-run` or `-r` flag, `quickonf` runs in dry-run mode, without modifying the system, allowing to test the configuration.
 
-Of course, `-help` or `-h` displays the flags list.
+All non-option arguments are considered to be specific steps you want to run. These arguments are path-compatible patterns, which will be tested against lower-case version of steps names, and which will also match if only a part of the name matched. For instance, "gnome ext" will match "Install GNOME extensions", "Configure GNOME extensions", but not "Install GNOME" nor "Configure GNOME Shell".
+
+And, finally, of course, as usual, as you may expect, don't worry, `-help` or `-h` displays the flags list.
 
 ## General knowledge
 

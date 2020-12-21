@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"path"
 
 	"gopkg.in/yaml.v3"
 
@@ -49,5 +50,19 @@ func main() {
 		q.List()
 		return
 	}
-	q.Run(dryrun)
+
+	steps := flag.Args()
+	if len(steps) == 0 {
+		q.Run(dryrun)
+	} else {
+		for i, s := range steps {
+			s = "*" + s + "*"
+			if _, err := path.Match(s, ""); err != nil {
+				fmt.Println(err)
+				os.Exit(1)
+			}
+			steps[i] = s
+		}
+		q.Steps(steps, dryrun)
+	}
 }
