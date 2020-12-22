@@ -115,7 +115,7 @@ func Apt(in interface{}, out output.Output) error {
 		}
 		out.Info("Installing " + pkg)
 		out.ShowLoader()
-		_, err = helper.ExecSudo([]string{"DEBIAN_FRONTEND=noninteractive"}, "apt-get", "--yes", "--quiet", "install", "--no-install-recommends", pkg)
+		_, err = helper.ExecSudo([]string{"DEBIAN_FRONTEND=noninteractive"}, "apt-get", "--yes", "--quiet", "install", pkg)
 		out.HideLoader()
 		if err != nil {
 			return err
