@@ -118,7 +118,7 @@ func DebconfSet(in interface{}, out output.Output) error {
 		out.Info("Would set " + variable + " to " + value + " for " + pkg)
 		return nil
 	}
-	tmpfile, err := ioutil.TempFile("", "quickonf-debconf-*")
+	tmpfile, err := ioutil.TempFile("", "quickonf-debconf")
 	if err != nil {
 		return err
 	}
