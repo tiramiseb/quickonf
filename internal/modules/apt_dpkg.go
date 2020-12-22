@@ -3,25 +3,21 @@ package modules
 import (
 	"bytes"
 	"errors"
-	"os"
 	"os/exec"
-	"path/filepath"
-	"strings"
 
 	"github.com/tiramiseb/quickonf/internal/helper"
 	"github.com/tiramiseb/quickonf/internal/output"
 )
 
-const aptArchiveDir = "/var/cache/apt/archives/"
-
 func init() {
 	Register("dpkg", Dpkg)
+	Register("dpkg-reconfigure", DpkgReconfigure)
 	Register("dpkg-version", DpkgVersion)
 	Register("apt", Apt)
 	Register("apt-remove", AptRemove)
 	Register("apt-upgrade", AptUpgrade)
 	Register("apt-autoremove-purge", AptAutoremovePurge)
-	Register("apt-flush-archive", AptFlushArchive)
+	Register("apt-clean-cache", AptCleanCache)
 }
 
 // Dpkg installs a .deb package
@@ -39,6 +35,29 @@ func Dpkg(in interface{}, out output.Output) error {
 		out.Info("Installing " + path)
 		out.ShowLoader()
 		_, err := helper.ExecSudo(nil, "dpkg", "--install", path)
+		out.HideLoader()
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+// DpkgReconfigure reconfigures a package interactively
+func DpkgReconfigure(in interface{}, out output.Output) error {
+	out.InstructionTitle("Reconfiguring deb package")
+	data, err := helper.SliceString(in)
+	if err != nil {
+		return err
+	}
+	for _, name := range data {
+		if Dryrun {
+			out.Info("Would reconfigure " + name)
+			continue
+		}
+		out.Info("Reconfiguring " + name)
+		out.ShowLoader()
+		_, err := helper.ExecSudo(nil, "dpkg-reconfigure", "--frontend", "noninteractive", name)
 		out.HideLoader()
 		if err != nil {
 			return err
