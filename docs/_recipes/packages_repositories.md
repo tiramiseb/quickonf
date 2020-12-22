@@ -6,6 +6,7 @@ title: Packages repositories
 
 ```yaml
 - Initialisation:
+    - always: true
     - sudo-password: my-wonderful-password
 ```
 
