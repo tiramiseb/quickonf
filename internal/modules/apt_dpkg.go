@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"errors"
 	"io/ioutil"
+	"os"
 	"strings"
 
 	"github.com/tiramiseb/quickonf/internal/helper"
@@ -128,7 +129,10 @@ func DebconfSet(in interface{}, out output.Output) error {
 	if _, err := helper.ExecSudo(nil, "debconf-set-selections", tmpfile.Name()); err != nil {
 		return err
 	}
-	return nil
+	if err := tmpfile.Close(); err != nil {
+		return err
+	}
+	return os.Remove(tmpfile.Name())
 }
 
 // Apt installs packages from apt repositories
