@@ -3,7 +3,8 @@ package modules
 import (
 	"bytes"
 	"errors"
-	"os/exec"
+	"io/ioutil"
+	"strings"
 
 	"github.com/tiramiseb/quickonf/internal/helper"
 	"github.com/tiramiseb/quickonf/internal/output"
@@ -13,6 +14,7 @@ func init() {
 	Register("dpkg", Dpkg)
 	Register("dpkg-reconfigure", DpkgReconfigure)
 	Register("dpkg-version", DpkgVersion)
+	Register("debconf-set", DebconfSet)
 	Register("apt", Apt)
 	Register("apt-remove", AptRemove)
 	Register("apt-upgrade", AptUpgrade)
@@ -88,6 +90,43 @@ func DpkgVersion(in interface{}, out output.Output) error {
 		if storeAs, ok := data["store"]; ok {
 			helper.Store(storeAs, string(cmdout))
 		}
+	}
+	return nil
+}
+
+// DebconfSet sets a debconf variable
+func DebconfSet(in interface{}, out output.Output) error {
+	out.InstructionTitle("Set debconf variable")
+	data, err := helper.MapStringString(in)
+	if err != nil {
+		return err
+	}
+	pkg, ok := data["package"]
+	if !ok {
+		return errors.New("Missing package name")
+	}
+	variable, ok := data["variable"]
+	if !ok {
+		return errors.New("Missing variable name")
+	}
+	value, ok := data["value"]
+	if !ok {
+		return errors.New("Missing value")
+	}
+	if Dryrun {
+		out.Info("Would set " + variable + " to " + value + " for " + pkg)
+		return nil
+	}
+	tmpfile, err := ioutil.TempFile("", "quickonf-debconf-*")
+	if err != nil {
+		return err
+	}
+	defer tmpfile.Close()
+	if _, err := tmpfile.WriteString(strings.Join([]string{pkg, variable, "select", value}, " ")); err != nil {
+		return err
+	}
+	if _, err := helper.ExecSudo(nil, "debconf-set-selections", tmpfile.Name()); err != nil {
+		return err
 	}
 	return nil
 }

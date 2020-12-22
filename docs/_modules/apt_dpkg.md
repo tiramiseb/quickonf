@@ -7,6 +7,7 @@ title: Apt and dpkg
 | `dpkg`                 | Install .deb packages                  | List of packages files          |
 | `dpkg-reconfigure`     | Reconfigure deb packages               | List of packages names          |
 | `dpkg-version`         | Check a package version                | Parameters as a map (see below) |
+| `debconf-set`          | Set a debconf variable                 | Parameters as a map (see below) |
 | `apt`                  | Install packages from APT repositories | List of packages names          |
 | `apt-remove`           | Remove installed packages              | List of packages names          |
 | `apt-upgrade`          | Upgrade all installed packages         | none                            |
@@ -32,3 +33,13 @@ Example:
         package: inkscape
         store: inkscape-version
 ```
+
+## debconf-set
+
+Set a debconf variable.
+
+Parameters:
+
+- `package`: name of the package
+- `variable`: name of the variable
+- `value`: value to set
