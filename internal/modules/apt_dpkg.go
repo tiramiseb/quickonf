@@ -174,31 +174,16 @@ func AptAutoremovePurge(in interface{}, out output.Output) error {
 	return err
 }
 
-// AptFlushArchive remove archives .deb files
-func AptFlushArchive(in interface{}, out output.Output) error {
-	out.InstructionTitle("APT flush archived .deb files")
+// AptCleanCache remove archives .deb files from cache
+func AptCleanCache(in interface{}, out output.Output) error {
+	out.InstructionTitle("Cleaning APT cache")
 	if Dryrun {
-		out.Info("Would remove all .deb files in " + aptArchiveDir)
+		out.Info("Would clean the APT cache")
 		return nil
 	}
-	out.Info("Removing all .deb files in " + aptArchiveDir)
-
-	f, err := os.Open(aptArchiveDir)
-	if err != nil {
-		return err
-	}
-	defer f.Close()
-	files, err := f.Readdirnames(1)
-	if err != nil {
-		return err
-	}
-	for _, oneFile := range files {
-		if !strings.HasSuffix(oneFile, ".deb") {
-			continue
-		}
-		if err := os.Remove(filepath.Join(aptArchiveDir, oneFile)); err != nil {
-			return err
-		}
-	}
-	return nil
+	out.Info("Cleaning the APT cache")
+	out.ShowLoader()
+	_, err := helper.ExecSudo([]string{"DEBIAN_FRONTEND=noninteractive"}, "apt-get", "clean")
+	out.HideLoader()
+	return err
 }

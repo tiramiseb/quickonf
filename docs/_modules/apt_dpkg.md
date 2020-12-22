@@ -10,7 +10,7 @@ title: Apt and dpkg
 | `apt-remove`           | Remove installed packages              | List of packages names          |
 | `apt-upgrade`          | Upgrade all installed packages         | none                            |
 | `apt-autoremove-purge` | Clean unneeded packages                | none                            |
-| `apt-flush-archive`    | Remove archived .deb packages          | none                            |
+| `apt-clean-cache`      | Clean the APT cache                    | none                            |
 
 Instructions in this module, except `dpkg-version`, need the sudo password to be set. See the [sudo]({% link _modules/sudo.md %}) module.
 
