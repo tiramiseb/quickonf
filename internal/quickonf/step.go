@@ -24,10 +24,39 @@ func (step Step) Name() string {
 	return ""
 }
 
+// Always returns true if the step must always run
+func (step Step) Always() bool {
+	for _, instructions := range step {
+		for _, instruction := range instructions {
+			for k, v := range instruction {
+				if k == "always" {
+					b, ok := v.(bool)
+					if ok {
+						return b
+					}
+					s, ok := v.(string)
+					if ok {
+						return s == "true"
+					}
+				}
+
+			}
+
+		}
+	}
+	return false
+}
+
 func (step Step) run(out output.Output) {
 	for title, instructions := range step {
 		out.StepTitle(title)
+	instruction:
 		for _, instruction := range instructions {
+			for k := range instruction {
+				if k == "always" {
+					continue instruction
+				}
+			}
 			if err := runAction(instruction, out); err != nil {
 				if err != quickonfErrors.NoError {
 					out.Error(err)

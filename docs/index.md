@@ -37,11 +37,17 @@ When run with the `-list` or `-l` flag, `quickonf` lists all defined steps, with
 
 When run with the `-dry-run` or `-r` flag, `quickonf` runs in dry-run mode, without modifying the system, allowing to test the configuration.
 
-All non-option arguments are considered to be specific steps you want to run. These arguments are path-compatible patterns, which will be tested against lower-case version of steps names, and which will also match if only a part of the name matched. For instance, "gnome ext" will match "Install GNOME extensions", "Configure GNOME extensions", but not "Install GNOME" nor "Configure GNOME Shell".
+All non-option arguments are considered to be specific steps you want to run.
 
 And, finally, of course, as usual, as you may expect, don't worry, `-help` or `-h` displays the flags list.
 
 ## General knowledge
+
+### Steps selection
+
+You can chose a set of steps to run, by giving patterns as non-option arguments. These arguments are path-compatible patterns, which will be tested against lower-case version of steps names, and which will also match if only a part of the name matched. For instance, "gnome ext" will match "Install GNOME extensions", "Configure GNOME extensions", but not "Install GNOME" nor "Configure GNOME Shell".
+
+However, you may need some steps to run even if not explicitly selected. In that case, use `always: true` at the same level as steps instructions (see recipes for examples).
 
 ### Command output
 
