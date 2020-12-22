@@ -4,9 +4,12 @@ title: GNOME Shell
 
 | Instruction                           | Action                                                         | Arguments                       |
 | ------------------------------------- | -------------------------------------------------------------- | ------------------------------- |
-| `gnome-shell-extension`               | Enable GNOME Shell extensions                                  | List of extensions              |
+| `install-gnome-shell-extension`       | Install GNOME Shell extensions from extensions.gnome.org       | List of extensions              |
+| `enable-gnome-shell-extension`        | Enable GNOME Shell extensions                                  | List of extensions              |
 | `local-gnome-shell-extension-version` | Check the version of a locally-installed GNOME Shell extension | Parameters as a map (see below) |
 | `gnome-shell-restart`                 | Restart GNOME Shell                                            | none                            |
+
+Extensions names are their UUIDs, like "places-menu@gnome-shell-extensions.gcampax.github.com".
 
 Parameters for version checking:
 
@@ -17,7 +20,7 @@ Example:
 
 ```yaml
 - GNOME Shell extensions:
-    - gnome-shell-extension:
+    - enable-gnome-shell-extension:
         - native-window-placement@gnome-shell-extensions.gcampax.github.com
         - places-menu@gnome-shell-extensions.gcampax.github.com
     - local-gnome-shell-extension-version:
