@@ -54,6 +54,7 @@ steps:
 			}
 		}
 	}
+	s.output.Report()
 }
 
 // List lists the steps contained in the quickonf service
