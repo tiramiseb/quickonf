@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"strconv"
 
 	"github.com/tiramiseb/quickonf/internal/helper"
 	"github.com/tiramiseb/quickonf/internal/output"
@@ -65,28 +66,12 @@ func LocalGnomeShellExtensionVersion(in interface{}, out output.Output) error {
 	}
 	defer f.Close()
 	jsondec := json.NewDecoder(f)
-	extMeta := map[string]interface{}{}
+	extMeta := struct {
+		Version int
+	}{}
 	jsondec.Decode(&extMeta)
-	version, ok := extMeta["version"]
-	if !ok {
-		out.Info("Extension " + ext + " does not declare a version")
-		storeVersion("")
-		return nil
-	}
-	switch val := version.(type) {
-	case string:
-		out.Info(fmt.Sprintf("Extension %s version is %s", ext, val))
-		storeVersion(val)
-	case int:
-		out.Info(fmt.Sprintf("Extension %s version is %d.0.0", ext, val))
-		storeVersion(fmt.Sprintf("%d.0.0", val))
-	case float64:
-		out.Info(fmt.Sprintf("Extension %s version is %.f.0.0", ext, val))
-		storeVersion(fmt.Sprintf("%.f.0.0", val))
-	default:
-		out.Alert(fmt.Sprintf("Extension %s version is not understood", ext))
-		storeVersion("")
-	}
+	out.Info(fmt.Sprintf("Extension %s version is %d", ext, extMeta.Version))
+	storeVersion(strconv.Itoa(extMeta.Version))
 	return nil
 }
 
