@@ -101,7 +101,7 @@ func Apt(in interface{}, out output.Output) error {
 	}
 
 	for _, pkg := range data {
-		cmdout, err := exec.Command("dpkg", "--get-selections", pkg).CombinedOutput()
+		cmdout, err := helper.Exec(nil, "dpkg", "--get-selections", pkg)
 		if err != nil {
 			return errors.New(string(cmdout))
 		}
