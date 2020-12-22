@@ -46,11 +46,11 @@ func snap(in interface{}, out output.Output, classic bool, dangerous bool) error
 		out.ShowLoader()
 		var err error
 		if classic {
-			_, err = helper.ExecSudo("snap", "install", "--classic", pkg)
+			_, err = helper.ExecSudo(nil, "snap", "install", "--classic", pkg)
 		} else if dangerous {
-			_, err = helper.ExecSudo("snap", "install", "--dangerous", pkg)
+			_, err = helper.ExecSudo(nil, "snap", "install", "--dangerous", pkg)
 		} else {
-			_, err = helper.ExecSudo("snap", "install", pkg)
+			_, err = helper.ExecSudo(nil, "snap", "install", pkg)
 		}
 		if err != nil {
 			return err
@@ -68,7 +68,7 @@ func SnapRefresh(in interface{}, out output.Output) error {
 		return nil
 	}
 	out.ShowLoader()
-	_, err := helper.ExecSudo("snap", "refresh")
+	_, err := helper.ExecSudo(nil, "snap", "refresh")
 	out.HideLoader()
 	if err != nil {
 		return err
@@ -88,7 +88,7 @@ func SnapVersion(in interface{}, out output.Output) error {
 	if !ok {
 		return errors.New("Missing package name")
 	}
-	cmdout, err := helper.Exec("snap", "info", pkg)
+	cmdout, err := helper.Exec(nil, "snap", "info", pkg)
 	if err != nil {
 		out.Info("Package " + pkg + " is not installed")
 		if storeAs, ok := data["store"]; ok {

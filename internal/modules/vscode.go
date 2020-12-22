@@ -33,7 +33,7 @@ func vscodeExtension(in interface{}, out output.Output, cmd string) error {
 		}
 		out.Info("Installing " + extension)
 		out.ShowLoader()
-		_, err := helper.Exec(cmd, "--install-extension", extension)
+		_, err := helper.Exec(nil, cmd, "--install-extension", extension)
 		out.HideLoader()
 		if err != nil {
 			return nil

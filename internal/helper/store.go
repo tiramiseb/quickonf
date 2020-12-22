@@ -5,7 +5,7 @@ import "strings"
 var store = map[string]string{}
 
 func init() {
-	cmdout, err := Exec("lsb_release", "--codename", "--short")
+	cmdout, err := Exec(nil, "lsb_release", "--codename", "--short")
 	if err != nil {
 		panic(err)
 	}

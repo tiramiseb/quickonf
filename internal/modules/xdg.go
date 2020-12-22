@@ -82,7 +82,7 @@ func XdgMimeDefault(in interface{}, out output.Output) error {
 			out.Info("Would change default app for " + mimetype + " to " + app)
 			continue
 		}
-		if _, err := helper.Exec("xdg-mime", "default", app+".desktop", mimetype); err != nil {
+		if _, err := helper.Exec(nil, "xdg-mime", "default", app+".desktop", mimetype); err != nil {
 			return err
 		}
 		out.Success("Changed default app for " + mimetype + " to " + app)
@@ -107,7 +107,7 @@ func XdgUserDir(in interface{}, out output.Output) error {
 			out.Info("Would change user dir " + name + " to " + path)
 			continue
 		}
-		if _, err := helper.Exec("xdg-user-dirs-update", "--set", name, path); err != nil {
+		if _, err := helper.Exec(nil, "xdg-user-dirs-update", "--set", name, path); err != nil {
 			return err
 		}
 		out.Success("Changed user dir " + name + " to " + path)

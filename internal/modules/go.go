@@ -22,7 +22,7 @@ func GoEnv(in interface{}, out output.Output) error {
 			out.Info("Would set " + param + " to " + value)
 			continue
 		}
-		if _, err := helper.Exec("go", "env", "-w", param+"="+value); err != nil {
+		if _, err := helper.Exec(nil, "go", "env", "-w", param+"="+value); err != nil {
 			return err
 		}
 		out.Success("Set " + param + " to " + value)
@@ -44,7 +44,7 @@ func GoPackage(in interface{}, out output.Output) error {
 		}
 		out.Info("Installing " + pkg)
 		out.ShowLoader()
-		_, err := helper.Exec("go", "get", pkg)
+		_, err := helper.Exec(nil, "go", "get", pkg)
 		out.HideLoader()
 		if err != nil {
 			return err

@@ -112,7 +112,7 @@ func file(in interface{}, out output.Output, root bool, permission os.FileMode) 
 			if err := os.Chmod(fName, permission); err != nil {
 				return err
 			}
-			if _, err := helper.ExecSudo("cp", fName, path); err != nil {
+			if _, err := helper.ExecSudo(nil, "cp", fName, path); err != nil {
 				return err
 			}
 		} else {

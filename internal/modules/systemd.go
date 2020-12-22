@@ -22,10 +22,10 @@ func SystemdEnable(in interface{}, out output.Output) error {
 			out.Info("Would enable and start " + service)
 			continue
 		}
-		if _, err := helper.ExecSudo("systemctl", "enable", service); err != nil {
+		if _, err := helper.ExecSudo(nil, "systemctl", "enable", service); err != nil {
 			return err
 		}
-		if _, err := helper.ExecSudo("systemctl", "start", service); err != nil {
+		if _, err := helper.ExecSudo(nil, "systemctl", "start", service); err != nil {
 			return err
 		}
 		out.Success("Enabled " + service)
@@ -45,10 +45,10 @@ func SystemdDisable(in interface{}, out output.Output) error {
 			out.Info("Would stop and disable " + service)
 			continue
 		}
-		if _, err := helper.ExecSudo("systemctl", "stop", service); err != nil {
+		if _, err := helper.ExecSudo(nil, "systemctl", "stop", service); err != nil {
 			return err
 		}
-		if _, err := helper.ExecSudo("systemctl", "disable", service); err != nil {
+		if _, err := helper.ExecSudo(nil, "systemctl", "disable", service); err != nil {
 			return err
 		}
 		out.Success("Disabled " + service)

@@ -38,7 +38,7 @@ func Dpkg(in interface{}, out output.Output) error {
 		}
 		out.Info("Installing " + path)
 		out.ShowLoader()
-		_, err := helper.ExecSudo("dpkg", "--install", path)
+		_, err := helper.ExecSudo(nil, "dpkg", "--install", path)
 		out.HideLoader()
 		if err != nil {
 			return err
@@ -58,7 +58,7 @@ func DpkgVersion(in interface{}, out output.Output) error {
 	if !ok {
 		return errors.New("Missing package name")
 	}
-	cmdout, err := helper.Exec("dpkg-query", "--showformat=${Version}", "--show", pkg)
+	cmdout, err := helper.Exec(nil, "dpkg-query", "--showformat=${Version}", "--show", pkg)
 	if err != nil {
 		out.Info("Package " + pkg + " is not installed")
 		if storeAs, ok := data["store"]; ok {
@@ -96,7 +96,7 @@ func Apt(in interface{}, out output.Output) error {
 		}
 		out.Info("Installing " + pkg)
 		out.ShowLoader()
-		_, err = helper.ExecSudo("apt-get", "--yes", "--quiet", "install", "--no-install-recommends", pkg)
+		_, err = helper.ExecSudo([]string{"DEBIAN_FRONTEND=noninteractive"}, "apt-get", "--yes", "--quiet", "install", "--no-install-recommends", pkg)
 		out.HideLoader()
 		if err != nil {
 			return err
@@ -113,7 +113,7 @@ func AptRemove(in interface{}, out output.Output) error {
 		return err
 	}
 	for _, pkg := range data {
-		cmdout, err := helper.Exec("dpkg", "--get-selections", pkg)
+		cmdout, err := helper.Exec(nil, "dpkg", "--get-selections", pkg)
 		if err != nil {
 			return err
 		}
@@ -127,7 +127,7 @@ func AptRemove(in interface{}, out output.Output) error {
 		}
 		out.Info("Removing " + pkg)
 		out.ShowLoader()
-		_, err = helper.ExecSudo("apt-get", "--yes", "--quiet", "remove", pkg)
+		_, err = helper.ExecSudo([]string{"DEBIAN_FRONTEND=noninteractive"}, "apt-get", "--yes", "--quiet", "remove", pkg)
 		out.HideLoader()
 		if err != nil {
 			return err
@@ -145,14 +145,14 @@ func AptUpgrade(in interface{}, out output.Output) error {
 	}
 	out.Info("Updating packages list")
 	out.ShowLoader()
-	_, err := helper.ExecSudo("apt-get", "--yes", "update")
+	_, err := helper.ExecSudo([]string{"DEBIAN_FRONTEND=noninteractive"}, "apt-get", "--yes", "update")
 	out.HideLoader()
 	if err != nil {
 		return err
 	}
 	out.Info("Upgrading packages")
 	out.ShowLoader()
-	_, err = helper.ExecSudo("apt-get", "--yes", "upgrade")
+	_, err = helper.ExecSudo([]string{"DEBIAN_FRONTEND=noninteractive"}, "apt-get", "--yes", "upgrade")
 	out.HideLoader()
 	if err != nil {
 		return err
@@ -169,7 +169,7 @@ func AptAutoremovePurge(in interface{}, out output.Output) error {
 	}
 	out.Info("Removing unneeded dependencies")
 	out.ShowLoader()
-	_, err := helper.ExecSudo("apt-get", "--yes", "autoremove", "--purge")
+	_, err := helper.ExecSudo([]string{"DEBIAN_FRONTEND=noninteractive"}, "apt-get", "--yes", "autoremove", "--purge")
 	out.HideLoader()
 	return err
 }

@@ -21,7 +21,7 @@ func GitConfig(in interface{}, out output.Output) error {
 			out.Info("Would set " + param + " to " + value)
 			continue
 		}
-		if _, err := helper.Exec("git", "config", "--global", param, value); err != nil {
+		if _, err := helper.Exec(nil, "git", "config", "--global", param, value); err != nil {
 			return err
 		}
 		out.Success("Set " + param + " to " + value)

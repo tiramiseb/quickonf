@@ -10,8 +10,11 @@ import (
 var SudoPassword string
 
 // Exec executes a command
-func Exec(cmd string, args ...string) ([]byte, error) {
-	cmdout, err := exec.Command(cmd, args...).CombinedOutput()
+func Exec(env []string, cmd string, args ...string) ([]byte, error) {
+	cmdObj := exec.Command(cmd, args...)
+	cmdObj.Env = append(cmdObj.Env, "LANG=C")
+	cmdObj.Env = append(cmdObj.Env, env...)
+	cmdout, err := cmdObj.CombinedOutput()
 	if err != nil && len(cmdout) > 0 {
 		return nil, errors.New(string(cmdout))
 	}
@@ -19,13 +22,14 @@ func Exec(cmd string, args ...string) ([]byte, error) {
 }
 
 // ExecSudo executes a command as root by using sudo
-func ExecSudo(args ...string) ([]byte, error) {
+func ExecSudo(env []string, args ...string) ([]byte, error) {
 	if SudoPassword == "" {
 		return nil, errors.New("Sudo password is not set")
 	}
 	args = append([]string{"--prompt=", "--stdin"}, args...)
 	sudoCmd := exec.Command("sudo", args...)
-	sudoCmd.Env = []string{"LANG=C"}
+	sudoCmd.Env = append(sudoCmd.Env, "LANG=C")
+	sudoCmd.Env = append(sudoCmd.Env, env...)
 	sudoCmd.Stdin = strings.NewReader(SudoPassword)
 	cmdout, err := sudoCmd.CombinedOutput()
 	if err != nil && len(cmdout) > 0 {

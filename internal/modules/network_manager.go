@@ -45,7 +45,7 @@ RANGE:
 		path = helper.Path(path)
 		nameB := []byte(nameS)
 
-		shown, err := helper.Exec("nmcli", "connection", "show")
+		shown, err := helper.Exec(nil, "nmcli", "connection", "show")
 		if err != nil {
 			return err
 		}
@@ -67,7 +67,7 @@ RANGE:
 			continue
 		}
 
-		if _, err := helper.Exec("nmcli", "connection", "import", "type", "openvpn", "file", path); err != nil {
+		if _, err := helper.Exec(nil, "nmcli", "connection", "import", "type", "openvpn", "file", path); err != nil {
 			return err
 		}
 	}
