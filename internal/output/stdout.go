@@ -2,6 +2,7 @@ package output
 
 import (
 	"fmt"
+	"strconv"
 	"strings"
 	"time"
 
@@ -150,6 +151,28 @@ func (s *Stdout) HidePercentage() {
 	fmt.Print(loaderClear)
 }
 
+// ShowXonY displays the loader with "X/Y" information
+func (s *Stdout) ShowXonY(x, y int) {
+	xS := strconv.Itoa(x)
+	yS := strconv.Itoa(y)
+	if len(xS) > 4 {
+		xS = xS[len(xS)-5 : len(xS)-1]
+	} else {
+		xS = fmt.Sprintf("%4s", xS)
+	}
+	if len(yS) > 5 {
+		yS = yS[0:5]
+	} else {
+		yS = fmt.Sprintf("%-5s", yS)
+	}
+	color.Danger.Print("\r       [" + xS + "/" + yS + "]")
+}
+
+// HideXonY hidles the loader with "X/Y" information
+func (s *Stdout) HideXonY() {
+	fmt.Print(loaderClear)
+}
+
 // Report writes the summary
 func (s *Stdout) Report() {
 	fmt.Println("")
@@ -197,5 +220,4 @@ func (s *Stdout) Report() {
 			}
 		}
 	}
-
 }

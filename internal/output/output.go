@@ -13,7 +13,10 @@ type Output interface {
 	HideLoader() // HideLoader hides the loader
 
 	ShowPercentage(int) // ShowPercentage displays the loader with percentage
-	HidePercentage()    // HidePercentage hidles the loader with percentage
+	HidePercentage()    // HidePercentage hides the loader with percentage
+
+	ShowXonY(int, int) // ShowXonY displays the loader with "X/Y" information
+	HideXonY()         // HideXonY hides the loader with "X/Y" information
 
 	Report() // Report writes the summary
 }
