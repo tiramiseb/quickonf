@@ -2,6 +2,7 @@ package helper
 
 import (
 	"encoding/json"
+	"errors"
 	"io"
 	"net/http"
 	"os"
@@ -52,6 +53,9 @@ func downloadFile(url, path string, out output.Output) error {
 		return err
 	}
 	defer resp.Body.Close()
+	if resp.StatusCode == http.StatusNotFound {
+		return errors.New("404 not found")
+	}
 	body := resp.Body
 	if out != nil {
 		body = &passThru{
@@ -78,5 +82,8 @@ func DownloadJSON(url string, destination interface{}) error {
 		return err
 	}
 	defer resp.Body.Close()
+	if resp.StatusCode == http.StatusNotFound {
+		return errors.New("404 not found")
+	}
 	return json.NewDecoder(resp.Body).Decode(destination)
 }
