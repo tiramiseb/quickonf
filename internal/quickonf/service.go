@@ -43,7 +43,7 @@ func (s *Service) Steps(steps []string, dryrun bool) {
 	}
 	for _, step := range s.steps {
 		for _, wanted := range steps {
-			if ok, _ := path.Match(wanted, strings.ToLower(step.Name())); ok {
+			if ok, _ := path.Match(wanted, strings.ReplaceAll(strings.ToLower(step.Name()), "/", " ")); ok {
 				step.run(s.output)
 			}
 		}
