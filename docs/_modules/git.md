@@ -2,9 +2,10 @@
 title: Git
 ---
 
-| Instruction  | Action              | Arguments                      |
-| ------------ | ------------------- | ------------------------------ |
-| `git-config` | Set a git parameter | Map of parameter name to value |
+| Instruction      | Action                     | Arguments                      |
+| ---------------- | -------------------------- | ------------------------------ |
+| `git-config`     | Set a git parameter        | Map of parameter name to value |
+| `git-clone-pull` | Clone or pull a repository | Map of repository URL to path  |
 
 Example:
 
