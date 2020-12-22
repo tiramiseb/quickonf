@@ -20,7 +20,10 @@ Example:
 
 ```yaml
 - GNOME Shell extensions:
+    - install-gnome-shell-extension:
+        - gsconnect@andyholmes.github.io
     - enable-gnome-shell-extension:
+        - gsconnect@andyholmes.github.io
         - native-window-placement@gnome-shell-extensions.gcampax.github.com
         - places-menu@gnome-shell-extensions.gcampax.github.com
     - local-gnome-shell-extension-version:
