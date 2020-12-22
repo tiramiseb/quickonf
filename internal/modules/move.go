@@ -2,6 +2,7 @@ package modules
 
 import (
 	"errors"
+	"fmt"
 	"os"
 	"path/filepath"
 
@@ -25,6 +26,7 @@ func init() {
 	Register("migration-source", MigrationSource)
 	Register("force-migrate", ForceMigrate)
 	Register("migrate", Migrate)
+	Register("do-not-migrate", DoNotMigrate)
 }
 
 // Move moves files or directories, or does nothing if the source does not exist
@@ -84,6 +86,30 @@ func migrate(in interface{}, out output.Output, ifExists moveDestinationExists) 
 		translated[filepath.Join(moveMigrationSource, path)] = path
 	}
 	return move(translated, out, ifExists)
+}
+
+// DoNotMigrate removes a file fro the previous home, without migrating it
+func DoNotMigrate(in interface{}, out output.Output) error {
+	if moveMigrationSource == "" {
+		return errors.New("Migration source is not defined")
+	}
+	out.InstructionTitle("Remove do-no-migrate files")
+	data, err := helper.SliceString(in)
+	if err != nil {
+		return err
+	}
+	for _, fpath := range data {
+		fpath = filepath.Join(moveMigrationSource, fpath)
+		if Dryrun {
+			out.Info(fmt.Sprintf("Would make sure %s does not exist", fpath))
+			continue
+		}
+		out.Info(fmt.Sprintf("Making sure %s does not exist", fpath))
+		if err := os.RemoveAll(fpath); err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 func move(data map[string]string, out output.Output, destExists moveDestinationExists) error {

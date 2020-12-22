@@ -8,11 +8,12 @@ title: Move
 | `force-move`       | Move files or directories, removing existing destinations                           | Map of sources to destinations |
 | `migration-source` | Set the migration source path                                                       | The path                       |
 | `migrate`          | Migrate files or directories from the previous home                                 | List of relative paths         |
-| `migrate`          | Migrate files or directories from the previous home, removing existing destinations | List of relative paths         |
+| `force-migrate`    | Migrate files or directories from the previous home, removing existing destinations | List of relative paths         |
+| `do-not-migrate`   | Make sure given file does not exist in previous home and do not migrate it          | List of relative paths         |
 
 For all instructions in this module, if the source does not exist, this is a no-op.
 
-# Migration
+## Migration
 
 Let's say you have moved your previous home directory to `/home/previous` before reinstalling your system, in order to have a clean all-new environment. You still want to keep some directories or files as-is. That's what migration is about.
 
@@ -30,11 +31,3 @@ You first tell quickonf where your previous home is with `migration-source` and 
 ```
 
 These instructions will move `/home/previous/Music` to `$HOME/Music` and `/home/previous/.config/GIMP` to `$HOME/.config/GIMP`. If the destination already exists, it is not overwritten.
-
-Example:
-
-```yaml
-- My documents:
-    - move:
-        OLD/MyDocs: MyDocs
-```
