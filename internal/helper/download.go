@@ -1,6 +1,7 @@
 package helper
 
 import (
+	"bytes"
 	"encoding/json"
 	"errors"
 	"io"
@@ -86,4 +87,19 @@ func DownloadJSON(url string, destination interface{}) error {
 		return errors.New("404 not found")
 	}
 	return json.NewDecoder(resp.Body).Decode(destination)
+}
+
+// Download downloads the given URL and returns it as a []byte
+func Download(url string) ([]byte, error) {
+	resp, err := http.Get(url)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode == http.StatusNotFound {
+		return nil, errors.New("404 not found")
+	}
+	var buf bytes.Buffer
+	_, err = buf.ReadFrom(resp.Body)
+	return buf.Bytes(), err
 }
