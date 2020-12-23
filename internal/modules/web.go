@@ -108,7 +108,5 @@ func ParseWebPage(in interface{}, out output.Output) error {
 		}
 	}
 
-	// fmt.Println(string(page))
-
 	return nil
 }
