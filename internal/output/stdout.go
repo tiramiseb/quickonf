@@ -146,7 +146,7 @@ func (s *Stdout) ShowPercentage(p int) {
 	}
 }
 
-// HidePercentage hidles the loader with percentage
+// HidePercentage hides the loader with percentage
 func (s *Stdout) HidePercentage() {
 	fmt.Print(loaderClear)
 }
@@ -168,7 +168,7 @@ func (s *Stdout) ShowXonY(x, y int) {
 	color.Danger.Print("\r       [" + xS + "/" + yS + "]")
 }
 
-// HideXonY hidles the loader with "X/Y" information
+// HideXonY hides the loader with "X/Y" information
 func (s *Stdout) HideXonY() {
 	fmt.Print(loaderClear)
 }
