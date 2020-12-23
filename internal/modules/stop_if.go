@@ -3,6 +3,7 @@ package modules
 import (
 	"errors"
 	"fmt"
+	"os"
 
 	"github.com/Masterminds/semver/v3"
 
@@ -12,12 +13,34 @@ import (
 )
 
 func init() {
+	Register("stop-if-exist", StopIfExist)
 	Register("stop-if-older", StopIfOlder)
 }
 
-// StopIfOlder compares versions
+// StopIfExist stops the step if all given files exist
+func StopIfExist(in interface{}, out output.Output) error {
+	out.InstructionTitle("Stop if exist")
+	data, err := helper.SliceString(in)
+	if err != nil {
+		return err
+	}
+	for _, f := range data {
+		f = helper.Path(f)
+		_, err := os.Stat(f)
+		if err != nil {
+			if os.IsNotExist(err) {
+				out.Info(fmt.Sprintf("File %s does not exist", f))
+				return nil
+			}
+			return err
+		}
+	}
+	return quickonfErrors.NoError
+}
+
+// StopIfOlder compares versions and stops the step if older
 func StopIfOlder(in interface{}, out output.Output) error {
-	out.InstructionTitle("Comparing versions")
+	out.InstructionTitle("Stop if older")
 	data, err := helper.MapStringString(in)
 	if err != nil {
 		return err
