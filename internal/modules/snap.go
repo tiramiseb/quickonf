@@ -12,26 +12,32 @@ func init() {
 	Register("snap", Snap)
 	Register("snap-classic", SnapClassic)
 	Register("snap-dangerous", SnapDangerous)
+	Register("snap-edge", SnapEdge)
 	Register("snap-refresh", SnapRefresh)
 	Register("snap-version", SnapVersion)
 }
 
 // Snap installs Snap packages
 func Snap(in interface{}, out output.Output) error {
-	return snap(in, out, false, false)
+	return snap(in, out)
 }
 
 // SnapClassic installs Snap packages in classic mode
 func SnapClassic(in interface{}, out output.Output) error {
-	return snap(in, out, true, false)
+	return snap(in, out, "--classic")
 }
 
 // SnapDangerous installs Snap packages without verifying their signatures
 func SnapDangerous(in interface{}, out output.Output) error {
-	return snap(in, out, false, true)
+	return snap(in, out, "--dangerous")
 }
 
-func snap(in interface{}, out output.Output, classic bool, dangerous bool) error {
+// SnapEdge installs Snap packages from the edge channel
+func SnapEdge(in interface{}, out output.Output) error {
+	return snap(in, out, "--edge")
+}
+
+func snap(in interface{}, out output.Output, options ...string) error {
 	out.InstructionTitle("Installing snap package")
 	data, err := helper.SliceString(in)
 	if err != nil {
@@ -45,14 +51,10 @@ func snap(in interface{}, out output.Output, classic bool, dangerous bool) error
 		out.Info("Installing " + pkg)
 		out.ShowLoader()
 		var err error
-		if classic {
-			_, err = helper.ExecSudo(nil, "snap", "install", "--classic", pkg)
-		} else if dangerous {
-			_, err = helper.ExecSudo(nil, "snap", "install", "--dangerous", pkg)
-		} else {
-			_, err = helper.ExecSudo(nil, "snap", "install", pkg)
-		}
-		if err != nil {
+		cmd := []string{"snap", "install"}
+		cmd = append(cmd, options...)
+		cmd = append(cmd, pkg)
+		if _, err = helper.ExecSudo(nil, cmd...); err != nil {
 			return err
 		}
 		out.HideLoader()
