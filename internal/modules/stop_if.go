@@ -35,6 +35,7 @@ func StopIfExist(in interface{}, out output.Output) error {
 			return err
 		}
 	}
+	out.Info(fmt.Sprintf("All listed files exist"))
 	return quickonfErrors.NoError
 }
 
