@@ -2,6 +2,12 @@
 title: TeamViewer
 ---
 
+## The problem
+
+The TeamViewer .deb package is downloaded on the product's download page, not in a repository.
+
+Moreover, its latest version may only be read in the download page. The name of the file to download is generic.
+
 ## Prerequisite
 
 ```yaml
@@ -9,12 +15,6 @@ title: TeamViewer
     - always: true
     - sudo-password: my-wonderful-password
 ```
-
-## The problem
-
-The TeamViewer .deb package is downloaded on the product's download page, not in a repository.
-
-Moreover, its latest version may only be read in the download page. The name of the file to download is generic.
 
 ## The recipe
 

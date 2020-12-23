@@ -2,6 +2,14 @@
 title: Zoom
 ---
 
+## The problem
+
+The Zoom .deb package is downloaded on the product's download page, not in a repository.
+
+Its latest version may only be read in the download page. The name of the file to download is generic.
+
+Moreover, the version does not comply with SemVer, because it contains 4 numbers.
+
 ## Prerequisite
 
 ```yaml
@@ -9,14 +17,6 @@ title: Zoom
     - always: true
     - sudo-password: my-wonderful-password
 ```
-
-## The problem
-
-The TeamViewer .deb package is downloaded on the product's download page, not in a repository.
-
-Its latest version may only be read in the download page. The name of the file to download is generic.
-
-Moreover, the version does not comply with SemVer, because it contains 4 numbers.
 
 ## The recipe
 
