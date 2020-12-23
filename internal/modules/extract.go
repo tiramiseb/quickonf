@@ -27,6 +27,10 @@ func ExtractTarxz(in interface{}, out output.Output) error {
 	for tarxzFile, dest := range data {
 		tarxzFile = helper.Path(tarxzFile)
 		dest = helper.Path(dest)
+		if Dryrun {
+			out.Info("Would extract " + tarxzFile + " to " + dest)
+			continue
+		}
 		out.Info("Extracting " + tarxzFile + " to " + dest)
 		fread, err := os.Open(tarxzFile)
 		if err != nil {
