@@ -16,7 +16,7 @@ func init() {
 	Register("restricted-file", RestrictedFile)
 	Register("root-file", RootFile)
 	Register("executable-root-file", ExecutableRootFile)
-	Register("restricted-root-file", ExecutableRootFile)
+	Register("restricted-root-file", RestrictedRootFile)
 }
 
 const (
@@ -68,6 +68,9 @@ func file(in interface{}, out output.Output, root bool, permission os.FileMode) 
 	}
 	for path, content := range data {
 		path = helper.Path(path)
+		if err != nil {
+			return err
+		}
 		bcontent := []byte(content)
 		info, err := os.Stat(path)
 		if err == nil {
@@ -89,7 +92,7 @@ func file(in interface{}, out output.Output, root bool, permission os.FileMode) 
 						}
 					}
 				}
-				return nil
+				continue
 			}
 		} else if !os.IsNotExist(err) {
 			return err
