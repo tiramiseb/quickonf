@@ -32,7 +32,6 @@ func UnzipFile(zipfilepath, dest string, out output.Output) error {
 			out.ShowXonY(i, totalfiles)
 		}
 
-		// Store filename/path for returning and using later on
 		fpath := filepath.Join(dest, f.Name)
 
 		if f.FileInfo().IsDir() {
