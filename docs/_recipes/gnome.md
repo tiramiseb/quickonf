@@ -76,7 +76,7 @@ Here are some of my preferences, don't hesitate to dig into the dconf database t
         candidate: <pop-shell-candidate>
     - download:
         <pop-shell-url>: /tmp/quickonf-pop-shell.zip
-    - unzip:
+    - extract-zip:
         /tmp/quickonf-pop-shell.zip: .local/share/gnome-shell/extensions/pop-shell@system76.com
     - remove:
         - /tmp/quickonf-pop-shell.zip
