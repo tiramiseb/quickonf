@@ -12,6 +12,7 @@ import (
 func init() {
 	// Register("browse-web", BrowseWeb)
 	Register("parse-web-page", ParseWebPage)
+	Register("post", Post)
 }
 
 // // BrowseWeb browses a website
@@ -106,6 +107,36 @@ func ParseWebPage(in interface{}, out output.Output) error {
 				}
 			}
 		}
+	}
+
+	return nil
+}
+
+// Post sends a request to a POST request
+func Post(in interface{}, out output.Output) error {
+	out.InstructionTitle("POST request")
+	data, err := helper.MapStringString(in)
+	if err != nil {
+		return err
+	}
+	url, ok := data["url"]
+	if !ok {
+		return errors.New("Missing url")
+	}
+	payloadS, ok := data["payload"]
+	if !ok {
+		return errors.New("Missing payload")
+	}
+	payload := []byte(payloadS)
+
+	out.Info(fmt.Sprintf("POSTing to %s", url))
+	response, err := helper.Post(url, payload)
+	if err != nil {
+		return err
+	}
+	store, ok := data["store"]
+	if ok {
+		helper.Store(store, string(response))
 	}
 
 	return nil
