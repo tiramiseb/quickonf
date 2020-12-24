@@ -1,8 +1,8 @@
 package modules
 
 import (
-	"bytes"
 	"errors"
+	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
@@ -13,6 +13,29 @@ import (
 
 func init() {
 	Register("nm-import-openvpn", NetworkManagerImport)
+	Register("nm-wifi", NetworkManagerWifi)
+}
+
+// NetworkManagerWifi sets the known wifi networks with WPA-PSK security
+func NetworkManagerWifi(in interface{}, out output.Output) error {
+	out.InstructionTitle("Network manager wifi")
+	data, err := helper.MapStringString(in)
+	if err != nil {
+		return err
+	}
+	for net, ssid := range data {
+		ok, err := nmConnectionExists(net)
+		if err != nil {
+			return err
+		}
+		if ok {
+			out.Info(fmt.Sprintf("Connection %s already exists", net))
+		}
+		if _, err := helper.Exec(nil, "nmcli", "connection", "add", "con-name", net, "type", "wifi", "ssid", net, "--", "802-11-wireless-security.key-mgmt", "wpa-psk", "802-11-wireless-security.psk", ssid); err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 // NetworkManagerImport imports a configuration into network manager
@@ -22,44 +45,34 @@ func NetworkManagerImport(in interface{}, out output.Output) error {
 	if err != nil {
 		return err
 	}
-RANGE:
 	for _, path := range data {
 		path = helper.Path(path)
 		if _, err := os.Stat(path); err != nil {
 			if os.IsNotExist(err) {
-				out.Error(err)
+				out.Error(fmt.Errorf("File %s does not exist", path))
 				continue
 			}
 			return err
 		}
 		nameParts := strings.Split(filepath.Base(path), ".")
-		var nameS string
+		var name string
 		switch len(nameParts) {
 		case 0:
 			return errors.New("No file name in " + path)
 		case 1, 2:
-			nameS = nameParts[0]
+			name = nameParts[0]
 		default:
-			nameS = strings.Join(nameParts[0:len(nameParts)-2], ".")
+			name = strings.Join(nameParts[0:len(nameParts)-2], ".")
 		}
 		path = helper.Path(path)
-		nameB := []byte(nameS)
 
-		shown, err := helper.Exec(nil, "nmcli", "connection", "show")
+		ok, err := nmConnectionExists(name)
 		if err != nil {
 			return err
 		}
-
-		for _, line := range bytes.Split(shown, []byte{'\n'}) {
-			fields := bytes.Fields(line)
-			var connName []byte
-			if len(fields) > 0 {
-				connName = fields[0]
-			}
-			if bytes.Equal(connName, nameB) {
-				out.Info(nameS + " is already configured")
-				continue RANGE
-			}
+		if ok {
+			out.Info(name + " is already configured")
+			continue
 		}
 
 		if Dryrun {
@@ -72,4 +85,18 @@ RANGE:
 		}
 	}
 	return nil
+}
+
+func nmConnectionExists(name string) (bool, error) {
+	shownB, err := helper.Exec(nil, "nmcli", "connection", "show")
+	if err != nil {
+		return false, err
+	}
+	shown := string(shownB)
+	for _, line := range strings.Split(shown, "\n") {
+		if strings.HasPrefix(line, name) {
+			return true, nil
+		}
+	}
+	return false, nil
 }
