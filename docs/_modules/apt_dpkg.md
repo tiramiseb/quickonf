@@ -5,6 +5,7 @@ title: Apt and dpkg
 | Instruction            | Action                                 | Arguments                       |
 | ---------------------- | -------------------------------------- | ------------------------------- |
 | `dpkg`                 | Install .deb packages                  | List of packages files          |
+| `dpkg-dependencies`    | Install dependencies of .deb packages  | List of packages files          |
 | `dpkg-reconfigure`     | Reconfigure deb packages               | List of packages names          |
 | `dpkg-version`         | Check a package version                | Parameters as a map (see below) |
 | `debconf-set`          | Set a debconf variable                 | Parameters as a map (see below) |

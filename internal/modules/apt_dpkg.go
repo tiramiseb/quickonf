@@ -13,6 +13,7 @@ import (
 
 func init() {
 	Register("dpkg", Dpkg)
+	Register("dpkg-dependencies", DpkgDependencies)
 	Register("dpkg-reconfigure", DpkgReconfigure)
 	Register("dpkg-version", DpkgVersion)
 	Register("debconf-set", DebconfSet)
@@ -41,6 +42,37 @@ func Dpkg(in interface{}, out output.Output) error {
 		out.HideLoader()
 		if err != nil {
 			return err
+		}
+	}
+	return nil
+}
+
+// DpkgDependencies installs dependencies for a .deb package
+func DpkgDependencies(in interface{}, out output.Output) error {
+	out.InstructionTitle("Install dependencies for .deb package")
+	data, err := helper.SliceString(in)
+	if err != nil {
+		return err
+	}
+	for _, path := range data {
+		out.Info("Dependencies for " + path)
+		depsB, err := helper.Exec(nil, "dpkg-deb", "--show", "--showformat=${Depends}", path)
+		if err != nil {
+			return err
+		}
+		deps := strings.Split(string(depsB), ", ")
+		for _, pkg := range deps {
+			if Dryrun {
+				out.Info("Would install " + pkg)
+				continue
+			}
+			out.Info("Installing " + pkg)
+			out.ShowLoader()
+			_, err = helper.ExecSudo([]string{"DEBIAN_FRONTEND=noninteractive"}, "apt-get", "--yes", "--quiet", "install", pkg)
+			out.HideLoader()
+			if err != nil {
+				return err
+			}
 		}
 	}
 	return nil
