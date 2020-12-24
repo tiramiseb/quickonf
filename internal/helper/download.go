@@ -8,6 +8,8 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/gabriel-vasile/mimetype"
+
 	"github.com/tiramiseb/quickonf/internal/output"
 )
 
@@ -92,6 +94,23 @@ func DownloadJSON(url string, destination interface{}) error {
 // Download downloads the given URL and returns it as a []byte
 func Download(url string) ([]byte, error) {
 	resp, err := http.Get(url)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode == http.StatusNotFound {
+		return nil, errors.New("404 not found")
+	}
+	var buf bytes.Buffer
+	_, err = buf.ReadFrom(resp.Body)
+	return buf.Bytes(), err
+}
+
+// Post uses method POST in the given URL
+func Post(url string, payload []byte) ([]byte, error) {
+	contentType := mimetype.Detect(payload).String()
+	body := bytes.NewReader(payload)
+	resp, err := http.Post(url, contentType, body)
 	if err != nil {
 		return nil, err
 	}
