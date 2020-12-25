@@ -2,13 +2,12 @@ name: Go
 
 on:
   push:
-    branches: [main]
-  pull_request:
-    branches: [main]
+    tags:
+      - "v*"
 
 jobs:
   build:
-    name: Build
+    name: Release
     runs-on: ubuntu-latest
     steps:
       - name: Set up Go 1.x
@@ -24,3 +23,35 @@ jobs:
 
       - name: Build
         run: make all
+
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          body: Download `quickonf` for 64b version, or `quickonf-32` for 32b version. Built on Ubuntu.
+          draft: false
+          prerelease: false
+
+      - name: Upload 64b binary
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./quickonf
+          asset_name: quickonf
+          asset_content_type: application/x-executable
+
+      - name: Upload 32b binary
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./quickonf-32
+          asset_name: quickonf-32
+          asset_content_type: application/x-executable
