@@ -18,8 +18,8 @@
         <h2>{{ site.description | default: site.github.project_tagline }}</h2>
 
         <section id="downloads">
-          <a href="{{ site.github.releases_url }}" class="btn btn-github">All releases</a>
-          <a href="{{ site.github.repository_url }}" class="btn btn-github"><span class="icon"></span>View on GitHub</a>
+          <a href="{{ site.github.releases_url }}" class="btn btn-github"><span class="icon"></span> All releases</a>
+          <a href="{{ site.github.repository_url }}" class="btn btn-github"><span class="icon"></span> View on GitHub</a>
         </section>
       </div>
     </header>
@@ -37,6 +37,7 @@
           <a href="{{ recipe.url | relative_url }}">{{ recipe.title }}</a><br/>
         {% endfor %}
         <hr/>
+        <a href="{{ '/developers' | relative_url }}">Doc for developers</a>
       </nav>
       <section id="main_content">
         {{ content }}
