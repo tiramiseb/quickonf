@@ -70,10 +70,10 @@ func GtkBookmarks(in interface{}, out output.Output) error {
 	}
 	for _, d := range result {
 		if Dryrun {
-			out.Info("Would set bookmark " + d[0] + " → " + d[1])
+			out.Infof("Would set bookmark %s → %s", d[0], d[1])
 			continue
 		}
-		out.Success("Bookmark " + d[0] + " → " + d[1])
+		out.Successf("Bookmark %s → %s", d[0], d[1])
 	}
 
 	return nil

@@ -1,7 +1,7 @@
 package helper
 
 import (
-	"errors"
+	"fmt"
 	"os"
 )
 
@@ -19,7 +19,7 @@ const (
 func Symlink(path, target string) (status SymlinkStatus, err error) {
 	if stat, err := os.Lstat(path); err == nil {
 		if stat.Mode()&os.ModeSymlink != os.ModeSymlink {
-			return SymlinkError, errors.New(path + " already exists but is not a symlink")
+			return SymlinkError, fmt.Errorf("%s already exists but is not a symlink", path)
 		}
 		if currentTarget, err := os.Readlink(path); err == nil {
 			if currentTarget == target {

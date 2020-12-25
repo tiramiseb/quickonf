@@ -2,7 +2,7 @@ package modules
 
 import (
 	"bytes"
-	"errors"
+	"fmt"
 	"io/ioutil"
 	"os"
 
@@ -75,7 +75,7 @@ func file(in interface{}, out output.Output, root bool, permission os.FileMode) 
 		info, err := os.Stat(path)
 		if err == nil {
 			if info.IsDir() {
-				return errors.New(path + " is a directory")
+				return fmt.Errorf("%s is a directory", path)
 			}
 			// TODO Read root restricted content...
 			current, err := ioutil.ReadFile(path)
@@ -83,7 +83,7 @@ func file(in interface{}, out output.Output, root bool, permission os.FileMode) 
 				return err
 			}
 			if bytes.Compare(bcontent, current) == 0 {
-				out.Info(path + " already has the needed content")
+				out.Infof("%s already has the needed content", path)
 				if !root {
 					if !Dryrun {
 						err := os.Chmod(path, permission)
@@ -98,7 +98,7 @@ func file(in interface{}, out output.Output, root bool, permission os.FileMode) 
 			return err
 		}
 		if Dryrun {
-			out.Info("Would create or modify " + path)
+			out.Infof("Would create or modify %s", path)
 			continue
 		}
 		if root {
@@ -123,7 +123,7 @@ func file(in interface{}, out output.Output, root bool, permission os.FileMode) 
 				return err
 			}
 		}
-		out.Success(path + " created or modified")
+		out.Successf("%s created or modified", path)
 	}
 	return nil
 }

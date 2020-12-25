@@ -44,10 +44,10 @@ func DownloadFile(url, path string) error {
 
 func downloadFile(url, path string, out output.Output) error {
 	if Dryrun {
-		out.Info("Would download " + url + " to " + path)
+		out.Infof("Would download %s to %s", url, path)
 		return nil
 	}
-	out.Info("Downloading " + url + " to " + path)
+	out.Infof("Downloading %s to %s", url, path)
 	if out != nil {
 		out.ShowLoader()
 	}

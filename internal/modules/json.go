@@ -3,7 +3,6 @@ package modules
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 	"strings"
 
 	"github.com/tidwall/gjson"
@@ -44,7 +43,7 @@ func JSONBuild(in interface{}, out output.Output) error {
 		return err
 	}
 	resultS := string(result)
-	out.Info(fmt.Sprintf("Result is %s", resultS))
+	out.Infof("Result is %s", resultS)
 	for _, k := range storeKeys {
 		helper.Store(k, resultS)
 	}
@@ -69,7 +68,7 @@ func JSONGet(in interface{}, out output.Output) error {
 	}
 
 	result := gjson.Get(from, key).String()
-	out.Info(fmt.Sprintf("Got %s", result))
+	out.Infof("Got %s", result)
 
 	store, ok := data["store"]
 	if ok {

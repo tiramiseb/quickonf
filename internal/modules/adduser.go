@@ -17,13 +17,13 @@ func AddUserToGroup(in interface{}, out output.Output) error {
 	}
 	for user, group := range data {
 		if Dryrun {
-			out.Info("Would add user " + user + " to group " + group)
+			out.Infof("Would add user %s to group %s", user, group)
 			continue
 		}
 		if _, err := helper.ExecSudo(nil, "adduser", user, group); err != nil {
 			return err
 		}
-		out.Success("User " + user + " added to group " + group)
+		out.Successf("User %s added to group %s", user, group)
 	}
 	return nil
 }

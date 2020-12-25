@@ -29,13 +29,13 @@ func StopIfExist(in interface{}, out output.Output) error {
 		_, err := os.Stat(f)
 		if err != nil {
 			if os.IsNotExist(err) {
-				out.Info(fmt.Sprintf("File %s does not exist", f))
+				out.Infof("File %s does not exist", f)
 				return nil
 			}
 			return err
 		}
 	}
-	out.Info(fmt.Sprintf("All listed files exist"))
+	out.Successf("All listed files exist")
 	return quickonfErrors.NoError
 }
 
@@ -60,22 +60,22 @@ func StopIfOlder(in interface{}, out output.Output) error {
 	}
 	curVersion, err := semver.NewVersion(curStr)
 	if err != nil {
-		return fmt.Errorf("With current as \"%s\": %w", curStr, err)
+		return fmt.Errorf(`With current as "%s": %w`, curStr, err)
 	}
 	candVersion, err := semver.NewVersion(candStr)
 	if err != nil {
-		return fmt.Errorf("With candidate as \"%s\": %w", candStr, err)
+		return fmt.Errorf(`With candidate as "%s": %w`, candStr, err)
 	}
 	diff := candVersion.Compare(curVersion)
 	switch diff {
 	case -1:
-		out.Info("Candidate (" + candStr + ") is older than current version (" + curStr + ")")
+		out.Infof("Candidate (%s) is older than current version (%s)", candStr, curStr)
 		return quickonfErrors.NoError
 	case 0:
-		out.Info("Candidate (" + candStr + ") is the same as current version (" + curStr + ")")
+		out.Infof("Candidate (%s) is the same as current version (%s)", candStr, curStr)
 		return quickonfErrors.NoError
 	case 1:
-		out.Info("Candidate (" + candStr + ") is newer than current version (" + curStr + ")")
+		out.Infof("Candidate (%s) is newer than current version (%s)", candStr, curStr)
 	}
 	return nil
 }

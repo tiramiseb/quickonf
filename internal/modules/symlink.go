@@ -24,12 +24,12 @@ func Symlink(in interface{}, out output.Output) error {
 		case helper.SymlinkError:
 			return err
 		case helper.SymlinkAleradyExists:
-			out.Info("Link from " + path + " to " + target + " already exists")
+			out.Infof("Link from %s to %s already exists", path, target)
 		case helper.SymlinkCreated:
 			if Dryrun {
-				out.Info("Would create link from " + path + " to " + target)
+				out.Infof("Would create link from %s to %s", path, target)
 			} else {
-				out.Success("Link from " + path + " to " + target + " created")
+				out.Successf("Link from %s to %s created", path, target)
 			}
 		}
 	}

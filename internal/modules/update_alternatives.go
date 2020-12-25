@@ -18,13 +18,13 @@ func UpdateAlternatives(in interface{}, out output.Output) error {
 	}
 	for alt, path := range data {
 		if Dryrun {
-			out.Info("Would change alternative for " + alt + " to " + path)
+			out.Infof("Would change alternative for %s to %s", alt, path)
 			continue
 		}
 		if _, err := helper.ExecSudo(nil, "update-alternatives", "--set", alt, path); err != nil {
 			return err
 		}
-		out.Success("Changed alternative for " + alt + " to " + path)
+		out.Successf("Changed alternative for %s to %s", alt, path)
 	}
 	return nil
 }

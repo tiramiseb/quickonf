@@ -16,7 +16,7 @@ func String(v interface{}) (str string, err error) {
 	case nil:
 		str = ""
 	default:
-		err = fmt.Errorf("Value \"%v\" is not a string", v)
+		err = fmt.Errorf(`Value "%v" is not a string`, v)
 	}
 	return
 }

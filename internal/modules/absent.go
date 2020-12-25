@@ -1,7 +1,7 @@
 package modules
 
 import (
-	"errors"
+	"fmt"
 	"io"
 	"os"
 
@@ -25,7 +25,7 @@ func Absent(in interface{}, out output.Output) error {
 		info, err := os.Lstat(path)
 		if err != nil {
 			if os.IsNotExist(err) {
-				out.Info(path + " already absent")
+				out.Infof("%s already absent", path)
 				continue
 			}
 			return err
@@ -38,21 +38,21 @@ func Absent(in interface{}, out output.Output) error {
 			defer f.Close()
 			_, err = f.Readdirnames(1)
 			if err == nil {
-				return errors.New("Directory " + path + " contains files, cannot be deleted")
+				return fmt.Errorf("Directory %s contains files, cannot be deleted", path)
 			}
 			if err != io.EOF {
 				return err
 			}
 		}
 		if Dryrun {
-			out.Info("Would remove " + path)
+			out.Infof("Would remove %s", path)
 			continue
 		}
 		err = os.Remove(path)
 		if err != nil {
 			return err
 		}
-		out.Success(path + " removed")
+		out.Successf("%s removed", path)
 	}
 	return nil
 }

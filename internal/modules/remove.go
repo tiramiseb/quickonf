@@ -22,19 +22,19 @@ func Remove(in interface{}, out output.Output) error {
 		path = helper.Path(path)
 		if _, err := os.Stat(path); err != nil {
 			if os.IsNotExist(err) {
-				out.Info(path + " does not exist already")
+				out.Infof("%s does not exist already", path)
 				continue
 			}
 			return err
 		}
 		if Dryrun {
-			out.Info("Would remove " + path)
+			out.Infof("Would remove %s", path)
 			continue
 		}
 		if err := os.Remove(path); err != nil {
 			return err
 		}
-		out.Success("Removed " + path)
+		out.Successf("Removed %s", path)
 	}
 	return nil
 }

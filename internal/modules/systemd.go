@@ -19,7 +19,7 @@ func SystemdEnable(in interface{}, out output.Output) error {
 	}
 	for _, service := range data {
 		if Dryrun {
-			out.Info("Would enable and start " + service)
+			out.Infof("Would enable and start %s", service)
 			continue
 		}
 		if _, err := helper.ExecSudo(nil, "systemctl", "enable", service); err != nil {
@@ -28,7 +28,7 @@ func SystemdEnable(in interface{}, out output.Output) error {
 		if _, err := helper.ExecSudo(nil, "systemctl", "start", service); err != nil {
 			return err
 		}
-		out.Success("Enabled " + service)
+		out.Successf("Enabled %s", service)
 	}
 	return nil
 }
@@ -42,7 +42,7 @@ func SystemdDisable(in interface{}, out output.Output) error {
 	}
 	for _, service := range data {
 		if Dryrun {
-			out.Info("Would stop and disable " + service)
+			out.Infof("Would stop and disable %s", service)
 			continue
 		}
 		if _, err := helper.ExecSudo(nil, "systemctl", "stop", service); err != nil {
@@ -51,7 +51,7 @@ func SystemdDisable(in interface{}, out output.Output) error {
 		if _, err := helper.ExecSudo(nil, "systemctl", "disable", service); err != nil {
 			return err
 		}
-		out.Success("Disabled " + service)
+		out.Successf("Disabled %s", service)
 	}
 	return nil
 }

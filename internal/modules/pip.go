@@ -20,7 +20,7 @@ func PIP(in interface{}, out output.Output) error {
 	}
 	for _, pkg := range data {
 		if Dryrun {
-			out.Info("Would install " + pkg)
+			out.Infof("Would install %s", pkg)
 			continue
 		}
 		if _, err := helper.ExecSudo(nil, "pip3", "install", "--upgrade", pkg); err != nil {

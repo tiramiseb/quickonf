@@ -24,13 +24,13 @@ func GitConfig(in interface{}, out output.Output) error {
 	}
 	for param, value := range data {
 		if Dryrun {
-			out.Info("Would set " + param + " to " + value)
+			out.Infof("Would set %s to %s", param, value)
 			continue
 		}
 		if _, err := helper.Exec(nil, "git", "config", "--global", param, value); err != nil {
 			return err
 		}
-		out.Success("Set " + param + " to " + value)
+		out.Successf("Set %s to %s", param, value)
 	}
 	return nil
 }
@@ -59,10 +59,10 @@ func GitCloneOrPull(in interface{}, out output.Output) error {
 				return err
 			}
 			if Dryrun {
-				out.Info(fmt.Sprintf("Would pull latest commit in %s", dir))
+				out.Infof("Would pull latest commit in %s", dir)
 				continue
 			}
-			out.Info(fmt.Sprintf("%s already exists, pulling latest commit", dir))
+			out.Infof("%s already exists, pulling latest commit", dir)
 			w, err := rep.Worktree()
 			if err != nil {
 				return err
@@ -75,16 +75,15 @@ func GitCloneOrPull(in interface{}, out output.Output) error {
 				return err
 			}
 			continue
-		} else {
-			if os.IsNotExist(err) {
-				// It does not already exist, cloning the repo
-				if err := helper.GitClone(repo, dir, 1, out); err != nil {
-					return err
-				}
-				continue
-			}
-			return err
 		}
+		if os.IsNotExist(err) {
+			// It does not already exist, cloning the repo
+			if err := helper.GitClone(repo, dir, 1, out); err != nil {
+				return err
+			}
+			continue
+		}
+		return err
 	}
 	return nil
 }

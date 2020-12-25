@@ -57,7 +57,7 @@ func MigrationSource(in interface{}, out output.Output) error {
 		return err
 	}
 	moveMigrationSource = helper.Path(data)
-	out.Success("Migration source is " + moveMigrationSource)
+	out.Successf("Migration source is %s", moveMigrationSource)
 	return nil
 }
 
@@ -101,10 +101,10 @@ func DoNotMigrate(in interface{}, out output.Output) error {
 	for _, fpath := range data {
 		fpath = filepath.Join(moveMigrationSource, fpath)
 		if Dryrun {
-			out.Info(fmt.Sprintf("Would make sure %s does not exist", fpath))
+			out.Infof("Would make sure %s does not exist", fpath)
 			continue
 		}
-		out.Info(fmt.Sprintf("Making sure %s does not exist", fpath))
+		out.Infof("Making sure %s does not exist", fpath)
 		if err := os.RemoveAll(fpath); err != nil {
 			return err
 		}
@@ -118,7 +118,7 @@ func move(data map[string]string, out output.Output, destExists moveDestinationE
 		to = helper.Path(to)
 		if _, err := os.Stat(from); err != nil {
 			if os.IsNotExist(err) {
-				out.Info("Source " + from + " does not exist")
+				out.Infof("Source %s does not exist", from)
 				continue
 			}
 			return err
@@ -126,10 +126,10 @@ func move(data map[string]string, out output.Output, destExists moveDestinationE
 		_, err := os.Stat(to)
 		if err == nil {
 			if destExists == moveFail {
-				return errors.New(to + " already exists")
+				return fmt.Errorf("%s already exists", to)
 			}
 			if destExists == movePass {
-				out.Info(to + " already exists")
+				out.Infof("%s already exists", to)
 				continue
 			}
 			if Dryrun {
@@ -145,13 +145,13 @@ func move(data map[string]string, out output.Output, destExists moveDestinationE
 			}
 		}
 		if Dryrun {
-			out.Info("Would move " + from + " to " + to)
+			out.Infof("Would move %s to %s", from, to)
 			continue
 		}
 		if err = os.Rename(from, to); err != nil {
 			return err
 		}
-		out.Success("Moved " + from + " to " + to)
+		out.Successf("Moved %s to %s", from, to)
 	}
 	return nil
 }

@@ -18,13 +18,13 @@ func Dconf(in interface{}, out output.Output) error {
 	}
 	for k, v := range data {
 		if Dryrun {
-			out.Info("Would set " + k + " to " + v)
+			out.Infof("Would set %s to %s", k, v)
 			continue
 		}
 		if _, err := helper.Exec(nil, "dconf", "write", k, v); err != nil {
 			return err
 		}
-		out.Success("Set " + k + " to " + v)
+		out.Successf("Set %s to %s", k, v)
 	}
 	return nil
 }

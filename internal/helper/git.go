@@ -1,8 +1,6 @@
 package helper
 
 import (
-	"fmt"
-
 	"github.com/go-git/go-git/v5"
 
 	"github.com/tiramiseb/quickonf/internal/output"
@@ -12,12 +10,12 @@ import (
 func GitClone(repo, dest string, depth int, out output.Output) error {
 	if Dryrun {
 		if out != nil {
-			out.Info(fmt.Sprintf("Would clone %s into %s", repo, dest))
+			out.Infof("Would clone %s into %s", repo, dest)
 		}
 		return nil
 	}
 	if out != nil {
-		out.Info(fmt.Sprintf("Cloning %s into %s", repo, dest))
+		out.Infof("Cloning %s into %s", repo, dest)
 	}
 	options := git.CloneOptions{
 		URL: repo,

@@ -12,10 +12,10 @@ import (
 // UnzipFile unzips the given file into the given destination
 func UnzipFile(zipfilepath, dest string, out output.Output) error {
 	if Dryrun {
-		out.Info("Would extract " + zipfilepath + " to " + dest)
+		out.Infof("Would extract %s to %s", zipfilepath, dest)
 		return nil
 	}
-	out.Info("Extracting " + zipfilepath + " to " + dest)
+	out.Infof("Extracting %s to %s", zipfilepath, dest)
 	if out != nil {
 		defer out.HidePercentage()
 	}

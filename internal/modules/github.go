@@ -2,6 +2,7 @@ package modules
 
 import (
 	"errors"
+	"fmt"
 	"path"
 	"strings"
 
@@ -40,7 +41,7 @@ func GithubLatest(in interface{}, out output.Output) error {
 	if err != nil {
 		return err
 	}
-	out.Info("Latest release for " + repository + " is " + result.TagName)
+	out.Infof("Latest release for %s is %s", repository, result.TagName)
 	if storeRelease, ok := data["store"]; ok {
 		helper.Store(storeRelease, result.TagName)
 	}
@@ -60,17 +61,17 @@ func GithubLatest(in interface{}, out output.Output) error {
 		}
 	}
 	if len(matching) == 0 {
-		return errors.New("No asset matching \"" + pattern + "\" in " + repository)
+		return fmt.Errorf(`No asset matching "%s" in %s`, pattern, repository)
 	}
 	if len(matching) > 1 {
 		names := make([]string, len(matching))
 		for i, m := range matching {
 			names[i] = result.Assets[m].Name
 		}
-		return errors.New("Too many assets matching pattern in " + repository + ": " + strings.Join(names, ", "))
+		return fmt.Errorf("Too many assets matching pattern in %s: %s", repository, strings.Join(names, ", "))
 	}
 	url := result.Assets[matching[0]].URL
-	out.Info("Download URL for latest release is " + url)
+	out.Infof("Download URL for latest release is %s", url)
 	if storeURL, ok := data["store-url"]; ok {
 		helper.Store(storeURL, url)
 	}

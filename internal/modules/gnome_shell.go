@@ -37,10 +37,7 @@ func InstallGnomeShellExtension(in interface{}, out output.Output) error {
 	}
 	gnomeVersion := string(gnomeVerLine[2])
 	for _, ext := range data {
-		dest, err := helper.String(helper.Path(".local/share/gnome-shell/extensions/" + ext))
-		if err != nil {
-			return err
-		}
+		dest := helper.Path(".local/share/gnome-shell/extensions/" + ext)
 		out.ShowLoader()
 		extInfo := struct {
 			Version     int
@@ -60,15 +57,15 @@ func InstallGnomeShellExtension(in interface{}, out output.Output) error {
 			return err
 		}
 		if extInfo.Version <= current {
-			out.Info(fmt.Sprintf("%s already installed in version %d", ext, current))
+			out.Infof("%s already installed in version %d", ext, current)
 			continue
 		}
 		if Dryrun {
-			out.Info(fmt.Sprintf("Would install %s in version %d", ext, extInfo.Version))
+			out.Infof("Would install %s in version %d", ext, extInfo.Version)
 			continue
 		}
 
-		out.Info("Installing " + ext)
+		out.Infof("Installing %s", ext)
 		tmpfile, err := ioutil.TempFile("", "quickonf-gnome-extension-"+ext+"-*.zip")
 		if err != nil {
 			return err
@@ -96,13 +93,13 @@ func EnableGnomeShellExtension(in interface{}, out output.Output) error {
 	}
 	for _, extension := range data {
 		if Dryrun {
-			out.Info("Would enable " + extension)
+			out.Infof("Would enable %s", extension)
 			continue
 		}
 		if _, err := helper.Exec(nil, "gnome-shell-extension-tool", "--enable-extension", extension); err != nil {
 			return err
 		}
-		out.Success("Enabled " + extension)
+		out.Successf("Enabled %s", extension)
 	}
 	return nil
 }
@@ -125,9 +122,9 @@ func LocalGnomeShellExtensionVersion(in interface{}, out output.Output) error {
 	}
 
 	if installed {
-		out.Info(fmt.Sprintf("Extension %s current version is %d", ext, version))
+		out.Infof("Extension %s current version is %d", ext, version)
 	} else {
-		out.Info("Extension " + ext + " is not installed")
+		out.Infof("Extension %s is not installed", ext)
 	}
 	helper.Store(data["store"], strconv.Itoa(version))
 	return nil

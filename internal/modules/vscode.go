@@ -12,26 +12,27 @@ func init() {
 
 // VscodeExtension installs VS Code extensions
 func VscodeExtension(in interface{}, out output.Output) error {
+	out.InstructionTitle("Install Vscode extension")
 	return vscodeExtension(in, out, "code")
 }
 
 // VscodiumExtension installs VS Codium extensions
 func VscodiumExtension(in interface{}, out output.Output) error {
+	out.InstructionTitle("Install Vscodium extension")
 	return vscodeExtension(in, out, "codium")
 }
 
 func vscodeExtension(in interface{}, out output.Output, cmd string) error {
-	out.InstructionTitle("Install Vs" + cmd + " extension")
 	data, err := helper.SliceString(in)
 	if err != nil {
 		return err
 	}
 	for _, extension := range data {
 		if Dryrun {
-			out.Info("Would install " + extension)
+			out.Infof("Would install %s", extension)
 			continue
 		}
-		out.Info("Installing " + extension)
+		out.Infof("Installing %s", extension)
 		out.ShowLoader()
 		_, err := helper.Exec(nil, cmd, "--install-extension", extension)
 		out.HideLoader()

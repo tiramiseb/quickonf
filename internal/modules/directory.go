@@ -1,9 +1,7 @@
 package modules
 
 import (
-	// 	"errors"
-	// 	"os"
-	"errors"
+	"fmt"
 	"os"
 
 	"github.com/tiramiseb/quickonf/internal/helper"
@@ -26,23 +24,23 @@ func Directory(in interface{}, out output.Output) error {
 		info, err := os.Lstat(path)
 		if err == nil {
 			if info.IsDir() {
-				out.Info(path + " already exists")
+				out.Infof("%s already exists", path)
 				continue
 			}
-			return errors.New(path + " is not a directory")
+			return fmt.Errorf("%s is not a directory", path)
 		}
 		if !os.IsNotExist(err) {
 			return err
 		}
 		if Dryrun {
-			out.Info("Would create " + path)
+			out.Infof("Would create %s", path)
 			continue
 		}
 		err = os.MkdirAll(path, 0755)
 		if err != nil {
 			return err
 		}
-		out.Success(path + " created")
+		out.Successf("%s created", path)
 	}
 	return nil
 }

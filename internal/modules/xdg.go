@@ -2,6 +2,7 @@ package modules
 
 import (
 	"errors"
+	"fmt"
 	"os"
 	"path"
 	"path/filepath"
@@ -58,12 +59,12 @@ func XdgAutostart(in interface{}, out output.Output) error {
 		case helper.SymlinkError:
 			return err
 		case helper.SymlinkAleradyExists:
-			out.Info("Autostart for " + app + " already configured")
+			out.Infof("Autostart for %s already configured", app)
 		case helper.SymlinkCreated:
 			if Dryrun {
-				out.Info("Would autostart " + app)
+				out.Infof("Would autostart %s", app)
 			} else {
-				out.Success("Autostart for " + app + " configured")
+				out.Successf("Autostart for %s configured", app)
 			}
 		}
 	}
@@ -79,13 +80,13 @@ func XdgMimeDefault(in interface{}, out output.Output) error {
 	}
 	for mimetype, app := range data {
 		if Dryrun {
-			out.Info("Would change default app for " + mimetype + " to " + app)
+			out.Infof("Would change default app for %s to %s", mimetype, app)
 			continue
 		}
 		if _, err := helper.Exec(nil, "xdg-mime", "default", app+".desktop", mimetype); err != nil {
 			return err
 		}
-		out.Success("Changed default app for " + mimetype + " to " + app)
+		out.Successf("Changed default app for %s to %s", mimetype, app)
 	}
 	return nil
 }
@@ -100,17 +101,17 @@ func XdgUserDir(in interface{}, out output.Output) error {
 	for name, path := range data {
 		name = strings.ToUpper(name)
 		if !xdgAllUserDirs[name] {
-			return errors.New("User dir \"" + name + "\" does not exist")
+			return fmt.Errorf(`User dir "%s" does not exist`, name)
 		}
 		path = helper.Path(path)
 		if Dryrun {
-			out.Info("Would change user dir " + name + " to " + path)
+			out.Infof("Would change user dir %s to %s", name, path)
 			continue
 		}
 		if _, err := helper.Exec(nil, "xdg-user-dirs-update", "--set", name, path); err != nil {
 			return err
 		}
-		out.Success("Changed user dir " + name + " to " + path)
+		out.Successf("Changed user dir %s to %s", name, path)
 	}
 	return nil
 }

@@ -33,10 +33,10 @@ func Dpkg(in interface{}, out output.Output) error {
 	}
 	for _, path := range data {
 		if Dryrun {
-			out.Info("Would install " + path)
+			out.Infof("Would install %s", path)
 			continue
 		}
-		out.Info("Installing " + path)
+		out.Infof("Installing %s", path)
 		out.ShowLoader()
 		_, err := helper.ExecSudo(nil, "dpkg", "--install", path)
 		out.HideLoader()
@@ -55,7 +55,7 @@ func DpkgDependencies(in interface{}, out output.Output) error {
 		return err
 	}
 	for _, path := range data {
-		out.Info("Dependencies for " + path)
+		out.Infof("Dependencies for %s", path)
 		depsB, err := helper.Exec(nil, "dpkg-deb", "--show", "--showformat=${Depends}", path)
 		if err != nil {
 			return err
@@ -63,10 +63,10 @@ func DpkgDependencies(in interface{}, out output.Output) error {
 		deps := strings.Split(string(depsB), ", ")
 		for _, pkg := range deps {
 			if Dryrun {
-				out.Info("Would install " + pkg)
+				out.Infof("Would install %s", pkg)
 				continue
 			}
-			out.Info("Installing " + pkg)
+			out.Infof("Installing %s", pkg)
 			out.ShowLoader()
 			_, err = helper.ExecSudo([]string{"DEBIAN_FRONTEND=noninteractive"}, "apt-get", "--yes", "--quiet", "install", pkg)
 			out.HideLoader()
@@ -87,10 +87,10 @@ func DpkgReconfigure(in interface{}, out output.Output) error {
 	}
 	for _, name := range data {
 		if Dryrun {
-			out.Info("Would reconfigure " + name)
+			out.Infof("Would reconfigure %s", name)
 			continue
 		}
-		out.Info("Reconfiguring " + name)
+		out.Infof("Reconfiguring %s", name)
 		out.ShowLoader()
 		_, err := helper.ExecSudo(nil, "dpkg-reconfigure", "--frontend", "noninteractive", name)
 		out.HideLoader()
@@ -114,12 +114,12 @@ func DpkgVersion(in interface{}, out output.Output) error {
 	}
 	cmdout, err := helper.Exec(nil, "dpkg-query", "--showformat=${Version}", "--show", pkg)
 	if err != nil {
-		out.Info("Package " + pkg + " is not installed")
+		out.Infof("Package %s is not installed", pkg)
 		if storeAs, ok := data["store"]; ok {
 			helper.Store(storeAs, "0.0.0")
 		}
 	} else {
-		out.Info("Package " + pkg + " version is " + string(cmdout))
+		out.Infof("Package %s version is %s", pkg, cmdout)
 		if storeAs, ok := data["store"]; ok {
 			helper.Store(storeAs, string(cmdout))
 		}
@@ -147,7 +147,7 @@ func DebconfSet(in interface{}, out output.Output) error {
 		return errors.New("Missing value")
 	}
 	if Dryrun {
-		out.Info("Would set " + variable + " to " + value + " for " + pkg)
+		out.Infof("Would set %s to %s for %s", variable, value, pkg)
 		return nil
 	}
 	tmpfile, err := ioutil.TempFile("", "quickonf-debconf")
@@ -181,14 +181,14 @@ func Apt(in interface{}, out output.Output) error {
 			return errors.New(string(cmdout))
 		}
 		if bytes.Contains(cmdout, []byte("install")) {
-			out.Info(pkg + " is already installed")
+			out.Infof("%s is already installed")
 			continue
 		}
 		if Dryrun {
-			out.Info("Would install " + pkg)
+			out.Infof("Would install %s", pkg)
 			continue
 		}
-		out.Info("Installing " + pkg)
+		out.Infof("Installing %s", pkg)
 		out.ShowLoader()
 		_, err = helper.ExecSudo([]string{"DEBIAN_FRONTEND=noninteractive"}, "apt-get", "--yes", "--quiet", "install", pkg)
 		out.HideLoader()
@@ -212,14 +212,14 @@ func AptRemove(in interface{}, out output.Output) error {
 			return err
 		}
 		if !bytes.Contains(cmdout, []byte("install")) {
-			out.Info(pkg + " is not installed")
+			out.Infof("%s is not installed", pkg)
 			continue
 		}
 		if Dryrun {
-			out.Info("Would remove " + pkg)
+			out.Infof("Would remove %s", pkg)
 			continue
 		}
-		out.Info("Removing " + pkg)
+		out.Infof("Removing %s", pkg)
 		out.ShowLoader()
 		_, err = helper.ExecSudo([]string{"DEBIAN_FRONTEND=noninteractive"}, "apt-get", "--yes", "--quiet", "remove", pkg)
 		out.HideLoader()

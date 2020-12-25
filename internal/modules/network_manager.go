@@ -1,7 +1,6 @@
 package modules
 
 import (
-	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -29,7 +28,10 @@ func NetworkManagerWifi(in interface{}, out output.Output) error {
 			return err
 		}
 		if ok {
-			out.Info(fmt.Sprintf("Connection %s already exists", net))
+			out.Infof("Connection %s already exists", net)
+		}
+		if Dryrun {
+			out.Infof("Would add wifi connection %s", net)
 		}
 		if _, err := helper.Exec(nil, "nmcli", "connection", "add", "con-name", net, "type", "wifi", "ssid", net, "--", "802-11-wireless-security.key-mgmt", "wpa-psk", "802-11-wireless-security.psk", ssid); err != nil {
 			return err
@@ -58,7 +60,7 @@ func NetworkManagerImport(in interface{}, out output.Output) error {
 		var name string
 		switch len(nameParts) {
 		case 0:
-			return errors.New("No file name in " + path)
+			return fmt.Errorf("No file name in %s", path)
 		case 1, 2:
 			name = nameParts[0]
 		default:
@@ -71,7 +73,7 @@ func NetworkManagerImport(in interface{}, out output.Output) error {
 			return err
 		}
 		if ok {
-			out.Info(name + " is already configured")
+			out.Infof("%s is already configured", name)
 			continue
 		}
 

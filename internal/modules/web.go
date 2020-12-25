@@ -90,7 +90,7 @@ func ParseWebPage(in interface{}, out output.Output) error {
 	matches := re.FindStringSubmatch(string(page))
 
 	if len(matches) == 0 {
-		return errors.New("No match for " + re.String() + " in " + url)
+		return fmt.Errorf(`No match for "%s" in %s`, re, url)
 	}
 
 	out.Info("Match " + re.String())
@@ -100,7 +100,7 @@ func ParseWebPage(in interface{}, out output.Output) error {
 	}
 	for i, name := range re.SubexpNames() {
 		if name != "" {
-			out.Info(fmt.Sprintf("%s value is %s", name, matches[i]))
+			out.Infof("%s value is %s", name, matches[i])
 			for key, val := range data {
 				if key == "store-"+name {
 					helper.Store(val, matches[i])
@@ -129,7 +129,7 @@ func Post(in interface{}, out output.Output) error {
 	}
 	payload := []byte(payloadS)
 
-	out.Info(fmt.Sprintf("POSTing to %s", url))
+	out.Infof("POSTing to %s", url)
 	response, err := helper.Post(url, payload)
 	if err != nil {
 		return err

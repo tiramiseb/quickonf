@@ -38,8 +38,8 @@ func RegexpReplace(in interface{}, out output.Output) error {
 	}
 
 	result := re.ReplaceAllString(from, repl)
-	out.Info("Tranforming " + from)
-	out.Info("Result is " + result)
+	out.Infof(`Tranforming "%s"`, from)
+	out.Infof(`Result is "%s"`, result)
 	store, ok := data["store"]
 	if ok {
 		helper.Store(store, result)

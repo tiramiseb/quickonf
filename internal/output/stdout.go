@@ -74,10 +74,20 @@ func (s *Stdout) Info(str string) {
 	s.report.info(str)
 }
 
+// Infof writes an informational message with format
+func (s *Stdout) Infof(format string, a ...interface{}) {
+	s.Info(fmt.Sprintf(format, a...))
+}
+
 // Success writes a successful message
 func (s *Stdout) Success(str string) {
 	color.Info.Println("    ✓  " + str)
 	s.report.success(str)
+}
+
+// Successf writes an informational message with format
+func (s *Stdout) Successf(format string, a ...interface{}) {
+	s.Success(fmt.Sprintf(format, a...))
 }
 
 // Alert writes an alert message

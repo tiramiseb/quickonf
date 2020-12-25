@@ -45,10 +45,10 @@ func snap(in interface{}, out output.Output, options ...string) error {
 	}
 	for _, pkg := range data {
 		if Dryrun {
-			out.Info("Would install " + pkg)
+			out.Infof("Would install %s", pkg)
 			continue
 		}
-		out.Info("Installing " + pkg)
+		out.Infof("Installing %s", pkg)
 		out.ShowLoader()
 		var err error
 		cmd := []string{"snap", "install"}
@@ -92,7 +92,7 @@ func SnapVersion(in interface{}, out output.Output) error {
 	}
 	cmdout, err := helper.Exec(nil, "snap", "info", pkg)
 	if err != nil {
-		out.Info("Package " + pkg + " is not installed")
+		out.Infof("Package %s is not installed", pkg)
 		if storeAs, ok := data["store"]; ok {
 			helper.Store(storeAs, "")
 		}
@@ -100,14 +100,14 @@ func SnapVersion(in interface{}, out output.Output) error {
 	for _, l := range bytes.Split(cmdout, []byte{'\n'}) {
 		fields := bytes.Fields(l)
 		if bytes.Equal(fields[0], []byte("installed:")) {
-			out.Info("Package " + pkg + " version is " + string(fields[1]))
+			out.Infof("Package %s version is %s", pkg, fields[1])
 			if storeAs, ok := data["store"]; ok {
 				helper.Store(storeAs, string(fields[1]))
 			}
 			return nil
 		}
 	}
-	out.Info("Could not determine package " + pkg + " version")
+	out.Infof("Could not determine package %s version", pkg)
 	if storeAs, ok := data["store"]; ok {
 		helper.Store(storeAs, "")
 	}
