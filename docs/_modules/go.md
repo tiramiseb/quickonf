@@ -2,10 +2,10 @@
 title: Go
 ---
 
-| Instruction  | Action                        | Arguments                      |
-| ------------ | ----------------------------- | ------------------------------ |
-| `go-env`     | Set go environment parameters | Map of parameter name to value |
-| `go-package` | Install Go packages           | List of packages               |
+| Instruction  | Action                        | Arguments                      | Dry run    |
+| ------------ | ----------------------------- | ------------------------------ | ---------- |
+| `go-env`     | Set go environment parameters | Map of parameter name to value | No change  |
+| `go-package` | Install Go packages           | List of packages               | No install |
 
 Example:
 

@@ -2,10 +2,10 @@
 title: Stop if...
 ---
 
-| Instruction     | Action                                   | Arguments                       |
-| --------------- | ---------------------------------------- | ------------------------------- |
-| `stop-if-exist` | Check if given files or dirs exist       | List of paths                   |
-| `stop-if-older` | Compare versions and maybe stop the step | Parameters as a map (see below) |
+| Instruction     | Action                                   | Arguments                       | Dry run |
+| --------------- | ---------------------------------------- | ------------------------------- | ------- |
+| `stop-if-exist` | Check if given files or dirs exist       | List of paths                   | -       |
+| `stop-if-older` | Compare versions and maybe stop the step | Parameters as a map (see below) | -       |
 
 ## Stop if exist
 

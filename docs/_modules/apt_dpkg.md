@@ -2,18 +2,18 @@
 title: Apt and dpkg
 ---
 
-| Instruction            | Action                                 | Arguments                       |
-| ---------------------- | -------------------------------------- | ------------------------------- |
-| `dpkg`                 | Install .deb packages                  | List of packages files          |
-| `dpkg-dependencies`    | Install dependencies of .deb packages  | List of packages files          |
-| `dpkg-reconfigure`     | Reconfigure deb packages               | List of packages names          |
-| `dpkg-version`         | Check a package version                | Parameters as a map (see below) |
-| `debconf-set`          | Set a debconf variable                 | Parameters as a map (see below) |
-| `apt`                  | Install packages from APT repositories | List of packages names          |
-| `apt-remove`           | Remove installed packages              | List of packages names          |
-| `apt-upgrade`          | Upgrade all installed packages         | none                            |
-| `apt-autoremove-purge` | Clean unneeded packages                | none                            |
-| `apt-clean-cache`      | Clean the APT cache                    | none                            |
+| Instruction            | Action                                 | Arguments                       | Dry run                   |
+| ---------------------- | -------------------------------------- | ------------------------------- | ------------------------- |
+| `dpkg`                 | Install .deb packages                  | List of packages files          | No install                |
+| `dpkg-dependencies`    | Install dependencies of .deb packages  | List of packages files          | Check list but no install |
+| `dpkg-reconfigure`     | Reconfigure deb packages               | List of packages names          | No configuration          |
+| `dpkg-version`         | Check a package version                | Parameters as a map (see below) | -                         |
+| `debconf-set`          | Set a debconf variable                 | Parameters as a map (see below) | No change                 |
+| `apt`                  | Install packages from APT repositories | List of packages names          | No install                |
+| `apt-remove`           | Remove installed packages              | List of packages names          | No change                 |
+| `apt-upgrade`          | Upgrade all installed packages         | none                            | No change                 |
+| `apt-autoremove-purge` | Clean unneeded packages                | none                            | No change                 |
+| `apt-clean-cache`      | Clean the APT cache                    | none                            | No change                 |
 
 Instructions in this module, except `dpkg-version`, need the sudo password to be set. See the [sudo]({% link _modules/sudo.md %}) module.
 

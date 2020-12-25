@@ -2,9 +2,9 @@
 title: Update Alternatives
 ---
 
-| Instruction           | Action                  | Arguments                  |
-| --------------------- | ----------------------- | -------------------------- |
-| `update-alternatives` | Change default commands | Map from command to target |
+| Instruction           | Action                  | Arguments                  | Dry run   |
+| --------------------- | ----------------------- | -------------------------- | --------- |
+| `update-alternatives` | Change default commands | Map from command to target | No change |
 
 All instructions in this module need the sudo password to be set. See the [sudo]({% link _modules/sudo.md %}) module.
 

@@ -2,10 +2,10 @@
 title: Web
 ---
 
-| Instruction      | Action                      | Arguments                       |
-| ---------------- | --------------------------- | ------------------------------- |
-| `parse-web-page` | Find a string in a web page | Parameters as a map (see below) |
-| `post`           | Execute a POST request      | Parameters as a map (see below) |
+| Instruction      | Action                      | Arguments                       | Dry run |
+| ---------------- | --------------------------- | ------------------------------- | ------- |
+| `parse-web-page` | Find a string in a web page | Parameters as a map (see below) | -       |
+| `post`           | Execute a POST request      | Parameters as a map (see below) | -       |
 
 ## Parse web page
 

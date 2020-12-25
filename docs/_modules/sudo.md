@@ -6,7 +6,7 @@ title: Sudo
 | --------------- | ----------------------------------- | --------------------- |
 | `sudo-password` | Set the sudo passord for future use | The password for sudo |
 
-# sudo-password
+## Sudo password
 
 Set the sudo password for future use, whenever a root access is necessary. This password is then used in other modules. This instruction should be the first in the configuration file.
 

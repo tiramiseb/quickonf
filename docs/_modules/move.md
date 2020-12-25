@@ -2,14 +2,14 @@
 title: Move
 ---
 
-| Instruction        | Action                                                                              | Arguments                      |
-| ------------------ | ----------------------------------------------------------------------------------- | ------------------------------ |
-| `move`             | Move files or directories                                                           | Map of sources to destinations |
-| `force-move`       | Move files or directories, removing existing destinations                           | Map of sources to destinations |
-| `migration-source` | Set the migration source path                                                       | The path                       |
-| `migrate`          | Migrate files or directories from the previous home                                 | List of relative paths         |
-| `force-migrate`    | Migrate files or directories from the previous home, removing existing destinations | List of relative paths         |
-| `do-not-migrate`   | Make sure given file does not exist in previous home and do not migrate it          | List of relative paths         |
+| Instruction        | Action                                                                              | Arguments                      | Dry run   |
+| ------------------ | ----------------------------------------------------------------------------------- | ------------------------------ | --------- |
+| `move`             | Move files or directories                                                           | Map of sources to destinations | No change |
+| `force-move`       | Move files or directories, removing existing destinations                           | Map of sources to destinations | No change |
+| `migration-source` | Set the migration source path                                                       | The path                       | No change |
+| `migrate`          | Migrate files or directories from the previous home                                 | List of relative paths         | No change |
+| `force-migrate`    | Migrate files or directories from the previous home, removing existing destinations | List of relative paths         | No change |
+| `do-not-migrate`   | Make sure given file does not exist in previous home and do not migrate it          | List of relative paths         | No change |
 
 For all instructions in this module, if the source does not exist, this is a no-op.
 

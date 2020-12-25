@@ -2,10 +2,10 @@
 title: VS Code
 ---
 
-| Instruction          | Action                       | Arguments          |
-| -------------------- | ---------------------------- | ------------------ |
-| `vscode-extension`   | Install VS Code extensions   | List of extensions |
-| `vscodium-extension` | Install VS Codium extensions | List of extensions |
+| Instruction          | Action                       | Arguments          | Dry run    |
+| -------------------- | ---------------------------- | ------------------ | ---------- |
+| `vscode-extension`   | Install VS Code extensions   | List of extensions | No install |
+| `vscodium-extension` | Install VS Codium extensions | List of extensions | No install |
 
 Example:
 

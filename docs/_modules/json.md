@@ -2,10 +2,10 @@
 title: JSON
 ---
 
-| Instruction  | Action                                 | Arguments                      |
-| ------------ | -------------------------------------- | ------------------------------ |
-| `json-build` | Build a JSON structure from parameters | List of parameters (see below) |
-| `json-get`   | Get a data from a JSON structure       | Map of parameters (see below)  |
+| Instruction  | Action                                 | Arguments                      | Dry run |
+| ------------ | -------------------------------------- | ------------------------------ | ------- |
+| `json-build` | Build a JSON structure from parameters | List of parameters (see below) | -       |
+| `json-get`   | Get a data from a JSON structure       | Map of parameters (see below)  | -       |
 
 Example for `json-build` and `json-get` may be found in the [Cura for Dagoma]({% link _recipes/curafordagoma.md %}) recipe.
 

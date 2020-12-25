@@ -2,14 +2,14 @@
 title: File
 ---
 
-| Instruction            | Action                                             | Arguments                   |
-| ---------------------- | -------------------------------------------------- | --------------------------- |
-| `file`                 | Create or replace files                            | Map of path to file content |
-| `executable-file`      | Create or replace files with executable flag       | Map of path to file content |
-| `restricted-file`      | Create or replace files only readable by the owner | Map of path to file content |
-| `root-file`            | Create or replace files as root                    | Map of path to file content |
-| `executable-root-file` | Create or replace executable files as root         | Map of path to file content |
-| `restricted-root-file` | Create or replace files only readable by root      | Map of path to file content |
+| Instruction            | Action                                             | Arguments                   | Dry run   |
+| ---------------------- | -------------------------------------------------- | --------------------------- | --------- |
+| `file`                 | Create or replace files                            | Map of path to file content | No change |
+| `executable-file`      | Create or replace files with executable flag       | Map of path to file content | No change |
+| `restricted-file`      | Create or replace files only readable by the owner | Map of path to file content | No change |
+| `root-file`            | Create or replace files as root                    | Map of path to file content | No change |
+| `executable-root-file` | Create or replace executable files as root         | Map of path to file content | No change |
+| `restricted-root-file` | Create or replace files only readable by root      | Map of path to file content | No change |
 
 All these instructions are variants for the same action.
 

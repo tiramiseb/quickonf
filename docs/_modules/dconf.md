@@ -2,9 +2,9 @@
 title: Dconf
 ---
 
-| Instruction | Action                                | Arguments             |
-| ----------- | ------------------------------------- | --------------------- |
-| `dconf`     | Set a parameter in the dconf database | Map of keys to values |
+| Instruction | Action                                | Arguments             | Dry run   |
+| ----------- | ------------------------------------- | --------------------- | --------- |
+| `dconf`     | Set a parameter in the dconf database | Map of keys to values | No change |
 
 Example:
 

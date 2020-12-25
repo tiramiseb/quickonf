@@ -2,9 +2,9 @@
 title: Remove
 ---
 
-| Instruction | Action                      | Arguments                          |
-| ----------- | --------------------------- | ---------------------------------- |
-| `remove`    | Remove files or directories | List of files or directories paths |
+| Instruction | Action                      | Arguments                          | Dry run    |
+| ----------- | --------------------------- | ---------------------------------- | ---------- |
+| `remove`    | Remove files or directories | List of files or directories paths | No removal |
 
 If the target does not exist, this is a no-op.
 

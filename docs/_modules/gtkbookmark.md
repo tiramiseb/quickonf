@@ -2,9 +2,9 @@
 title: Gtk Bookmarks
 ---
 
-| Instruction    | Action                | Arguments                     |
-| -------------- | --------------------- | ----------------------------- |
-| `gtk-bookmark` | Set the Gtk bookmarks | List of bookmarks (see below) |
+| Instruction    | Action                | Arguments                     | Dry run   |
+| -------------- | --------------------- | ----------------------------- | --------- |
+| `gtk-bookmark` | Set the Gtk bookmarks | List of bookmarks (see below) | No change |
 
 A bookmark may be in one of the following forms:
 

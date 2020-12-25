@@ -2,6 +2,6 @@
 title: Fonts
 ---
 
-| Instruction  | Action                     | Arguments |
-| ------------ | -------------------------- | --------- |
-| `font-cache` | Regenerate the fonts cache | None      |
+| Instruction  | Action                     | Arguments | Dry run         |
+| ------------ | -------------------------- | --------- | --------------- |
+| `font-cache` | Regenerate the fonts cache | None      | No regeneration |

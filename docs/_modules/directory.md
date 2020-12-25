@@ -2,9 +2,9 @@
 title: Directory
 ---
 
-| Instruction | Action             | Arguments           |
-| ----------- | ------------------ | ------------------- |
-| `directory` | Create directories | List of directories |
+| Instruction | Action             | Arguments           | Dry run     |
+| ----------- | ------------------ | ------------------- | ----------- |
+| `directory` | Create directories | List of directories | No creation |
 
 If the target already exists and is not a directory, it fails.
 

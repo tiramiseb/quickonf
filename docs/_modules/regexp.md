@@ -2,9 +2,9 @@
 title: RegExp
 ---
 
-| Instruction      | Action                                          | Arguments                       |
-| ---------------- | ----------------------------------------------- | ------------------------------- |
-| `regexp-replace` | Replace value according to a regular expression | Parameters as a map (see below) |
+| Instruction      | Action                                          | Arguments                       | Dry run |
+| ---------------- | ----------------------------------------------- | ------------------------------- | ------- |
+| `regexp-replace` | Replace value according to a regular expression | Parameters as a map (see below) | -       |
 
 ## Regexp replace
 

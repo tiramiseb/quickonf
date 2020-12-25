@@ -2,11 +2,11 @@
 title: XDG
 ---
 
-| Instruction        | Action                                 | Arguments                             |
-| ------------------ | -------------------------------------- | ------------------------------------- |
-| `xdg-autostart`    | Set autostart for applications         | List of app names or .desktop files   |
-| `xdg-mime-default` | Set default applications for mimetypes | Map from mimetype to application name |
-| `xdg-user-dir`     | Set a XDG user dir                     | Map from name to path                 |
+| Instruction        | Action                                 | Arguments                             | Dry run   |
+| ------------------ | -------------------------------------- | ------------------------------------- | --------- |
+| `xdg-autostart`    | Set autostart for applications         | List of app names or .desktop files   | No change |
+| `xdg-mime-default` | Set default applications for mimetypes | Map from mimetype to application name | No change |
+| `xdg-user-dir`     | Set a XDG user dir                     | Map from name to path                 | No change |
 
 For `xdg-autostart`, a ".desktop file" is the path to the `.desktop` file, especially if it is not in `/usr/share/applications`. If missing, the `.desktop` extension is automatically added.
 

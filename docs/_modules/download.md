@@ -2,9 +2,9 @@
 title: Download
 ---
 
-| Instruction | Action                           | Arguments            |
-| ----------- | -------------------------------- | -------------------- |
-| `download`  | Download files from the Internet | Map of URLs to paths |
+| Instruction | Action                           | Arguments            | Dry run     |
+| ----------- | -------------------------------- | -------------------- | ----------- |
+| `download`  | Download files from the Internet | Map of URLs to paths | No download |
 
 Example:
 

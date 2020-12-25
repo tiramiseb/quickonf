@@ -2,14 +2,14 @@
 title: Snap
 ---
 
-| Instruction      | Action                                                   | Arguments                       |
-| ---------------- | -------------------------------------------------------- | ------------------------------- |
-| `snap`           | Install Snap packages                                    | List of packages                |
-| `snap-classic`   | Install Snap packages in classic mode                    | List of packages                |
-| `snap-dangerous` | Install Snap packages without verifying their signatures | List of packages                |
-| `snap-edge`      | Install Snap packages from the edge channel              | List of packages                |
-| `snap-refresh`   | Refresh Snap packages                                    | none                            |
-| `snap-version`   | Get a Snap package version                               | Parameters as a map (see below) |
+| Instruction      | Action                                                   | Arguments                       | Dry run    |
+| ---------------- | -------------------------------------------------------- | ------------------------------- | ---------- |
+| `snap`           | Install Snap packages                                    | List of packages                | No install |
+| `snap-classic`   | Install Snap packages in classic mode                    | List of packages                | No install |
+| `snap-dangerous` | Install Snap packages without verifying their signatures | List of packages                | No install |
+| `snap-edge`      | Install Snap packages from the edge channel              | List of packages                | No install |
+| `snap-refresh`   | Refresh Snap packages                                    | none                            | No refresh |
+| `snap-version`   | Get a Snap package version                               | Parameters as a map (see below) | -          |
 
 Classic mode disables security confinement.
 
