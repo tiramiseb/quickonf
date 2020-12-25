@@ -47,7 +47,7 @@ func GitCloneOrPull(in interface{}, out output.Output) error {
 		finfo, err := os.Stat(dir)
 		if err == nil {
 			if !finfo.IsDir() {
-				out.Error(fmt.Errorf("%s exists but is not a directory", dir))
+				out.Alertf("%s exists but is not a directory", dir)
 				continue
 			}
 			// Directory exists, verify it is a repository and pull it

@@ -9,6 +9,7 @@ type Output interface {
 	Success(string)                           // Success writes a successful message
 	Successf(format string, a ...interface{}) // Success writes a successful message with formatting
 	Alert(string)                             // Alert writes an alert message
+	Alertf(format string, a ...interface{})   // Alertf writes an alert message with formatting
 	Error(error)                              // Error writes an error message
 
 	ShowLoader() // ShowLoader displays the loader

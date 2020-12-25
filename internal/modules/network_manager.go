@@ -51,7 +51,7 @@ func NetworkManagerImport(in interface{}, out output.Output) error {
 		path = helper.Path(path)
 		if _, err := os.Stat(path); err != nil {
 			if os.IsNotExist(err) {
-				out.Error(fmt.Errorf("File %s does not exist", path))
+				out.Alertf("File %s does not exist", path)
 				continue
 			}
 			return err

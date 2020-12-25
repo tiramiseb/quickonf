@@ -96,6 +96,11 @@ func (s *Stdout) Alert(str string) {
 	s.report.alert(str)
 }
 
+// Alertf writes an alert message with formatting
+func (s *Stdout) Alertf(format string, a ...interface{}) {
+	s.Alert(fmt.Sprintf(format, a...))
+}
+
 // Error writes an error message
 func (s *Stdout) Error(err error) {
 	fmt.Print("     ")
