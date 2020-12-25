@@ -181,7 +181,7 @@ func Apt(in interface{}, out output.Output) error {
 			return errors.New(string(cmdout))
 		}
 		if bytes.Contains(cmdout, []byte("install")) {
-			out.Infof("%s is already installed")
+			out.Infof("%s is already installed", pkg)
 			continue
 		}
 		if Dryrun {
