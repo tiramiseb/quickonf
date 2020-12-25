@@ -1,8 +1,6 @@
 package modules
 
 import (
-	"strings"
-
 	"github.com/tiramiseb/quickonf/internal/helper"
 	"github.com/tiramiseb/quickonf/internal/output"
 )
@@ -24,18 +22,7 @@ func PIP(in interface{}, out output.Output) error {
 			continue
 		}
 		if _, err := helper.ExecSudo(nil, "pip3", "install", "--upgrade", pkg); err != nil {
-			if strings.Contains(err.Error(), "command not found") {
-				out.Info("Installing PIP first")
-				out.ShowLoader()
-				_, err = helper.ExecSudo(nil, "apt-get", "--yes", "--quiet", "install", "--no-install-recommends", "python3-pip")
-				out.HideLoader()
-				if err != nil {
-					return err
-				}
-				if _, err := helper.ExecSudo(nil, "pip3", "install", "--upgrade", pkg); err != nil {
-					return err
-				}
-			}
+			return err
 		}
 	}
 	return nil
