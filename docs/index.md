@@ -31,7 +31,12 @@ Instructions are grouped by modules, documented here, menu is on the left (yay!)
 
 ## How to install
 
-Just click on the « All releases » button up here ↑, then chose the latest release and download either the `quickonf` asset (for 64b systems) or the `quickonf-32` asset (for 32b systems). Don't forget to make the downloaded file executable!
+Direct links:
+
+- [64 bits binary](https://github.com/tiramiseb/quickonf/releases/latest/download/quickonf)
+- [32 bits binary](https://github.com/tiramiseb/quickonf/releases/latest/download/quickonf-32)
+
+Don't forget to make the downloaded file executable!
 
 ## Flags and arguments
 
