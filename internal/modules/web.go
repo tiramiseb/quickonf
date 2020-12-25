@@ -93,7 +93,7 @@ func ParseWebPage(in interface{}, out output.Output) error {
 		return fmt.Errorf(`No match for "%s" in %s`, re, url)
 	}
 
-	out.Info("Match " + re.String())
+	out.Infof(`Match "%s"`, re.String())
 	store, ok := data["store"]
 	if ok {
 		helper.Store(store, matches[0])
