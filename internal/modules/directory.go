@@ -10,11 +10,23 @@ import (
 
 func init() {
 	Register("directory", Directory)
+	Register("root-directory", RootDirectory)
 }
 
 // Directory creates directories
 func Directory(in interface{}, out output.Output) error {
 	out.InstructionTitle("Directory creation")
+	return directory(in, out, false)
+}
+
+// RootDirectory creates directories as root
+func RootDirectory(in interface{}, out output.Output) error {
+	out.InstructionTitle("Directory creation as root")
+	return directory(in, out, true)
+
+}
+
+func directory(in interface{}, out output.Output, root bool) error {
 	data, err := helper.SliceString(in)
 	if err != nil {
 		return err
@@ -36,9 +48,15 @@ func Directory(in interface{}, out output.Output) error {
 			out.Infof("Would create %s", path)
 			continue
 		}
-		err = os.MkdirAll(path, 0755)
-		if err != nil {
-			return err
+		if root {
+			if _, err = helper.ExecSudo(nil, "mkdir", "-p", path); err != nil {
+				return err
+			}
+
+		} else {
+			if err = os.MkdirAll(path, 0755); err != nil {
+				return err
+			}
 		}
 		out.Successf("%s created", path)
 	}
