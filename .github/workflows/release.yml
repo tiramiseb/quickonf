@@ -27,7 +27,8 @@ jobs:
       - name: Get release upload URL
         id: release
         run: |
-          upload_url=$(curl -sH "Accept: application/vnd.github.v3+json" https://api.github.com/repos/tiramiseb/quickonf/releases/tags/${{ github.ref }} | jq -r .upload_url)
+          tag=$(echo "${{ github.ref }} | sed 's|refs/tags/||'")
+          upload_url=$(curl -sH "Accept: application/vnd.github.v3+json" https://api.github.com/repos/tiramiseb/quickonf/releases/tags/$tag | jq -r .upload_url)
           echo "::debug Upload URL is $upload_url"
           echo "::set-output name=upload_url::$upload_url"
 
