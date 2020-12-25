@@ -1,6 +1,6 @@
 # Intro
 
-Quickonf allows you to automate your environment configuration, instead of manually configuring your apps every time you reinstall your system.
+Quickonf allows you to automate your environment configuration, instead of manually configuring your apps every time you reinstall your system. It is made for Linux. Or maybe other UNIX-Like system, dunno, not tested.
 
 It is especially useful if you reinstall Ubuntu every now and then and do not want to use the same user environment over and over (because sometimes, when keeping older configuration files, some app may disfunction).
 
@@ -27,7 +27,11 @@ In this file, you create steps, with the following format:
 
 Yes, you guessed it, it's written in YAML.
 
-Instructions are grouped by modules, documented here (yay!).
+Instructions are grouped by modules, documented here, menu is on the left (yay!).
+
+## How to install
+
+Just click on the « All releases » button up here ↑, then chose the latest release and download either the `quickonf` asset (for 64b systems) or the `quickonf-32` asset (for 32b systems). Don't forget to make the downloaded file executable!
 
 ## Flags and arguments
 
