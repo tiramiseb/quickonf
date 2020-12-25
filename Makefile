@@ -1,4 +1,4 @@
 all: build
 
 build:
-	go build -o quickonf cmd/main.go
+	CGO_ENABLED=0 go build -o quickonf cmd/main.go
