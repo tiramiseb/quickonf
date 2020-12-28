@@ -1,5 +1,5 @@
 ---
-title: Cura for Dagoma
+title: Cura by Dagoma
 ---
 
 ## The problem
