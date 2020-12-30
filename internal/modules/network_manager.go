@@ -29,13 +29,16 @@ func NetworkManagerWifi(in interface{}, out output.Output) error {
 		}
 		if ok {
 			out.Infof("Connection %s already exists", net)
+			continue
 		}
 		if Dryrun {
 			out.Infof("Would add wifi connection %s", net)
+			continue
 		}
 		if _, err := helper.Exec(nil, "nmcli", "connection", "add", "con-name", net, "type", "wifi", "ssid", net, "--", "802-11-wireless-security.key-mgmt", "wpa-psk", "802-11-wireless-security.psk", ssid); err != nil {
 			return err
 		}
+		out.Successf("Added wifi connection %s", net)
 	}
 	return nil
 }
