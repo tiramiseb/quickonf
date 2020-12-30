@@ -18,8 +18,14 @@ func Download(in interface{}, out output.Output) error {
 	}
 	for url, path := range data {
 		path = helper.Path(path)
-		if err := helper.DownloadFileWithPercent(url, path, out); err != nil {
+		result, err := helper.DownloadFile(url, path, out)
+		switch result {
+		case helper.ResultDryrun:
+			out.Infof("Would download %s to %s", url, path)
+		case helper.ResultError:
 			return err
+		case helper.ResultSuccess:
+			out.Successf("Downloaded %s to %s", url, path)
 		}
 	}
 	return nil

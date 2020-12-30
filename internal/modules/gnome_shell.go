@@ -74,10 +74,10 @@ func InstallGnomeShellExtension(in interface{}, out output.Output) error {
 		if err := tmpfile.Close(); err != nil {
 			return err
 		}
-		if err := helper.DownloadFileWithPercent("https://extensions.gnome.org"+extInfo.DownloadURL, fname, out); err != nil {
+		if _, err := helper.DownloadFile("https://extensions.gnome.org"+extInfo.DownloadURL, fname, out); err != nil {
 			return err
 		}
-		if err = helper.UnzipFile(fname, dest, out); err != nil {
+		if _, err := helper.ExtractZip(fname, dest, out); err != nil {
 			return err
 		}
 	}

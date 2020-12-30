@@ -132,37 +132,6 @@ The ones you may use to make the user wait:
 
 Because some actions may be common to multiple instructions, there are some helpers in `internal/helpers`. You may of course create new helpers if you think it will help.
 
-Currently available helpers are:
-
-- download:
-
-  - `DownloadFileWithPercent(url, path string, out output.Output) error`: download a file from the given URL and store it at the given path, showing a percentage loader (already tests Dryrun, no need to check it before calling this helper)
-  - `DownloadFile(url, path string) error`: download a file from the given URL and store it at the given path, silently (don't use it for large files, please) (already tests Dryrun, no need to check it before calling this helper)
-  - `DownloadJSON(url string, destination interface{}) error`: download JSON data from the given URL and store it in the given interface
-  - `Download(url string) ([]byte, error)`: download data from the given URL and return it
-  - `Post(url string, payload []byte) ([]byte, error)`: execute a POST method request to the given URL with the given payload (content-type is automatically detected) and return the resulting data
-
-- exec (for these helpers, please note the current environment is passed to the executed commands, along with `LANG=C` to avoid locale-specific values):
-
-  - `Exec(env []string, cmd string, args ...string) ([]byte, error)`: execute the given command, with the given arguments, providing the given environment variables, and return its stdout (or stderr as a part of the error)
-  - `ExecSudo(env []string, args ...string) ([]byte, error)`: execute the command (given as the first argument) as root, with the other arguments, providing the given environment variables, and return its stdout (or stderr as a part of the error)
-
-- git:
-
-  - `GitClone(repo, dest string, depth int, out output.Output) error`: clone the given repository to the given destination, with the given depth, while showing a loader if `out` is not nil (already tests Dryrun, no need to check it before calling this helper)
-
-- path:
-
-  - `Path(str string) string`: transform the given path as an absolute path. The relative paths are considered to be relative to the user's home directory. Please use this helper everywhere you ask for a path.
-
-- symlink:
-
-  - `Symlink(path, target string) (status SymlinkStatus, err error)`: create a symbolic link, making `path` point to `target` (already tests Dryrun, no need to check it before calling this helper)
-
-- zip:
-
-  `UnzipFile(zipfilepath, dest string, out output.Output) error`: extract the given .zip file to the given destination, writing information and showing a X/Y progress bar if `out` is not nil (already tests Dryrun, no need to check it before calling this helper)
-
 ## Recipes
 
 Recipes are the place where you may share configuration for some specific situation or software. Instructions should not be specific, but recipes are exactly made for it!

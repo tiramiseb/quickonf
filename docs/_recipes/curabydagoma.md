@@ -56,7 +56,7 @@ Then, downloading and extracting a .zip, installing the dependencies, installing
         - os=Linux
         - arch=x64
         - package_type=debian
-    - post:
+    - http-post:
         url: https://dist.dagoma3d.com/api
         payload: <curabydago-api-req>
         store: curabydago-api-resp

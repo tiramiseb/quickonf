@@ -1,11 +1,6 @@
 package modules
 
 import (
-	"errors"
-	"fmt"
-	"os"
-
-	"github.com/go-git/go-git/v5"
 	"github.com/tiramiseb/quickonf/internal/helper"
 	"github.com/tiramiseb/quickonf/internal/output"
 )
@@ -44,46 +39,33 @@ func GitCloneOrPull(in interface{}, out output.Output) error {
 	}
 	for repo, dir := range data {
 		dir = helper.Path(dir)
-		finfo, err := os.Stat(dir)
-		if err == nil {
-			if !finfo.IsDir() {
-				out.Alertf("%s exists but is not a directory", dir)
-				continue
-			}
-			// Directory exists, verify it is a repository and pull it
-			rep, err := git.PlainOpen(dir)
-			if err != nil {
-				if errors.Is(err, git.ErrRepositoryNotExists) {
-					return fmt.Errorf("%s is not a Git repository", dir)
-				}
-				return err
-			}
-			if Dryrun {
-				out.Infof("Would pull latest commit in %s", dir)
-				continue
-			}
-			out.Infof("%s already exists, pulling latest commit", dir)
-			w, err := rep.Worktree()
-			if err != nil {
-				return err
-			}
-			if err := w.Pull(&git.PullOptions{RemoteName: "origin"}); err != nil {
-				if errors.Is(err, git.NoErrAlreadyUpToDate) {
-					out.Info("... already up-to-date")
-					continue
-				}
-				return err
-			}
+		out.ShowLoader()
+		result, err := helper.GitClone(repo, dir, 0)
+		out.HideLoader()
+		switch result {
+		case helper.ResultDryrun:
+			out.Infof("Would clone %s in %s", repo, dir)
 			continue
-		}
-		if os.IsNotExist(err) {
-			// It does not already exist, cloning the repo
-			if err := helper.GitClone(repo, dir, 1, out); err != nil {
-				return err
-			}
+		case helper.ResultSuccess:
+			out.Successf("Cloned %s in %s", repo, dir)
 			continue
+		case helper.ResultError:
+			return err
 		}
-		return err
+		// The only possible situation here is the repository already existing: we can pull
+		out.ShowLoader()
+		result, err = helper.GitPull(dir)
+		out.HideLoader()
+		switch result {
+		case helper.ResultDryrun:
+			out.Infof("Would pull in %s", dir)
+		case helper.ResultAlready:
+			out.Infof("%s already in sync with origin", dir)
+		case helper.ResultError:
+			return err
+		case helper.ResultSuccess:
+			out.Successf("Pulled latest modifications in %s", dir)
+		}
 	}
 	return nil
 }

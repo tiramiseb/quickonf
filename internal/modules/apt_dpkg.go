@@ -18,6 +18,7 @@ func init() {
 	Register("dpkg-version", DpkgVersion)
 	Register("debconf-set", DebconfSet)
 	Register("apt", Apt)
+	// Register("apt-source", AptSource)
 	Register("apt-remove", AptRemove)
 	Register("apt-upgrade", AptUpgrade)
 	Register("apt-autoremove-purge", AptAutoremovePurge)
@@ -198,6 +199,45 @@ func Apt(in interface{}, out output.Output) error {
 	}
 	return nil
 }
+
+/*
+// AptSource adds a source for APT
+func AptSource(in interface{}, out output.Output) error {
+	out.InstructionTitle("Add APT source")
+	data, err := helper.MapStringString(in)
+	if err != nil {
+		return err
+	}
+
+	id, ok := data["id"]
+	if !ok {
+		return errors.New("Missing id")
+	}
+
+	source, ok := data["source"]
+	if !ok {
+		return errors.New("Missing source")
+	}
+
+	key, ok := data["key"]
+	if ok {
+
+		// TODO Add key to /etc/apt/trusted.gpg.d/<id>.gpg
+	}
+
+	// TODO add source to /etc/apt/sources.list.d/<id>.list
+
+	out.Info("Updating packages list")
+	out.ShowLoader()
+	_, err := helper.ExecSudo([]string{"DEBIAN_FRONTEND=noninteractive"}, "apt-get", "--yes", "update")
+	out.HideLoader()
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+*/
 
 // AptRemove removes deb packages from system
 func AptRemove(in interface{}, out output.Output) error {

@@ -21,16 +21,14 @@ func Symlink(in interface{}, out output.Output) error {
 		target = helper.Path(target)
 		status, err := helper.Symlink(path, target)
 		switch status {
-		case helper.SymlinkError:
-			return err
-		case helper.SymlinkAleradyExists:
+		case helper.ResultAlready:
 			out.Infof("Link from %s to %s already exists", path, target)
-		case helper.SymlinkCreated:
-			if Dryrun {
-				out.Infof("Would create link from %s to %s", path, target)
-			} else {
-				out.Successf("Link from %s to %s created", path, target)
-			}
+		case helper.ResultDryrun:
+			out.Infof("Would create link from %s to %s", path, target)
+		case helper.ResultError:
+			return err
+		case helper.ResultSuccess:
+			out.Successf("Link from %s to %s created", path, target)
 		}
 	}
 	return nil

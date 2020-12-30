@@ -5,7 +5,7 @@ import (
 	"strings"
 )
 
-// String returns a string with values from store from an interface
+// String returns a string from an interface, replacing occurrences of "<xxx>" with the value of xxx in the store.
 func String(v interface{}) (str string, err error) {
 	switch v.(type) {
 	case string:

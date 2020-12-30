@@ -12,7 +12,8 @@ import (
 func init() {
 	// Register("browse-web", BrowseWeb)
 	Register("parse-web-page", ParseWebPage)
-	Register("post", Post)
+	Register("http-get", HTTPGet)
+	Register("http-post", HTTPPost)
 }
 
 // // BrowseWeb browses a website
@@ -77,7 +78,7 @@ func ParseWebPage(in interface{}, out output.Output) error {
 		return errors.New("Missing regexp")
 	}
 
-	page, err := helper.Download(url)
+	page, err := helper.HTTPGet(url)
 	if err != nil {
 		return err
 	}
@@ -112,8 +113,33 @@ func ParseWebPage(in interface{}, out output.Output) error {
 	return nil
 }
 
-// Post sends a request to a POST request
-func Post(in interface{}, out output.Output) error {
+// HTTPGet sends a GET request
+func HTTPGet(in interface{}, out output.Output) error {
+	out.InstructionTitle("GET request")
+	data, err := helper.MapStringString(in)
+	if err != nil {
+		return err
+	}
+	url, ok := data["url"]
+	if !ok {
+		return errors.New("Missing url")
+	}
+
+	out.Infof("GETing %s", url)
+	response, err := helper.HTTPGet(url)
+	if err != nil {
+		return err
+	}
+	store, ok := data["store"]
+	if ok {
+		helper.Store(store, string(response))
+	}
+
+	return nil
+}
+
+// HTTPPost sends a POST request
+func HTTPPost(in interface{}, out output.Output) error {
 	out.InstructionTitle("POST request")
 	data, err := helper.MapStringString(in)
 	if err != nil {
@@ -130,7 +156,7 @@ func Post(in interface{}, out output.Output) error {
 	payload := []byte(payloadS)
 
 	out.Infof("POSTing to %s", url)
-	response, err := helper.Post(url, payload)
+	response, err := helper.HTTPPost(url, payload)
 	if err != nil {
 		return err
 	}

@@ -56,16 +56,14 @@ func XdgAutostart(in interface{}, out output.Output) error {
 
 		status, err := helper.Symlink(autostartPath, fullApp)
 		switch status {
-		case helper.SymlinkError:
+		case helper.ResultError:
 			return err
-		case helper.SymlinkAleradyExists:
+		case helper.ResultAlready:
 			out.Infof("Autostart for %s already configured", app)
-		case helper.SymlinkCreated:
-			if Dryrun {
-				out.Infof("Would autostart %s", app)
-			} else {
-				out.Successf("Autostart for %s configured", app)
-			}
+		case helper.ResultDryrun:
+			out.Infof("Would autostart %s", app)
+		case helper.ResultSuccess:
+			out.Successf("Autostart for %s configured", app)
 		}
 	}
 	return nil

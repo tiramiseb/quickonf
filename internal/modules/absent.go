@@ -1,10 +1,6 @@
 package modules
 
 import (
-	"fmt"
-	"io"
-	"os"
-
 	"github.com/tiramiseb/quickonf/internal/helper"
 	"github.com/tiramiseb/quickonf/internal/output"
 )
@@ -15,44 +11,24 @@ func init() {
 
 // Absent makes sure a file is absent
 func Absent(in interface{}, out output.Output) error {
-	out.InstructionTitle("Make file absent")
+	out.InstructionTitle("Make sure file is absent")
 	data, err := helper.SliceString(in)
 	if err != nil {
 		return err
 	}
 	for _, path := range data {
 		path = helper.Path(path)
-		info, err := os.Lstat(path)
-		if err != nil {
-			if os.IsNotExist(err) {
-				out.Infof("%s already absent", path)
-				continue
-			}
+		status, err := helper.Remove(path)
+		switch status {
+		case helper.ResultError:
 			return err
-		}
-		if info.IsDir() {
-			f, err := os.Open(path)
-			if err != nil {
-				return err
-			}
-			defer f.Close()
-			_, err = f.Readdirnames(1)
-			if err == nil {
-				return fmt.Errorf("Directory %s contains files, cannot be deleted", path)
-			}
-			if err != io.EOF {
-				return err
-			}
-		}
-		if Dryrun {
+		case helper.ResultAlready:
+			out.Infof("%s already absent", path)
+		case helper.ResultDryrun:
 			out.Infof("Would remove %s", path)
-			continue
+		case helper.ResultSuccess:
+			out.Successf("%s removed", path)
 		}
-		err = os.Remove(path)
-		if err != nil {
-			return err
-		}
-		out.Successf("%s removed", path)
 	}
 	return nil
 }

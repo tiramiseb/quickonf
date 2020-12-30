@@ -1,9 +1,6 @@
 package modules
 
 import (
-	"bytes"
-	"fmt"
-	"io/ioutil"
 	"os"
 
 	"github.com/tiramiseb/quickonf/internal/helper"
@@ -71,59 +68,19 @@ func file(in interface{}, out output.Output, root bool, permission os.FileMode) 
 		if err != nil {
 			return err
 		}
-		bcontent := []byte(content)
-		info, err := os.Stat(path)
-		if err == nil {
-			if info.IsDir() {
-				return fmt.Errorf("%s is a directory", path)
-			}
-			// TODO Read root restricted content...
-			current, err := ioutil.ReadFile(path)
-			if err != nil {
-				return err
-			}
-			if bytes.Compare(bcontent, current) == 0 {
-				out.Infof("%s already has the needed content", path)
-				if !root {
-					if !Dryrun {
-						err := os.Chmod(path, permission)
-						if err != nil {
-							return err
-						}
-					}
-				}
-				continue
-			}
-		} else if !os.IsNotExist(err) {
-			return err
-		}
-		if Dryrun {
+		out.ShowLoader()
+		result, err := helper.File(path, []byte(content), permission, root)
+		out.HideLoader()
+		switch result {
+		case helper.ResultAlready:
+			out.Infof("%s already has the needed content", path)
+		case helper.ResultDryrun:
 			out.Infof("Would create or modify %s", path)
-			continue
+		case helper.ResultError:
+			return err
+		case helper.ResultSuccess:
+			out.Successf("%s created or modified", path)
 		}
-		if root {
-			f, err := ioutil.TempFile("", "quickonf-root-file")
-			if err != nil {
-				return err
-			}
-			fName := f.Name()
-			defer os.Remove(fName)
-			defer f.Close()
-			if _, err = f.Write(bcontent); err != nil {
-				return err
-			}
-			if err := os.Chmod(fName, permission); err != nil {
-				return err
-			}
-			if _, err := helper.ExecSudo(nil, "cp", fName, path); err != nil {
-				return err
-			}
-		} else {
-			if err := ioutil.WriteFile(path, bcontent, permission); err != nil {
-				return err
-			}
-		}
-		out.Successf("%s created or modified", path)
 	}
 	return nil
 }

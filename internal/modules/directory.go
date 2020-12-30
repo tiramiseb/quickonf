@@ -1,9 +1,6 @@
 package modules
 
 import (
-	"fmt"
-	"os"
-
 	"github.com/tiramiseb/quickonf/internal/helper"
 	"github.com/tiramiseb/quickonf/internal/output"
 )
@@ -33,32 +30,17 @@ func directory(in interface{}, out output.Output, root bool) error {
 	}
 	for _, path := range data {
 		path = helper.Path(path)
-		info, err := os.Lstat(path)
-		if err == nil {
-			if info.IsDir() {
-				out.Infof("%s already exists", path)
-				continue
-			}
-			return fmt.Errorf("%s is not a directory", path)
-		}
-		if !os.IsNotExist(err) {
-			return err
-		}
-		if Dryrun {
+		result, err := helper.Directory(path, root)
+		switch result {
+		case helper.ResultAlready:
+			out.Infof("%s already exists", path)
+		case helper.ResultDryrun:
 			out.Infof("Would create %s", path)
-			continue
+		case helper.ResultError:
+			return err
+		case helper.ResultSuccess:
+			out.Successf("%s created", path)
 		}
-		if root {
-			if _, err = helper.ExecSudo(nil, "mkdir", "-p", path); err != nil {
-				return err
-			}
-
-		} else {
-			if err = os.MkdirAll(path, 0755); err != nil {
-				return err
-			}
-		}
-		out.Successf("%s created", path)
 	}
 	return nil
 }

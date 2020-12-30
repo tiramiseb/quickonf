@@ -1,13 +1,6 @@
 package modules
 
 import (
-	"archive/tar"
-	"io"
-	"os"
-	"path/filepath"
-
-	"github.com/ulikunitz/xz"
-
 	"github.com/tiramiseb/quickonf/internal/helper"
 	"github.com/tiramiseb/quickonf/internal/output"
 )
@@ -27,64 +20,18 @@ func ExtractTarxz(in interface{}, out output.Output) error {
 	for tarxzFile, dest := range data {
 		tarxzFile = helper.Path(tarxzFile)
 		dest = helper.Path(dest)
-		if Dryrun {
-			out.Infof("Would extract %s to %s", tarxzFile, dest)
-			continue
-		}
 		out.Infof("Extracting %s to %s", tarxzFile, dest)
-		fread, err := os.Open(tarxzFile)
-		if err != nil {
-			return err
-		}
-		defer fread.Close()
-
-		xread, err := xz.NewReader(fread)
-		if err != nil {
-			return err
-		}
-
-		tread := tar.NewReader(xread)
 		out.ShowLoader()
-		for {
-			header, err := tread.Next()
-			if err != nil {
-				if err == io.EOF {
-					break
-				}
-				out.HideLoader()
-				return err
-			}
-
-			target := filepath.Join(dest, header.Name)
-
-			switch header.Typeflag {
-			case tar.TypeDir:
-				if _, err := os.Stat(target); err != nil {
-					if os.IsNotExist(err) {
-						if err := os.MkdirAll(target, header.FileInfo().Mode()); err != nil {
-							out.HideLoader()
-							return err
-						}
-						continue
-					}
-					out.HideLoader()
-					return err
-				}
-			case tar.TypeReg:
-				f, err := os.OpenFile(target, os.O_CREATE|os.O_RDWR, header.FileInfo().Mode())
-				if err != nil {
-					out.HideLoader()
-					return err
-				}
-				_, err = io.Copy(f, tread)
-				f.Close()
-				if err != nil {
-					out.HideLoader()
-					return err
-				}
-			}
-		}
+		result, err := helper.ExtractTarxz(tarxzFile, dest)
 		out.HideLoader()
+		switch result {
+		case helper.ResultDryrun:
+			out.Info("... not really extracted")
+		case helper.ResultSuccess:
+			out.Success("... extracted successfully")
+		case helper.ResultError:
+			return err
+		}
 	}
 	return nil
 }
@@ -99,8 +46,14 @@ func ExtractZip(in interface{}, out output.Output) error {
 	for zipFile, dest := range data {
 		zipFile = helper.Path(zipFile)
 		dest = helper.Path(dest)
-		if err := helper.UnzipFile(zipFile, dest, out); err != nil {
+		result, err := helper.ExtractZip(zipFile, dest, out)
+		switch result {
+		case helper.ResultDryrun:
+			out.Infof("Would extract %s into %s", zipFile, dest)
+		case helper.ResultError:
 			return err
+		case helper.ResultSuccess:
+			out.Successf("Extracted %s into %s", zipFile, dest)
 		}
 	}
 	return nil

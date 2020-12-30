@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"io"
+	"io/ioutil"
 	"net/http"
 	"os"
 
@@ -13,7 +14,7 @@ import (
 	"github.com/tiramiseb/quickonf/internal/output"
 )
 
-// Passthru is inspired by https://stackoverflow.com/a/25645804
+// passThru is inspired by https://stackoverflow.com/a/25645804
 type passThru struct {
 	io.ReadCloser
 	current int64
@@ -32,32 +33,23 @@ func (pt *passThru) Read(p []byte) (int, error) {
 	return n, err
 }
 
-// DownloadFileWithPercent downloads the given URL to the given path, writing the percentage to the given output.
-func DownloadFileWithPercent(url, path string, out output.Output) error {
-	return downloadFile(url, path, out)
-}
-
-// DownloadFile downloads the given URL to the given path, without any output.
-func DownloadFile(url, path string) error {
-	return downloadFile(url, path, nil)
-}
-
-func downloadFile(url, path string, out output.Output) error {
+// DownloadFile downloads the given URL to the given path, writing the percentage to the given output if provided.
+//
+// If in dry-run mode, it returns ResultDryrun right away, without downloading.
+func DownloadFile(url, path string, out output.Output) (ResultStatus, error) {
 	if Dryrun {
-		out.Infof("Would download %s to %s", url, path)
-		return nil
+		return ResultDryrun, nil
 	}
-	out.Infof("Downloading %s to %s", url, path)
 	if out != nil {
 		out.ShowLoader()
 	}
 	resp, err := http.Get(url)
 	if err != nil {
-		return err
+		return ResultError, err
 	}
 	defer resp.Body.Close()
 	if resp.StatusCode == http.StatusNotFound {
-		return errors.New("404 not found")
+		return ResultError, errors.New("404 not found")
 	}
 	body := resp.Body
 	if out != nil {
@@ -71,54 +63,76 @@ func downloadFile(url, path string, out output.Output) error {
 	}
 	f, err := os.Create(path)
 	if err != nil {
-		return err
+		return ResultError, err
 	}
 	defer f.Close()
-	_, err = io.Copy(f, body)
-	return err
+	if _, err := io.Copy(f, body); err != nil {
+		return ResultError, err
+	}
+	return ResultSuccess, nil
 }
 
-// DownloadJSON downloads the given URL and decodes it to the given destination
+// DownloadJSON downloads the given URL and decodes it to the given destination.
+//
+// The URL is downloaded even in dry-run mode.
 func DownloadJSON(url string, destination interface{}) error {
-	resp, err := http.Get(url)
+	body, err := httpReq("GET", url, nil)
 	if err != nil {
 		return err
 	}
-	defer resp.Body.Close()
-	if resp.StatusCode == http.StatusNotFound {
-		return errors.New("404 not found")
+	defer body.Close()
+	if err := json.NewDecoder(body).Decode(destination); err != nil {
+		return err
 	}
-	return json.NewDecoder(resp.Body).Decode(destination)
+	return nil
 }
 
-// Download downloads the given URL and returns it as a []byte
-func Download(url string) ([]byte, error) {
-	resp, err := http.Get(url)
+// HTTPGet downloads the given URL and returns it as a []byte.
+//
+// The URL is downloaded even in dry-run mode.
+func HTTPGet(url string) ([]byte, error) {
+	body, err := httpReq("GET", url, nil)
 	if err != nil {
 		return nil, err
 	}
-	defer resp.Body.Close()
-	if resp.StatusCode == http.StatusNotFound {
-		return nil, errors.New("404 not found")
-	}
+	defer body.Close()
 	var buf bytes.Buffer
-	_, err = buf.ReadFrom(resp.Body)
+	_, err = buf.ReadFrom(body)
 	return buf.Bytes(), err
 }
 
-// Post uses method POST in the given URL
-func Post(url string, payload []byte) ([]byte, error) {
-	contentType := mimetype.Detect(payload).String()
-	body := bytes.NewReader(payload)
-	resp, err := http.Post(url, contentType, body)
+// HTTPPost uses method POST on the given URL and returns the result as a []byte.
+//
+// The URL is downloaded even in dry-run mode.
+func HTTPPost(url string, payload []byte) ([]byte, error) {
+	body, err := httpReq("POST", url, payload)
 	if err != nil {
 		return nil, err
 	}
-	defer resp.Body.Close()
-	if resp.StatusCode == http.StatusNotFound {
-		return nil, errors.New("404 not found")
-	}
+	defer body.Close()
 	var buf bytes.Buffer
-	_, err = buf.ReadFrom(resp.Body)
+	_, err = buf.ReadFrom(body)
 	return buf.Bytes(), err
+}
+
+func httpReq(method, url string, payload []byte) (io.ReadCloser, error) {
+	req, err := http.NewRequest(method, url, nil)
+	if err != nil {
+		return nil, err
+	}
+	if payload != nil {
+		req.Body = ioutil.NopCloser(bytes.NewReader(payload))
+		contentType := mimetype.Detect(payload).String()
+		req.Header.Set("Content-Type", contentType)
+	}
+
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	if resp.StatusCode == http.StatusNotFound {
+		resp.Body.Close()
+		return nil, errors.New("Not found")
+	}
+	return resp.Body, nil
 }
