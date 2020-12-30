@@ -60,6 +60,10 @@ func File(path string, content []byte, permission os.FileMode, root bool) (Resul
 	if err := ioutil.WriteFile(path, content, permission); err != nil {
 		return ResultError, err
 	}
+	// Added chmod because writefile doesn't seem to honor the permissions, even with a correct mask
+	if err := os.Chmod(path, permission); err != nil {
+		return ResultError, err
+	}
 
 	if root {
 		if _, err := ExecSudo(nil, "cp", "--preserve=mode", path, realPath); err != nil {
