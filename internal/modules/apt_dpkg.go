@@ -18,7 +18,7 @@ func init() {
 	Register("dpkg-version", DpkgVersion)
 	Register("debconf-set", DebconfSet)
 	Register("apt", Apt)
-	// Register("apt-source", AptSource)
+	Register("apt-source", AptSource)
 	Register("apt-remove", AptRemove)
 	Register("apt-upgrade", AptUpgrade)
 	Register("apt-autoremove-purge", AptAutoremovePurge)
@@ -200,7 +200,6 @@ func Apt(in interface{}, out output.Output) error {
 	return nil
 }
 
-/*
 // AptSource adds a source for APT
 func AptSource(in interface{}, out output.Output) error {
 	out.InstructionTitle("Add APT source")
@@ -214,30 +213,50 @@ func AptSource(in interface{}, out output.Output) error {
 		return errors.New("Missing id")
 	}
 
-	source, ok := data["source"]
+	sources, ok := data["sources"]
 	if !ok {
-		return errors.New("Missing source")
+		return errors.New("Missing sources")
 	}
+
+	out.Infof("Adding deb source for %s", id)
 
 	key, ok := data["key"]
 	if ok {
-
-		// TODO Add key to /etc/apt/trusted.gpg.d/<id>.gpg
+		var ext = "gpg"
+		if strings.HasPrefix(key, "-----BEGIN PGP PUBLIC KEY BLOCK-----") {
+			ext = "asc"
+		}
+		result, err := helper.File("/etc/apt/trusted.gpg.d/"+id+"."+ext, []byte(key), 0644, true)
+		switch result {
+		case helper.ResultAlready:
+			out.Info("... key already known")
+		case helper.ResultDryrun:
+			out.Info("... would add key")
+		case helper.ResultError:
+			return err
+		case helper.ResultSuccess:
+			out.Successf("... added key")
+		}
 	}
 
-	// TODO add source to /etc/apt/sources.list.d/<id>.list
+	result, err := helper.File("/etc/apt/sources.list.d/"+id+".list", []byte(sources), 0644, true)
+	switch result {
+	case helper.ResultAlready:
+		out.Info("... sources already known")
+	case helper.ResultDryrun:
+		out.Info("... would add sources")
+	case helper.ResultError:
+		return err
+	case helper.ResultSuccess:
+		out.Successf("... added sources")
+	}
 
 	out.Info("Updating packages list")
 	out.ShowLoader()
-	_, err := helper.ExecSudo([]string{"DEBIAN_FRONTEND=noninteractive"}, "apt-get", "--yes", "update")
+	_, err = helper.ExecSudo([]string{"DEBIAN_FRONTEND=noninteractive"}, "apt-get", "--yes", "update")
 	out.HideLoader()
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return err
 }
-*/
 
 // AptRemove removes deb packages from system
 func AptRemove(in interface{}, out output.Output) error {
