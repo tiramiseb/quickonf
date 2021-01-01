@@ -55,3 +55,19 @@ Parameters:
 - `id`: some identifier for the source (used for sources.list.d and key filenames)
 - `sources`: content of the sources.list.d file.
 - `key` (optional): content of the GPG key used to sign packages
+
+How to use it:
+
+```yaml
+- Install a wonderful app:
+    - http-get:
+        url: https://www.example.com/wonderful-app/key.gpg
+        store: wonderful-app-key
+    - apt-source:
+        id: wonderful-app
+        key: <wonderful-app-key>
+        sources: |
+          deb https://www.example.com/wonderful-app/deb <oscodename> main
+    - apt:
+        - wonderful-app
+```
