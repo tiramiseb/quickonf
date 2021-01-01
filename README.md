@@ -9,7 +9,7 @@ Downloads:
 Development:
 [![Issues](https://img.shields.io/github/issues/tiramiseb/quickonf.svg)](https://GitHub.com/tiramiseb/quickonf/issues/)
 [![Pull-requests](https://img.shields.io/github/issues-pr/tiramiseb/quickonf.svg)](https://GitHub.com/tiramiseb/quickonf/pull/)
-![Commits since latest release](https://img.shields.io/github/commits-since/tiramiseb/quickonf/latest)
+[![Commits since latest release](https://img.shields.io/github/commits-since/tiramiseb/quickonf/latest)](https://github.com/tiramiseb/quickonf/commits/main)
 
 A tool to quickly (re)configure a Linux system
 
