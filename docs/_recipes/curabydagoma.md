@@ -8,7 +8,7 @@ Dagoma has forked the Cura software, to optimise it for their printers.
 
 This software is especially tricky to get and update. If you want to update it manually, there are multiple steps:
 
-- first, check the version on the Dagoma website
+- first, check the version in the software
 - then, go to the download page and click on multiple links (implying multiple requests to an API)
 - then, download the returned link, you receive a .zip file
 - then, unzip the .zip file, it contains a README and a .deb file (for Debian/Ubuntu)
@@ -18,7 +18,7 @@ This software is especially tricky to get and update. If you want to update it m
 
 ## Automatization
 
-Checking the Dagoma website is a matter of parsing a webpage.
+Checking the Dagoma website is a matter downloading an URL.
 
 The multiple links clicks may be replaced by a single JSON REST API request, which returns the download link in a JSON response, that must be parsed.
 
@@ -38,10 +38,9 @@ Then, downloading and extracting a .zip, installing the dependencies, installing
 
 ```yaml
 - Cura by Dagoma:
-    - parse-web-page:
-        url: https://dagoma.odoo.com/logiciels
-        regexp: Version (?P<ver>[0-9]+\.[0-9]+\.[0-9]+)
-        store-ver: curabydago-candidate
+    - http-get:                                                                 
+        url: https://dist.dagoma3d.com/version/CuraByDagoma                     
+        store: curabydago-candidate 
     - dpkg-version:
         package: curabydagoma
         store: curabydago-current
