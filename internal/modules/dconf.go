@@ -21,7 +21,7 @@ func Dconf(in interface{}, out output.Output) error {
 			out.Infof("Would set %s to %s", k, v)
 			continue
 		}
-		if _, err := helper.Exec(nil, "dconf", "write", k, v); err != nil {
+		if _, err := helper.Exec(nil, "", "dconf", "write", k, v); err != nil {
 			return err
 		}
 		out.Successf("Set %s to %s", k, v)

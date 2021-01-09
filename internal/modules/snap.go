@@ -54,7 +54,7 @@ func snap(in interface{}, out output.Output, options ...string) error {
 		cmd := []string{"snap", "install"}
 		cmd = append(cmd, options...)
 		cmd = append(cmd, pkg)
-		if _, err = helper.ExecSudo(nil, cmd...); err != nil {
+		if _, err = helper.ExecSudo(nil, "", cmd...); err != nil {
 			return err
 		}
 		out.HideLoader()
@@ -70,7 +70,7 @@ func SnapRefresh(in interface{}, out output.Output) error {
 		return nil
 	}
 	out.ShowLoader()
-	_, err := helper.ExecSudo(nil, "snap", "refresh")
+	_, err := helper.ExecSudo(nil, "", "snap", "refresh")
 	out.HideLoader()
 	if err != nil {
 		return err
@@ -90,7 +90,7 @@ func SnapVersion(in interface{}, out output.Output) error {
 	if !ok {
 		return errors.New("Missing package name")
 	}
-	cmdout, err := helper.Exec(nil, "snap", "info", pkg)
+	cmdout, err := helper.Exec(nil, "", "snap", "info", pkg)
 	if err != nil {
 		out.Infof("Package %s is not installed", pkg)
 		if storeAs, ok := data["store"]; ok {

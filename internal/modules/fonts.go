@@ -16,7 +16,7 @@ func FontCache(in interface{}, out output.Output) error {
 		out.Info("Would regenerate the font cache")
 	}
 	out.ShowLoader()
-	_, err := helper.Exec(nil, "fc-cache", "-f")
+	_, err := helper.Exec(nil, "", "fc-cache", "-f")
 	out.HideLoader()
 	if err != nil {
 		return err

@@ -21,7 +21,7 @@ const (
 var Dryrun bool
 
 func init() {
-	cmdout, err := Exec(nil, "lsb_release", "--codename", "--short")
+	cmdout, err := Exec(nil, "", "lsb_release", "--codename", "--short")
 	if err != nil {
 		panic(err)
 	}

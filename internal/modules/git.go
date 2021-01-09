@@ -22,7 +22,7 @@ func GitConfig(in interface{}, out output.Output) error {
 			out.Infof("Would set %s to %s", param, value)
 			continue
 		}
-		if _, err := helper.Exec(nil, "git", "config", "--global", param, value); err != nil {
+		if _, err := helper.Exec(nil, "", "git", "config", "--global", param, value); err != nil {
 			return err
 		}
 		out.Successf("Set %s to %s", param, value)

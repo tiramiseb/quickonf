@@ -27,7 +27,7 @@ func InstallGnomeShellExtension(in interface{}, out output.Output) error {
 	if err != nil {
 		return err
 	}
-	cmdout, err := helper.Exec(nil, "gnome-shell", "--version")
+	cmdout, err := helper.Exec(nil, "", "gnome-shell", "--version")
 	if err != nil {
 		return err
 	}
@@ -96,7 +96,7 @@ func EnableGnomeShellExtension(in interface{}, out output.Output) error {
 			out.Infof("Would enable %s", extension)
 			continue
 		}
-		if _, err := helper.Exec(nil, "gnome-shell-extension-tool", "--enable-extension", extension); err != nil {
+		if _, err := helper.Exec(nil, "", "gnome-shell-extension-tool", "--enable-extension", extension); err != nil {
 			return err
 		}
 		out.Successf("Enabled %s", extension)
@@ -157,7 +157,7 @@ func GnomeShellRestart(in interface{}, out output.Output) error {
 		out.Info("Would restart GNOME Shell")
 		return nil
 	}
-	if _, err := helper.Exec(nil, "busctl", "--user", "call", "org.gnome.Shell", "/org/gnome/Shell", "org.gnome.Shell", "Eval", "s", `Meta.restart("Restarting Gnome...")`); err != nil {
+	if _, err := helper.Exec(nil, "", "busctl", "--user", "call", "org.gnome.Shell", "/org/gnome/Shell", "org.gnome.Shell", "Eval", "s", `Meta.restart("Restarting Gnome...")`); err != nil {
 		return err
 	}
 	return nil

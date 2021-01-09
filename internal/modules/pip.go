@@ -21,7 +21,7 @@ func PIP(in interface{}, out output.Output) error {
 			out.Infof("Would install %s", pkg)
 			continue
 		}
-		if _, err := helper.ExecSudo(nil, "pip3", "install", "--upgrade", pkg); err != nil {
+		if _, err := helper.ExecSudo(nil, "", "pip3", "install", "--upgrade", pkg); err != nil {
 			return err
 		}
 	}

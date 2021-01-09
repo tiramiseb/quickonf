@@ -39,7 +39,7 @@ func Dpkg(in interface{}, out output.Output) error {
 		}
 		out.Infof("Installing %s", path)
 		out.ShowLoader()
-		_, err := helper.ExecSudo(nil, "dpkg", "--install", path)
+		_, err := helper.ExecSudo(nil, "", "dpkg", "--install", path)
 		out.HideLoader()
 		if err != nil {
 			return err
@@ -57,7 +57,7 @@ func DpkgDependencies(in interface{}, out output.Output) error {
 	}
 	for _, path := range data {
 		out.Infof("Dependencies for %s", path)
-		depsB, err := helper.Exec(nil, "dpkg-deb", "--show", "--showformat=${Depends}", path)
+		depsB, err := helper.Exec(nil, "", "dpkg-deb", "--show", "--showformat=${Depends}", path)
 		if err != nil {
 			return err
 		}
@@ -69,7 +69,7 @@ func DpkgDependencies(in interface{}, out output.Output) error {
 			}
 			out.Infof("Installing %s", pkg)
 			out.ShowLoader()
-			_, err = helper.ExecSudo([]string{"DEBIAN_FRONTEND=noninteractive"}, "apt-get", "--yes", "--quiet", "install", pkg)
+			_, err = helper.ExecSudo([]string{"DEBIAN_FRONTEND=noninteractive"}, "", "apt-get", "--yes", "--quiet", "install", pkg)
 			out.HideLoader()
 			if err != nil {
 				return err
@@ -93,7 +93,7 @@ func DpkgReconfigure(in interface{}, out output.Output) error {
 		}
 		out.Infof("Reconfiguring %s", name)
 		out.ShowLoader()
-		_, err := helper.ExecSudo(nil, "dpkg-reconfigure", "--frontend", "noninteractive", name)
+		_, err := helper.ExecSudo(nil, "", "dpkg-reconfigure", "--frontend", "noninteractive", name)
 		out.HideLoader()
 		if err != nil {
 			return err
@@ -113,7 +113,7 @@ func DpkgVersion(in interface{}, out output.Output) error {
 	if !ok {
 		return errors.New("Missing package name")
 	}
-	cmdout, err := helper.Exec(nil, "dpkg-query", "--showformat=${Version}", "--show", pkg)
+	cmdout, err := helper.Exec(nil, "", "dpkg-query", "--showformat=${Version}", "--show", pkg)
 	if err != nil {
 		out.Infof("Package %s is not installed", pkg)
 		if storeAs, ok := data["store"]; ok {
@@ -159,7 +159,7 @@ func DebconfSet(in interface{}, out output.Output) error {
 	if _, err := tmpfile.WriteString(strings.Join([]string{pkg, variable, "select", value}, " ")); err != nil {
 		return err
 	}
-	if _, err := helper.ExecSudo(nil, "debconf-set-selections", tmpfile.Name()); err != nil {
+	if _, err := helper.ExecSudo(nil, "", "debconf-set-selections", tmpfile.Name()); err != nil {
 		return err
 	}
 	if err := tmpfile.Close(); err != nil {
@@ -177,7 +177,7 @@ func Apt(in interface{}, out output.Output) error {
 	}
 
 	for _, pkg := range data {
-		cmdout, err := helper.Exec(nil, "dpkg", "--get-selections", pkg)
+		cmdout, err := helper.Exec(nil, "", "dpkg", "--get-selections", pkg)
 		if err != nil {
 			return errors.New(string(cmdout))
 		}
@@ -191,7 +191,7 @@ func Apt(in interface{}, out output.Output) error {
 		}
 		out.Infof("Installing %s", pkg)
 		out.ShowLoader()
-		_, err = helper.ExecSudo([]string{"DEBIAN_FRONTEND=noninteractive"}, "apt-get", "--yes", "--quiet", "install", pkg)
+		_, err = helper.ExecSudo([]string{"DEBIAN_FRONTEND=noninteractive"}, "", "apt-get", "--yes", "--quiet", "install", pkg)
 		out.HideLoader()
 		if err != nil {
 			return err
@@ -253,7 +253,7 @@ func AptSource(in interface{}, out output.Output) error {
 
 	out.Info("Updating packages list")
 	out.ShowLoader()
-	_, err = helper.ExecSudo([]string{"DEBIAN_FRONTEND=noninteractive"}, "apt-get", "--yes", "update")
+	_, err = helper.ExecSudo([]string{"DEBIAN_FRONTEND=noninteractive"}, "", "apt-get", "--yes", "update")
 	out.HideLoader()
 	return err
 }
@@ -266,7 +266,7 @@ func AptRemove(in interface{}, out output.Output) error {
 		return err
 	}
 	for _, pkg := range data {
-		cmdout, err := helper.Exec(nil, "dpkg", "--get-selections", pkg)
+		cmdout, err := helper.Exec(nil, "", "dpkg", "--get-selections", pkg)
 		if err != nil {
 			return err
 		}
@@ -280,7 +280,7 @@ func AptRemove(in interface{}, out output.Output) error {
 		}
 		out.Infof("Removing %s", pkg)
 		out.ShowLoader()
-		_, err = helper.ExecSudo([]string{"DEBIAN_FRONTEND=noninteractive"}, "apt-get", "--yes", "--quiet", "remove", pkg)
+		_, err = helper.ExecSudo([]string{"DEBIAN_FRONTEND=noninteractive"}, "", "apt-get", "--yes", "--quiet", "remove", pkg)
 		out.HideLoader()
 		if err != nil {
 			return err
@@ -298,14 +298,14 @@ func AptUpgrade(in interface{}, out output.Output) error {
 	}
 	out.Info("Updating packages list")
 	out.ShowLoader()
-	_, err := helper.ExecSudo([]string{"DEBIAN_FRONTEND=noninteractive"}, "apt-get", "--yes", "update")
+	_, err := helper.ExecSudo([]string{"DEBIAN_FRONTEND=noninteractive"}, "", "apt-get", "--yes", "update")
 	out.HideLoader()
 	if err != nil {
 		return err
 	}
 	out.Info("Upgrading packages")
 	out.ShowLoader()
-	_, err = helper.ExecSudo([]string{"DEBIAN_FRONTEND=noninteractive"}, "apt-get", "--yes", "upgrade")
+	_, err = helper.ExecSudo([]string{"DEBIAN_FRONTEND=noninteractive"}, "", "apt-get", "--yes", "upgrade")
 	out.HideLoader()
 	if err != nil {
 		return err
@@ -322,7 +322,7 @@ func AptAutoremovePurge(in interface{}, out output.Output) error {
 	}
 	out.Info("Removing unneeded dependencies")
 	out.ShowLoader()
-	_, err := helper.ExecSudo([]string{"DEBIAN_FRONTEND=noninteractive"}, "apt-get", "--yes", "autoremove", "--purge")
+	_, err := helper.ExecSudo([]string{"DEBIAN_FRONTEND=noninteractive"}, "apt-get", "", "--yes", "autoremove", "--purge")
 	out.HideLoader()
 	return err
 }
@@ -336,7 +336,7 @@ func AptCleanCache(in interface{}, out output.Output) error {
 	}
 	out.Info("Cleaning the APT cache")
 	out.ShowLoader()
-	_, err := helper.ExecSudo([]string{"DEBIAN_FRONTEND=noninteractive"}, "apt-get", "clean")
+	_, err := helper.ExecSudo([]string{"DEBIAN_FRONTEND=noninteractive"}, "", "apt-get", "clean")
 	out.HideLoader()
 	return err
 }

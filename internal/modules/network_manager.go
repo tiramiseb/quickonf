@@ -35,7 +35,7 @@ func NetworkManagerWifi(in interface{}, out output.Output) error {
 			out.Infof("Would add wifi connection %s", net)
 			continue
 		}
-		if _, err := helper.Exec(nil, "nmcli", "connection", "add", "con-name", net, "type", "wifi", "ssid", net, "--", "802-11-wireless-security.key-mgmt", "wpa-psk", "802-11-wireless-security.psk", ssid); err != nil {
+		if _, err := helper.Exec(nil, "", "nmcli", "connection", "add", "con-name", net, "type", "wifi", "ssid", net, "--", "802-11-wireless-security.key-mgmt", "wpa-psk", "802-11-wireless-security.psk", ssid); err != nil {
 			return err
 		}
 		out.Successf("Added wifi connection %s", net)
@@ -85,7 +85,7 @@ func NetworkManagerImport(in interface{}, out output.Output) error {
 			continue
 		}
 
-		if _, err := helper.Exec(nil, "nmcli", "connection", "import", "type", "openvpn", "file", path); err != nil {
+		if _, err := helper.Exec(nil, "", "nmcli", "connection", "import", "type", "openvpn", "file", path); err != nil {
 			return err
 		}
 	}
@@ -93,7 +93,7 @@ func NetworkManagerImport(in interface{}, out output.Output) error {
 }
 
 func nmConnectionExists(name string) (bool, error) {
-	shownB, err := helper.Exec(nil, "nmcli", "connection", "show")
+	shownB, err := helper.Exec(nil, "", "nmcli", "connection", "show")
 	if err != nil {
 		return false, err
 	}

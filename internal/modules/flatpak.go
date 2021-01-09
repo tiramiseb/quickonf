@@ -26,7 +26,7 @@ func Flatpak(in interface{}, out output.Output) error {
 		}
 		out.Infof("Installing %s", pkg)
 		out.ShowLoader()
-		_, err := helper.ExecSudo(nil, "flatpak", "install", "--noninteractive", "--assumeyes", pkg)
+		_, err := helper.ExecSudo(nil, "", "flatpak", "install", "--noninteractive", "--assumeyes", pkg)
 		out.HideLoader()
 		if err != nil {
 			if strings.Contains(err.Error(), "already installed") {
@@ -53,7 +53,7 @@ func FlatpakRemote(in interface{}, out output.Output) error {
 		}
 		out.Infof("Adding %s (%s)", name, url)
 		out.ShowLoader()
-		_, err := helper.ExecSudo(nil, "flatpak", "remote-add", "--if-not-exists", name, url)
+		_, err := helper.ExecSudo(nil, "", "flatpak", "remote-add", "--if-not-exists", name, url)
 		out.HideLoader()
 		if err != nil {
 			return err
