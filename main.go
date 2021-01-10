@@ -14,14 +14,18 @@ import (
 
 func main() {
 	var conf string
-	var list bool
-	var dryrun bool
 	flag.StringVar(&conf, "config", "quickonf.yaml", "List all steps")
 	flag.StringVar(&conf, "c", "quickonf.yaml", "List all steps (shorthand)")
+	var list bool
 	flag.BoolVar(&list, "list", false, "List all steps")
 	flag.BoolVar(&list, "l", false, "List all steps (shorthand)")
+	var dryrun bool
 	flag.BoolVar(&dryrun, "dry-run", false, "Try all steps without modifying the system")
 	flag.BoolVar(&dryrun, "r", false, "Try all steps without modifying the system (shorthand)")
+	var output string
+	flag.StringVar(&output, "output", "stdout", "Output format")
+	flag.StringVar(&output, "o", "stdout", "Output format (shorthand)")
+
 	flag.Parse()
 
 	yamlFile, err := ioutil.ReadFile(conf)
@@ -39,7 +43,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	q, err := quickonf.New(config)
+	q, err := quickonf.New(config, output)
 	if err != nil {
 		fmt.Println("Could not initialize quickonf")
 		fmt.Println(err)

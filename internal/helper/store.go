@@ -9,3 +9,8 @@ func Store(key, value string) {
 	}
 	store[key] = value
 }
+
+// AllStore returns the content of the store
+func AllStore() map[string]string {
+	return store
+}

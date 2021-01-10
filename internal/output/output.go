@@ -1,5 +1,7 @@
 package output
 
+import "errors"
+
 // Output is an output for quickonf
 type Output interface {
 	StepTitle(string)                         // StepTitle writes a step title
@@ -22,4 +24,15 @@ type Output interface {
 	HideXonY()         // HideXonY hides the loader with "X/Y" information
 
 	Report() // Report writes the summary
+}
+
+// New returns a new output according to the given name
+func New(name string) (Output, error) {
+	switch name {
+	case "stdout":
+		return NewStdout(), nil
+	case "prog":
+		return NewProg(), nil
+	}
+	return nil, errors.New("Unknown output")
 }

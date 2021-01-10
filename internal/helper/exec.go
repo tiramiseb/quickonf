@@ -30,7 +30,7 @@ func ExecSudo(env []string, stdin string, args ...string) ([]byte, error) {
 	} else {
 		stdin = SudoPassword + "\n" + stdin
 	}
-	return execute(env, "sudo", args, (stdin))
+	return execute(env, "sudo", args, stdin)
 }
 
 func execute(env []string, cmd string, args []string, stdin string) ([]byte, error) {

@@ -16,10 +16,14 @@ type Service struct {
 }
 
 // New creates a new quickonf service containing the given steps
-func New(steps []Step) (*Service, error) {
+func New(steps []Step, outputName string) (*Service, error) {
+	out, err := output.New(outputName)
+	if err != nil {
+		return nil, err
+	}
 	return &Service{
 		steps:  steps,
-		output: output.NewStdout(),
+		output: out,
 	}, nil
 }
 
