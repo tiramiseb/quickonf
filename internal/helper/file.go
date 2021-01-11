@@ -66,7 +66,7 @@ func File(path string, content []byte, permission os.FileMode, root bool) (Resul
 	}
 
 	if root {
-		if _, err := ExecSudo(nil, "cp", "--preserve=mode", path, realPath); err != nil {
+		if _, err := ExecSudo(nil, "", "cp", "--preserve=mode", path, realPath); err != nil {
 			return ResultError, err
 		}
 	}
