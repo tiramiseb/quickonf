@@ -1,7 +1,10 @@
 // Package helper provides helpers for modules, in order to simplify their development
 package helper
 
-import "strings"
+import (
+	"os"
+	"strings"
+)
 
 // ResultStatus is returned by helper to inform the module of the result status
 type ResultStatus int
@@ -26,4 +29,9 @@ func init() {
 		panic(err)
 	}
 	Store("oscodename", strings.TrimSpace(string(cmdout)))
+	hostname, err := os.Hostname()
+	if err != nil {
+		panic(err)
+	}
+	Store("hostname", hostname)
 }

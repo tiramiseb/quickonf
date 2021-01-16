@@ -96,6 +96,7 @@ The following keys are set by default in the store:
 
 - `home`: user's home directory path
 - `oscodename`: Linux distribution codename (result of `lsb_release --codename --short`)
+- `hostname`: System hostname
 
 ### Run as another user
 
