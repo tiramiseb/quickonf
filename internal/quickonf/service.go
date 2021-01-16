@@ -37,24 +37,23 @@ func (s *Service) Run(dryrun bool) {
 	s.output.Report()
 }
 
-// Steps runs the selected steps
-func (s *Service) Steps(steps []string, dryrun bool) {
+// Steps runs only the selected steps, and the steps marked as "always"
+func (s *Service) Steps(stepsFilter []string, dryrun bool) {
 	modules.Dryrun = dryrun
 	helper.Dryrun = dryrun
 	s.output.StepTitle("Running steps matching:")
-	for _, step := range steps {
+	for _, step := range stepsFilter {
 		s.output.Info(step)
 	}
-steps:
 	for _, step := range s.steps {
 		if step.Always() {
 			step.run(s.output)
 			continue
 		}
-		for _, wanted := range steps {
+		for _, wanted := range stepsFilter {
 			if ok, _ := path.Match(wanted, strings.ReplaceAll(strings.ToLower(step.Name()), "/", " ")); ok {
 				step.run(s.output)
-				continue steps
+				break
 			}
 		}
 	}
