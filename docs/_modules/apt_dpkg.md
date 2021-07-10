@@ -2,6 +2,8 @@
 title: Apt and dpkg
 ---
 
+Instructions in this module, except `dpkg-version`, need the sudo password to be set. See the [sudo]({% link _modules/sudo.md %}) module.
+
 | Instruction            | Action                                 | Arguments                       | Dry run                   |
 | ---------------------- | -------------------------------------- | ------------------------------- | ------------------------- |
 | `dpkg`                 | Install .deb packages                  | List of packages files          | No install                |
@@ -15,8 +17,6 @@ title: Apt and dpkg
 | `apt-upgrade`          | Upgrade all installed packages         | none                            | No change                 |
 | `apt-autoremove-purge` | Clean unneeded packages                | none                            | No change                 |
 | `apt-clean-cache`      | Clean the APT cache                    | none                            | No change                 |
-
-Instructions in this module, except `dpkg-version`, need the sudo password to be set. See the [sudo]({% link _modules/sudo.md %}) module.
 
 ## dpkg-version
 

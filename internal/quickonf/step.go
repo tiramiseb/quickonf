@@ -2,7 +2,6 @@ package quickonf
 
 import (
 	"errors"
-	"strings"
 
 	quickonfErrors "github.com/tiramiseb/quickonf/internal/errors"
 	"github.com/tiramiseb/quickonf/internal/modules"
@@ -77,27 +76,8 @@ func (step Step) list(out output.Output) {
 }
 
 func runAction(action map[string]interface{}, out output.Output) error {
-	for fullname, data := range action {
-
-		// The part after "@" is a username...
-		nameAndUser := strings.SplitN(fullname, "@", 2)
-		instructionName := strings.TrimSpace(nameAndUser[0])
-
-		// Does the instruction exist?
-		instruction := modules.Get(instructionName)
-		if instruction == nil {
-			return errors.New("[No instruction named \"" + instructionName + "\"]")
-		}
-
-		switch len(nameAndUser) {
-		case 1:
-			// Not for another user
-			return instruction(data, out)
-		case 2:
-			// Another user has been named
-			return modules.RunAs(strings.TrimSpace(nameAndUser[1]), instructionName, data, out)
-
-		}
+	for instructionName, data := range action {
+		return modules.Get(instructionName)(data, out)
 	}
 	return errors.New("[No instruction]")
 }

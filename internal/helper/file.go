@@ -74,12 +74,12 @@ func File(path string, content []byte, permission os.FileMode, root bool) (Resul
 	return ResultSuccess, nil
 }
 
-// Directory creates a new directory, and its parents if needed. Directory owner is root if the root boolean is true.
+// Directory creates a new directory, and its parents if needed.
 //
 // If the directory already exists, it returns ResultAlready.
 //
 // In dry-run mode, ResultDryrun is returned.
-func Directory(path string, root bool) (ResultStatus, error) {
+func Directory(path string) (ResultStatus, error) {
 	info, err := os.Lstat(path)
 	if err == nil {
 		if info.IsDir() {
@@ -93,15 +93,8 @@ func Directory(path string, root bool) (ResultStatus, error) {
 	if Dryrun {
 		return ResultDryrun, nil
 	}
-	if root {
-		if _, err = ExecSudo(nil, "mkdir", "-p", path); err != nil {
-			return ResultError, err
-		}
-
-	} else {
-		if err = os.MkdirAll(path, 0755); err != nil {
-			return ResultError, err
-		}
+	if err = os.MkdirAll(path, 0755); err != nil {
+		return ResultError, err
 	}
 	return ResultSuccess, nil
 }

@@ -38,9 +38,9 @@ Then, downloading and extracting a .zip, installing the dependencies, installing
 
 ```yaml
 - Cura by Dagoma:
-    - http-get:                                                                 
-        url: https://dist.dagoma3d.com/version/CuraByDagoma                     
-        store: curabydago-candidate 
+    - http-get:
+        url: https://dist.dagoma3d.com/version/CuraByDagoma
+        store: curabydago-candidate
     - dpkg-version:
         package: curabydagoma
         store: curabydago-current

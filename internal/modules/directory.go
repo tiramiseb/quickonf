@@ -7,30 +7,18 @@ import (
 
 func init() {
 	Register("directory", Directory)
-	Register("root-directory", RootDirectory)
 }
 
 // Directory creates directories
 func Directory(in interface{}, out output.Output) error {
 	out.InstructionTitle("Directory creation")
-	return directory(in, out, false)
-}
-
-// RootDirectory creates directories as root
-func RootDirectory(in interface{}, out output.Output) error {
-	out.InstructionTitle("Directory creation as root")
-	return directory(in, out, true)
-
-}
-
-func directory(in interface{}, out output.Output, root bool) error {
 	data, err := helper.SliceString(in)
 	if err != nil {
 		return err
 	}
 	for _, path := range data {
 		path = helper.Path(path)
-		result, err := helper.Directory(path, root)
+		result, err := helper.Directory(path)
 		switch result {
 		case helper.ResultAlready:
 			out.Infof("%s already exists", path)

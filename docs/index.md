@@ -98,19 +98,6 @@ The following keys are set by default in the store:
 - `oscodename`: Linux distribution codename (result of `lsb_release --codename --short`)
 - `hostname`: System hostname
 
-### Run as another user
+### Sudo
 
-As long as the current user can use sudo to execute commands as another user, any instruction may be executed as another user by adding `@<username>` at the end of its name. For instance:
-
-```yaml
-- Create Bayek:
-    - user-password:
-        bayek: aya
-
-- Hello Bayek:
-    - file@bayek:
-        HELLO.txt: |
-          Hello Bayek, you have been automatically created!
-```
-
-In order to allow all instructions to be executed by any other user, a new instance is executed as the given user, with only the given instruction in its configuration file, and its output is redirected to the current quickonf instance. It implies the `quickonf` file must be executable for the given user.
+Some instructions need to be executed as another user, especially `root` for installing packages etc. It means that the current user must be able to use sudo in order to execute commands as another user. It is normally the case for the first user created on an Ubuntu system, for instance.

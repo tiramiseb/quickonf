@@ -2,10 +2,9 @@
 title: Directory
 ---
 
-| Instruction      | Action                     | Arguments           | Dry run     |
-| ---------------- | -------------------------- | ------------------- | ----------- |
-| `directory`      | Create directories         | List of directories | No creation |
-| `root-directory` | Create directories as root | List of directories | No creation |
+| Instruction | Action             | Arguments           | Dry run     |
+| ----------- | ------------------ | ------------------- | ----------- |
+| `directory` | Create directories | List of directories | No creation |
 
 If the target already exists and is not a directory, it fails.
 
@@ -16,6 +15,8 @@ Example:
     - directory:
         - Code/go
         - Code/python
-    - root-directory:
-        - /srv/code
+    - as:
+        root:
+          - directory:
+              - /srv/code
 ```
