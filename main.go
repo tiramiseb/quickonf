@@ -56,17 +56,14 @@ func main() {
 	}
 
 	steps := flag.Args()
-	if len(steps) == 0 {
-		q.Run(dryrun)
-	} else {
-		for i, s := range steps {
-			s = "*" + s + "*"
-			if _, err := path.Match(s, ""); err != nil {
-				fmt.Println(err)
-				os.Exit(1)
-			}
-			steps[i] = s
+	// Check the patterns before running steps
+	for i, s := range steps {
+		s = "*" + s + "*"
+		if _, err := path.Match(s, ""); err != nil {
+			fmt.Println(err)
+			os.Exit(1)
 		}
-		q.Steps(steps, dryrun)
+		steps[i] = s
 	}
+	q.Run(steps, dryrun)
 }

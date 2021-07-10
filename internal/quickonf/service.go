@@ -27,34 +27,30 @@ func New(steps []Step, outputName string) (*Service, error) {
 	}, nil
 }
 
-// Run runs the steps contained in the quickonf service
-func (s *Service) Run(dryrun bool) {
+// Run runs only the selected steps, and the steps marked as "always"
+func (s *Service) Run(filter []string, dryrun bool) {
 	modules.Dryrun = dryrun
 	helper.Dryrun = dryrun
-	for _, step := range s.steps {
-		step.run(s.output)
-	}
-	s.output.Report()
-}
-
-// Steps runs only the selected steps, and the steps marked as "always"
-func (s *Service) Steps(stepsFilter []string, dryrun bool) {
-	modules.Dryrun = dryrun
-	helper.Dryrun = dryrun
-	s.output.StepTitle("Running steps matching:")
-	for _, step := range stepsFilter {
-		s.output.Info(step)
+	if len(filter) > 0 {
+		s.output.StepTitle("Running steps matching:")
+		for _, step := range filter {
+			s.output.Info(step)
+		}
 	}
 	for _, step := range s.steps {
 		if step.Always() {
 			step.run(s.output)
 			continue
 		}
-		for _, wanted := range stepsFilter {
-			if ok, _ := path.Match(wanted, strings.ReplaceAll(strings.ToLower(step.Name()), "/", " ")); ok {
-				step.run(s.output)
-				break
+		if len(filter) > 0 {
+			for _, wanted := range filter {
+				if ok, _ := path.Match(wanted, strings.ReplaceAll(strings.ToLower(step.Name()), "/", " ")); ok {
+					step.run(s.output)
+					break
+				}
 			}
+		} else {
+			step.run(s.output)
 		}
 	}
 	s.output.Report()
