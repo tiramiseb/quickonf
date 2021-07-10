@@ -70,12 +70,12 @@ func ParseWebPage(in interface{}, out output.Output) error {
 	}
 	url, ok := data["url"]
 	if !ok {
-		return errors.New("Missing url")
+		return errors.New("missing url")
 	}
 
 	reg, ok := data["regexp"]
 	if !ok {
-		return errors.New("Missing regexp")
+		return errors.New("missing regexp")
 	}
 
 	page, err := helper.HTTPGet(url)
@@ -91,7 +91,7 @@ func ParseWebPage(in interface{}, out output.Output) error {
 	matches := re.FindStringSubmatch(string(page))
 
 	if len(matches) == 0 {
-		return fmt.Errorf(`No match for "%s" in %s`, re, url)
+		return fmt.Errorf(`no match for "%s" in %s`, re, url)
 	}
 
 	out.Infof(`Match "%s"`, re.String())
@@ -122,7 +122,7 @@ func HTTPGet(in interface{}, out output.Output) error {
 	}
 	url, ok := data["url"]
 	if !ok {
-		return errors.New("Missing url")
+		return errors.New("missing url")
 	}
 
 	out.Infof("GETing %s", url)
@@ -147,11 +147,11 @@ func HTTPPost(in interface{}, out output.Output) error {
 	}
 	url, ok := data["url"]
 	if !ok {
-		return errors.New("Missing url")
+		return errors.New("missing url")
 	}
 	payloadS, ok := data["payload"]
 	if !ok {
-		return errors.New("Missing payload")
+		return errors.New("missing payload")
 	}
 	payload := []byte(payloadS)
 

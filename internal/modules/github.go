@@ -23,7 +23,7 @@ func GithubLatest(in interface{}, out output.Output) error {
 	}
 	repository, ok := data["repository"]
 	if !ok {
-		return errors.New("Missing repository owner/name")
+		return errors.New("missing repository owner/name")
 	}
 
 	result := struct {
@@ -61,14 +61,14 @@ func GithubLatest(in interface{}, out output.Output) error {
 		}
 	}
 	if len(matching) == 0 {
-		return fmt.Errorf(`No asset matching "%s" in %s`, pattern, repository)
+		return fmt.Errorf(`no asset matching "%s" in %s`, pattern, repository)
 	}
 	if len(matching) > 1 {
 		names := make([]string, len(matching))
 		for i, m := range matching {
 			names[i] = result.Assets[m].Name
 		}
-		return fmt.Errorf("Too many assets matching pattern in %s: %s", repository, strings.Join(names, ", "))
+		return fmt.Errorf("too many assets matching pattern in %s: %s", repository, strings.Join(names, ", "))
 	}
 	url := result.Assets[matching[0]].URL
 	out.Infof("Download URL for latest release is %s", url)

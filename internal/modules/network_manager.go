@@ -63,7 +63,7 @@ func NetworkManagerImport(in interface{}, out output.Output) error {
 		var name string
 		switch len(nameParts) {
 		case 0:
-			return fmt.Errorf("No file name in %s", path)
+			return fmt.Errorf("no file name in %s", path)
 		case 1, 2:
 			name = nameParts[0]
 		default:

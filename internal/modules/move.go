@@ -75,7 +75,7 @@ func ForceMigrate(in interface{}, out output.Output) error {
 func migrate(in interface{}, out output.Output, ifExists moveDestinationExists) error {
 	out.InstructionTitle("Migrate file or directory")
 	if moveMigrationSource == "" {
-		return errors.New("Migration source is not defined")
+		return errors.New("migration source is not defined")
 	}
 	data, err := helper.SliceString(in)
 	if err != nil {
@@ -91,7 +91,7 @@ func migrate(in interface{}, out output.Output, ifExists moveDestinationExists) 
 // DoNotMigrate removes a file fro the previous home, without migrating it
 func DoNotMigrate(in interface{}, out output.Output) error {
 	if moveMigrationSource == "" {
-		return errors.New("Migration source is not defined")
+		return errors.New("migration source is not defined")
 	}
 	out.InstructionTitle("Remove do-no-migrate files")
 	data, err := helper.SliceString(in)

@@ -111,7 +111,7 @@ func DpkgVersion(in interface{}, out output.Output) error {
 	}
 	pkg, ok := data["package"]
 	if !ok {
-		return errors.New("Missing package name")
+		return errors.New("missing package name")
 	}
 	cmdout, err := helper.Exec(nil, "", "dpkg-query", "--showformat=${Version}", "--show", pkg)
 	if err != nil {
@@ -137,15 +137,15 @@ func DebconfSet(in interface{}, out output.Output) error {
 	}
 	pkg, ok := data["package"]
 	if !ok {
-		return errors.New("Missing package name")
+		return errors.New("missing package name")
 	}
 	variable, ok := data["variable"]
 	if !ok {
-		return errors.New("Missing variable name")
+		return errors.New("missing variable name")
 	}
 	value, ok := data["value"]
 	if !ok {
-		return errors.New("Missing value")
+		return errors.New("missing value")
 	}
 	if Dryrun {
 		out.Infof("Would set %s to %s for %s", variable, value, pkg)
@@ -210,12 +210,12 @@ func AptSource(in interface{}, out output.Output) error {
 
 	id, ok := data["id"]
 	if !ok {
-		return errors.New("Missing id")
+		return errors.New("missing id")
 	}
 
 	sources, ok := data["sources"]
 	if !ok {
-		return errors.New("Missing sources")
+		return errors.New("missing sources")
 	}
 
 	out.Infof("Adding deb source for %s", id)

@@ -48,7 +48,7 @@ func StopIfOlder(in interface{}, out output.Output) error {
 	}
 	curStr, ok := data["current"]
 	if !ok {
-		return errors.New("Missing current version")
+		return errors.New("missing current version")
 	}
 	if curStr == "" {
 		out.Info("Current version is empty")
@@ -56,15 +56,15 @@ func StopIfOlder(in interface{}, out output.Output) error {
 	}
 	candStr, ok := data["candidate"]
 	if !ok {
-		return errors.New("Missing candidate version")
+		return errors.New("missing candidate version")
 	}
 	curVersion, err := semver.NewVersion(curStr)
 	if err != nil {
-		return fmt.Errorf(`With current as "%s": %w`, curStr, err)
+		return fmt.Errorf(`with current as "%s": %w`, curStr, err)
 	}
 	candVersion, err := semver.NewVersion(candStr)
 	if err != nil {
-		return fmt.Errorf(`With candidate as "%s": %w`, candStr, err)
+		return fmt.Errorf(`with candidate as "%s": %w`, candStr, err)
 	}
 	diff := candVersion.Compare(curVersion)
 	switch diff {

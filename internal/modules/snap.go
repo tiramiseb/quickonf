@@ -88,7 +88,7 @@ func SnapVersion(in interface{}, out output.Output) error {
 	}
 	pkg, ok := data["package"]
 	if !ok {
-		return errors.New("Missing package name")
+		return errors.New("missing package name")
 	}
 	cmdout, err := helper.Exec(nil, "", "snap", "info", pkg)
 	if err != nil {

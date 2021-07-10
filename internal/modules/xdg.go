@@ -99,7 +99,7 @@ func XdgUserDir(in interface{}, out output.Output) error {
 	for name, path := range data {
 		name = strings.ToUpper(name)
 		if !xdgAllUserDirs[name] {
-			return fmt.Errorf(`User dir "%s" does not exist`, name)
+			return fmt.Errorf(`user dir "%s" does not exist`, name)
 		}
 		path = helper.Path(path)
 		if Dryrun {

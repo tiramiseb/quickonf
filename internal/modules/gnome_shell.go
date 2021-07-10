@@ -33,7 +33,7 @@ func InstallGnomeShellExtension(in interface{}, out output.Output) error {
 	}
 	gnomeVerLine := bytes.Fields(cmdout)
 	if len(gnomeVerLine) != 3 {
-		return fmt.Errorf(`Gnome version invalid, should be "GNOME Shell X.Y.Z": %s`, cmdout)
+		return fmt.Errorf(`GNOME version invalid, should be "GNOME Shell X.Y.Z": %s`, cmdout)
 	}
 	gnomeVersion := string(gnomeVerLine[2])
 	for _, ext := range data {
@@ -47,7 +47,7 @@ func InstallGnomeShellExtension(in interface{}, out output.Output) error {
 		out.HideLoader()
 		if err != nil {
 			if err.Error() == "404 not found" {
-				return fmt.Errorf("Extension %s does not exist", ext)
+				return fmt.Errorf("extension %s does not exist", ext)
 			}
 			return err
 		}
@@ -113,7 +113,7 @@ func LocalGnomeShellExtensionVersion(in interface{}, out output.Output) error {
 	}
 	ext, ok := data["extension"]
 	if !ok {
-		return errors.New("Missing extension name")
+		return errors.New("missing extension name")
 	}
 
 	installed, version, err := localGnomeShellExtensionVersion(ext)

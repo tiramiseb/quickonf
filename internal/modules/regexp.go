@@ -21,15 +21,15 @@ func RegexpReplace(in interface{}, out output.Output) error {
 	}
 	from, ok := data["from"]
 	if !ok {
-		return errors.New("Missing from")
+		return errors.New("missing from")
 	}
 	reg, ok := data["regexp"]
 	if !ok {
-		return errors.New("Missing regexp")
+		return errors.New("missing regexp")
 	}
 	repl, ok := data["replace"]
 	if !ok {
-		return errors.New("Missing replace")
+		return errors.New("missing replace")
 	}
 
 	re, err := regexp.Compile(reg)

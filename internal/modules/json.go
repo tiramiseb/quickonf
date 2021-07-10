@@ -60,11 +60,11 @@ func JSONGet(in interface{}, out output.Output) error {
 	}
 	from, ok := data["from"]
 	if !ok {
-		return errors.New("Missing from")
+		return errors.New("missing from")
 	}
 	key, ok := data["key"]
 	if !ok {
-		return errors.New("Missing key")
+		return errors.New("missing key")
 	}
 
 	result := gjson.Get(from, key).String()
