@@ -46,7 +46,7 @@ When run with the `-list` or `-l` flag, `quickonf` lists all defined steps, with
 
 When run with the `-dry-run` or `-r` flag, `quickonf` runs in dry-run mode, without modifying the system, allowing to test the configuration.
 
-All non-option arguments are considered to be specific steps you want to run.
+All non-option arguments are considered to be patterns to select specific steps you want to run (see below).
 
 And, finally, of course, as usual, as you may expect, don't worry, `-help` or `-h` displays the flags list.
 
