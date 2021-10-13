@@ -45,10 +45,16 @@ func DownloadFile(url, path string, out output.Output) (ResultStatus, error) {
 	}
 	resp, err := http.Get(url)
 	if err != nil {
+		if out != nil {
+			out.HideLoader()
+		}
 		return ResultError, err
 	}
 	defer resp.Body.Close()
 	if resp.StatusCode == http.StatusNotFound {
+		if out != nil {
+			out.HideLoader()
+		}
 		return ResultError, errors.New("404 not found")
 	}
 	body := resp.Body
