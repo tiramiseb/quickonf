@@ -48,18 +48,27 @@ func (step Step) Always() bool {
 }
 
 func (step Step) run(out output.Output) {
+	var skipNext bool
 	for title, instructions := range step {
 		out.StepTitle(title)
 	instruction:
 		for _, instruction := range instructions {
+			if skipNext {
+				skipNext = false
+				continue
+			}
 			for k := range instruction {
 				if k == "always" {
 					continue instruction
 				}
 			}
 			if err := runAction(instruction, out); err != nil {
-				if err != quickonfErrors.NoError {
-					out.Error(err)
+				if err == quickonfErrors.NoError {
+					return
+				}
+				if err == quickonfErrors.SkipNext {
+					skipNext = true
+					continue
 				}
 				return
 			}
