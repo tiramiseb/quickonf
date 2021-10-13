@@ -15,8 +15,8 @@ Example:
 
 ```yaml
 - John Doe must be able to user a modem:
-	- user-password:
-		johndoe: ilovejane
+    - user-password:
+        johndoe: ilovejane
     - user-in-group:
         johndoe: dialout
 ```
