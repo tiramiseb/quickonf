@@ -70,7 +70,7 @@ func (step Step) run(out output.Output) {
 					skipNext = true
 					continue
 				}
-				return
+				out.Error(err)
 			}
 		}
 		return
