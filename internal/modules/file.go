@@ -1,6 +1,7 @@
 package modules
 
 import (
+	"errors"
 	"os"
 
 	"github.com/tiramiseb/quickonf/internal/helper"
@@ -11,6 +12,7 @@ func init() {
 	Register("file", File)
 	Register("executable-file", ExecutableFile)
 	Register("restricted-file", RestrictedFile)
+	Register("read-file", ReadFile)
 }
 
 const (
@@ -60,6 +62,25 @@ func file(in interface{}, out output.Output, permission os.FileMode) error {
 		case helper.ResultSuccess:
 			out.Successf("%s created or modified", path)
 		}
+	}
+	return nil
+}
+
+// ReadFile reads the content of a file and places it in the store
+func ReadFile(in interface{}, out output.Output) error {
+	out.InstructionTitle("Read file")
+	data, err := helper.MapStringString(in)
+	if err != nil {
+		return err
+	}
+	for path, storeKey := range data {
+		path = helper.Path(path)
+		content, err := os.ReadFile(path)
+		if err != nil && !errors.Is(err, os.ErrNotExist) {
+			return err
+		}
+		helper.Store(storeKey, string(content))
+		out.Successf("Read %s", path)
 	}
 	return nil
 }
