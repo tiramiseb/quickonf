@@ -55,6 +55,7 @@ func snap(in interface{}, out output.Output, options ...string) error {
 		cmd = append(cmd, options...)
 		cmd = append(cmd, pkg)
 		if _, err = helper.ExecSudo(nil, "", cmd...); err != nil {
+			out.HideLoader()
 			return err
 		}
 		out.HideLoader()
