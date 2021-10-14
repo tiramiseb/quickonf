@@ -8,9 +8,10 @@ import (
 func init() {
 	Register("git-config", GitConfig)
 	Register("git-clone-pull", GitCloneOrPull)
+	Register("git-commit-hash", GitCommitHash)
 }
 
-// GitConfig sets got configuration parameters
+// GitConfig sets git configuration parameters
 func GitConfig(in interface{}, out output.Output) error {
 	out.InstructionTitle("Git configuration")
 	data, err := helper.MapStringString(in)
@@ -66,6 +67,26 @@ func GitCloneOrPull(in interface{}, out output.Output) error {
 		case helper.ResultSuccess:
 			out.Successf("Pulled latest modifications in %s", dir)
 		}
+	}
+	return nil
+}
+
+// GitCommitHash stores the hash of the commit at the given paths in the store
+func GitCommitHash(in interface{}, out output.Output) error {
+	out.InstructionTitle("Check latest git commit hash")
+	data, err := helper.MapStringString(in)
+	if err != nil {
+		return err
+	}
+	for path, storeKey := range data {
+		path = helper.Path(path)
+		hash := helper.GitCurrentCommit(path)
+		if hash == "" {
+			out.Infof("Could not get hash in %s", path)
+			continue
+		}
+		helper.Store(storeKey, hash)
+		out.Infof("Current hash in %s is %s", path, hash)
 	}
 	return nil
 }

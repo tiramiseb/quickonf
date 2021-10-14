@@ -101,3 +101,27 @@ func GitPull(path string) (ResultStatus, error) {
 	}
 	return ResultSuccess, nil
 }
+
+// GitCurrentCommit returns the hash of the current commit in the given directory
+func GitCurrentCommit(path string) string {
+	finfo, err := os.Stat(path)
+	if err != nil {
+		return ""
+	}
+	if !finfo.IsDir() {
+		return ""
+	}
+	// Directory exists, verify it is a repository and pull it
+	rep, err := git.PlainOpen(path)
+	if err != nil {
+		if errors.Is(err, git.ErrRepositoryNotExists) {
+			return ""
+		}
+		return ""
+	}
+	head, err := rep.Head()
+	if err != nil {
+		return ""
+	}
+	return head.Hash().String()
+}
