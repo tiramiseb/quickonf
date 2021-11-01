@@ -24,7 +24,7 @@ func File(path string, content []byte, permission os.FileMode, root bool) (Resul
 		if err != nil {
 			return ResultError, err
 		}
-		if bytes.Compare(content, current) == 0 {
+		if bytes.Equal(content, current) {
 			if !root {
 				// TODO also chmod if owned by root
 				if !Dryrun {
