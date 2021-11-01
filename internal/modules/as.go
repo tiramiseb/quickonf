@@ -8,7 +8,6 @@ import (
 	"io/ioutil"
 	"os"
 	"os/exec"
-	"path/filepath"
 	"strconv"
 	"strings"
 
@@ -30,11 +29,10 @@ func As(in interface{}, out output.Output) error {
 
 	// Remove automatic store values from the forwarded values, because they will be automatically filled again
 
-	cwd, err := os.Getwd()
+	fullPath, err := os.Executable()
 	if err != nil {
 		return err
 	}
-	fullPath := filepath.Join(cwd, os.Args[0])
 	allStore := helper.AllStore()
 	delete(allStore, "home")
 	delete(allStore, "hostname")
