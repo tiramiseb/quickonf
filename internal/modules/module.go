@@ -14,6 +14,9 @@ var registry = map[string]Instruction{}
 // Dryrun allows running instructions without system modification
 var Dryrun = false
 
+// Basepath is the base path for calculating files paths (based on configuration paths)
+var Basepath = ""
+
 // Register adds an instruction
 func Register(name string, instruction Instruction) {
 	registry[name] = instruction

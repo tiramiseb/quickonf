@@ -23,6 +23,9 @@ const (
 // Dryrun allows running instructions without system modification
 var Dryrun bool
 
+// Basepath is the base path for calculating files paths (based on configuration paths)
+var Basepath = ""
+
 func init() {
 	cmdout, err := Exec(nil, "", "lsb_release", "--codename", "--short")
 	if err != nil {

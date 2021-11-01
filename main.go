@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"os"
 	"path"
+	"path/filepath"
 
 	"gopkg.in/yaml.v3"
 
@@ -43,6 +44,8 @@ func main() {
 		os.Exit(1)
 	}
 
+	confpath := filepath.Dir(conf)
+
 	q, err := quickonf.New(config, output)
 	if err != nil {
 		fmt.Println("Could not initialize quickonf")
@@ -65,5 +68,5 @@ func main() {
 		}
 		steps[i] = s
 	}
-	q.Run(steps, dryrun)
+	q.Run(steps, confpath, dryrun)
 }

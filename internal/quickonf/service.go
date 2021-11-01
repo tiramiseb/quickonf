@@ -28,9 +28,11 @@ func New(steps []Step, outputName string) (*Service, error) {
 }
 
 // Run runs only the selected steps, and the steps marked as "always"
-func (s *Service) Run(filter []string, dryrun bool) {
+func (s *Service) Run(filter []string, basepath string, dryrun bool) {
 	modules.Dryrun = dryrun
 	helper.Dryrun = dryrun
+	modules.Basepath = basepath
+	helper.Basepath = basepath
 	if len(filter) > 0 {
 		s.output.StepTitle("Running steps matching:")
 		for _, step := range filter {

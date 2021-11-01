@@ -88,6 +88,18 @@ When an instruction fails, the whole step is stopped, but the processing of othe
 
 You can use the same instruction multiple times in a step. For instance, if you must create a directory then install a package then create another directory, it is possible.
 
+### External files
+
+If you want to use an external file, you can insert `<file:filename>` anywhere in your configuration. Relative paths are relative to the configuration file. For instance:
+
+```yaml
+Foobar config:
+	- file:
+		.config/foobar.conf: <file:foobar.conf>
+```
+
+where `foobar.conf` is in the same directory as `quickonf.yaml`.
+
 ### Data store
 
 Sometimes, you want to store some data to be reused in another instruction. For this, some instructions allow storing data in a centralized key-value store. That data can then be reused by putting the data key anywhere in the keys or values, in the following form: `<key-name>`. If a key with that name exists, that string is replaced with the associated value. It is used in some recipes, don't hesitate to check them.
