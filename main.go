@@ -17,6 +17,9 @@ func main() {
 	var conf string
 	flag.StringVar(&conf, "config", "quickonf.yaml", "List all steps")
 	flag.StringVar(&conf, "c", "quickonf.yaml", "List all steps (shorthand)")
+	var basepath string
+	flag.StringVar(&basepath, "base-path", "", "Base for relative paths in <file:X>")
+	flag.StringVar(&basepath, "b", "", "Base for relative paths in <file:X> (shorthand)")
 	var list bool
 	flag.BoolVar(&list, "list", false, "List all steps")
 	flag.BoolVar(&list, "l", false, "List all steps (shorthand)")
@@ -44,7 +47,9 @@ func main() {
 		os.Exit(1)
 	}
 
-	confpath := filepath.Dir(conf)
+	if basepath == "" {
+		basepath = filepath.Dir(conf)
+	}
 
 	q, err := quickonf.New(config, output)
 	if err != nil {
@@ -68,5 +73,5 @@ func main() {
 		}
 		steps[i] = s
 	}
-	q.Run(steps, confpath, dryrun)
+	q.Run(steps, basepath, dryrun)
 }

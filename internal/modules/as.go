@@ -67,7 +67,7 @@ func As(in interface{}, out output.Output) error {
 		if err := os.Chmod(f.Name(), 0644); err != nil {
 			return err
 		}
-		args := []string{"--reset-timestamp", "--prompt=", "--stdin", "--user", user, "--", fullPath, "-config", f.Name(), "-output", "prog"}
+		args := []string{"--reset-timestamp", "--prompt=", "--stdin", "--user", user, "--", fullPath, "-config", f.Name(), "-basepath", helper.Basepath, "-output", "prog"}
 		if Dryrun {
 			args = append(args, "-dry-run")
 		}
