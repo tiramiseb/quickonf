@@ -16,8 +16,9 @@ var filepathRe = regexp.MustCompile("<file:([^>]*)>")
 func String(v interface{}) (string, error) {
 	str, ok := v.(string)
 	if ok {
-		str = replaceFile(str)
+		// By dealing with stored before files, we can use things like "<file:<hostname>.conf>"
 		str = replaceStore(str)
+		str = replaceFile(str)
 		return str, nil
 	}
 	if v == nil {
