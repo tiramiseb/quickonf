@@ -94,8 +94,8 @@ If you want to use an external file, you can insert `<file:filename>` anywhere i
 
 ```yaml
 Foobar config:
-	- file:
-		.config/foobar.conf: <file:foobar.conf>
+  - file:
+      .config/foobar.conf: <file:foobar.conf>
 ```
 
 where `foobar.conf` is in the same directory as `quickonf.yaml`.
