@@ -1,7 +1,7 @@
 package modules
 
 import (
-	"errors"
+	"fmt"
 
 	"github.com/tiramiseb/quickonf/internal/output"
 )
@@ -24,7 +24,7 @@ func Get(name string) Instruction {
 	instruction, ok := registry[name]
 	if !ok {
 		return func(interface{}, output.Output) error {
-			return errors.New("[No instruction named \"" + name + "\"]")
+			return fmt.Errorf(`[no instruction named "%s"]`, name)
 		}
 	}
 	return instruction

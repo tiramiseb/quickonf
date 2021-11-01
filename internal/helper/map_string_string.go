@@ -8,7 +8,7 @@ import (
 func MapStringString(input interface{}) (map[string]string, error) {
 	data, ok := input.(map[string]interface{})
 	if !ok {
-		return nil, errors.New("Module configuration must be a map")
+		return nil, errors.New("module configuration must be a map")
 	}
 	result := make(map[string]string, len(data))
 	for k, v := range data {

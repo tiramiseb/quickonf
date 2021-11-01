@@ -122,7 +122,7 @@ func Remove(path string) (ResultStatus, error) {
 		defer f.Close()
 		_, err = f.Readdirnames(1)
 		if err == nil {
-			return ResultError, fmt.Errorf("Directory %s contains files, cannot be deleted", path)
+			return ResultError, fmt.Errorf("directory %s contains files, cannot be deleted", path)
 		}
 		if err != io.EOF {
 			return ResultError, err

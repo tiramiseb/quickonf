@@ -22,7 +22,7 @@ func Exec(env []string, stdin string, cmd string, args ...string) ([]byte, error
 // If command fails (errcode≠0), its combined output is in the error message.
 func ExecSudo(env []string, stdin string, args ...string) ([]byte, error) {
 	if SudoPassword == "" {
-		return nil, errors.New("Sudo password is not set")
+		return nil, errors.New("sudo password is not set")
 	}
 	args = append([]string{"--reset-timestamp", "--prompt=", "--stdin"}, args...)
 	if stdin == "" {

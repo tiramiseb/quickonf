@@ -34,5 +34,5 @@ func New(name string) (Output, error) {
 	case "prog":
 		return NewProg(), nil
 	}
-	return nil, errors.New("Unknown output")
+	return nil, errors.New("unknown output")
 }

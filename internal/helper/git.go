@@ -54,13 +54,13 @@ func GitClone(repo, dest string, depth int) (ResultStatus, error) {
 	for _, remote := range remotes {
 		urls := remote.Config().URLs
 		if len(urls) == 0 {
-			return ResultError, fmt.Errorf("No remote for repository in %s", dest)
+			return ResultError, fmt.Errorf("no remote for repository in %s", dest)
 		}
 		if urls[0] == repo {
 			return ResultAlready, nil
 		}
 	}
-	return ResultError, fmt.Errorf("Local repository does not have %s ad an origin", repo)
+	return ResultError, fmt.Errorf("local repository does not have %s ad an origin", repo)
 }
 
 // GitPull pulls the latest HEAD of the given Git repository from origin.

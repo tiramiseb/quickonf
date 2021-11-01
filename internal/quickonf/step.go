@@ -88,5 +88,5 @@ func runAction(action map[string]interface{}, out output.Output) error {
 	for instructionName, data := range action {
 		return modules.Get(instructionName)(data, out)
 	}
-	return errors.New("[No instruction]")
+	return errors.New("[no instruction]")
 }

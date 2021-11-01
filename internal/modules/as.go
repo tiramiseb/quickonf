@@ -154,7 +154,7 @@ func As(in interface{}, out output.Output) error {
 					}
 					xy := strings.SplitN(content, ":", 2)
 					if len(xy) != 2 {
-						out.Error(errors.New("Does not contain 2 values: " + content))
+						out.Error(fmt.Errorf("does not contain 2 values: %v", content))
 					}
 					x, err := strconv.Atoi(xy[0])
 					if err != nil {

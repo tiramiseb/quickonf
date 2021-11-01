@@ -8,7 +8,7 @@ import (
 func SliceString(input interface{}) ([]string, error) {
 	data, ok := input.([]interface{})
 	if !ok {
-		return nil, errors.New("Data is not a list")
+		return nil, errors.New("data is not a list")
 	}
 	result := make([]string, len(data))
 	for i, v := range data {

@@ -138,7 +138,7 @@ func httpReq(method, url string, payload []byte) (io.ReadCloser, error) {
 	}
 	if resp.StatusCode == http.StatusNotFound {
 		resp.Body.Close()
-		return nil, errors.New("Not found")
+		return nil, errors.New("not found")
 	}
 	return resp.Body, nil
 }
