@@ -3,6 +3,8 @@ package modules
 import (
 	"errors"
 	"os"
+	"regexp"
+	"strconv"
 
 	"github.com/tiramiseb/quickonf/internal/helper"
 	"github.com/tiramiseb/quickonf/internal/output"
@@ -13,6 +15,7 @@ func init() {
 	Register("executable-file", ExecutableFile)
 	Register("restricted-file", RestrictedFile)
 	Register("read-file", ReadFile)
+	Register("chmod", Chmod)
 }
 
 const (
@@ -81,6 +84,31 @@ func ReadFile(in interface{}, out output.Output) error {
 		}
 		helper.Store(storeKey, string(content))
 		out.Successf("Read %s", path)
+	}
+	return nil
+}
+
+var chmodRe = regexp.MustCompile("^[0-7][0-7][0-7]$")
+
+// Chmod changes the mode of a file
+func Chmod(in interface{}, out output.Output) error {
+	out.InstructionTitle("Change file mode")
+	data, err := helper.MapStringString(in)
+	if err != nil {
+		return err
+	}
+	for path, mode := range data {
+		path = helper.Path(path)
+		ok := chmodRe.MatchString(mode)
+		if !ok {
+			out.Alertf("%s is not a correct file mode (000-777)", mode)
+		}
+		i, _ := strconv.ParseInt(mode, 8, 64) // Not checking the error because it cannot fail, because mode has been checked by the regex
+		numericMode := os.FileMode(i)
+		if err := os.Chmod(path, numericMode); err != nil {
+			return err
+		}
+		out.Successf("Changed mode for %s", path)
 	}
 	return nil
 }

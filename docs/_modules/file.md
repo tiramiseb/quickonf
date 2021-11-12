@@ -2,12 +2,13 @@
 title: File
 ---
 
-| Instruction       | Action                                             | Arguments                     | Dry run   |
-| ----------------- | -------------------------------------------------- | ----------------------------- | --------- |
-| `file`            | Create or replace files                            | Map of path to file content   | No change |
-| `executable-file` | Create or replace files with executable flag       | Map of path to file content   | No change |
-| `restricted-file` | Create or replace files only readable by the owner | Map of path to file content   | No change |
-| `read-file`       | Store the content of files                         | Map of file path to store key | -         |
+| Instruction       | Action                                             | Arguments                              | Dry run   |
+| ----------------- | -------------------------------------------------- | -------------------------------------- | --------- |
+| `file`            | Create or replace files                            | Map of path to file content            | No change |
+| `executable-file` | Create or replace files with executable flag       | Map of path to file content            | No change |
+| `restricted-file` | Create or replace files only readable by the owner | Map of path to file content            | No change |
+| `read-file`       | Store the content of files                         | Map of file path to store key          | -         |
+| `chmod`           | Change a file mode                                 | Map of file path to numeric mode (ugo) | -         |
 
 Example:
 
@@ -21,4 +22,8 @@ Example:
     - file:
         .ssh/id_rsa.pub: |
           ssh-rsa AAAAblah blah blah
+
+- Some file:
+    - chmod:
+        some-file.txt: 644
 ```
