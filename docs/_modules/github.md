@@ -2,9 +2,10 @@
 title: GitHub
 ---
 
-| Instruction     | Action                                         | Arguments                       | Dry run |
-| --------------- | ---------------------------------------------- | ------------------------------- | ------- |
-| `github-latest` | Get the latest release for a GitHub repository | Parameters as a map (see below) | -       |
+| Instruction            | Action                                                | Arguments                       | Dry run |
+| ---------------------- | ----------------------------------------------------- | ------------------------------- | ------- |
+| `github-latest`        | Get the latest release for a GitHub repository        | Parameters as a map (see below) | -       |
+| `github-latest-stable` | Get the latest stable release for a GitHub repository | Parameters as a map (see below) | -       |
 
 Parameters:
 
