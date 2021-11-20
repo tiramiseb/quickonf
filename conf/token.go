@@ -20,6 +20,8 @@ type token struct {
 	content interface{}
 }
 
+type tokens []*token
+
 func identifyToken(line int, column int, content interface{}) *token {
 	// TODO Identify special tokens
 	typ := tokenDefault
@@ -34,4 +36,15 @@ func (t *token) error(msg string) error {
 func (t *token) errorf(format string, a ...interface{}) error {
 	a = append([]interface{}{t.line, t.column}, a...)
 	return fmt.Errorf("[%d:%d] "+format, a...)
+}
+
+// indentations returns the indentation size and the first token of the line
+func (t tokens) indentation() (int, *token) {
+	if len(t) == 0 {
+		return 0, nil
+	}
+	if t[0].typ != tokenIndentation {
+		return 0, t[0]
+	}
+	return t[0].content.(int), t[1]
 }

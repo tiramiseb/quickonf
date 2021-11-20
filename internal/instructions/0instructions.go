@@ -7,28 +7,29 @@ import (
 // Dryrun indicates if instructions must run in "dry-run" mode or not
 var Dryrun = false
 
-// Instruction is a quickonf instruction
-type Instruction func(args []string, out *output.Instruction) (result []string, success bool)
+// Run is the runnur for an instruction
+type Run func(args []string, out *output.Instruction) (result []string, success bool)
 
-var (
-	registry       = map[string]Instruction{}
-	nbArguments    = map[string]int{}
-	nbOutputValues = map[string]int{}
-)
-
-func register(name string, instr Instruction, arguments int, outputValues int) {
-	registry[name] = instr
-	nbArguments[name] = arguments
-	nbOutputValues[name] = outputValues
+// Instruction is a single instruction definition
+type Instruction struct {
+	Name            string
+	Run             Run
+	NumberArguments int
+	NumberOutputs   int
 }
 
-// Get returns the named instruction, the number of arguments it needs,
-// the number of values it returns and a boolean, which is false if the
+var (
+	registry = map[string]Instruction{}
+)
+
+func register(instr Instruction) {
+	registry[instr.Name] = instr
+}
+
+// Get returns the named instruction and a boolean, which is false if the
 // instruction does not exist.
-func Get(name string) (Instruction, int, int, bool) {
+func Get(name string) (Instruction, bool) {
 	instr, ok := registry[name]
-	args := nbArguments[name]
-	out := nbOutputValues[name]
-	return instr, args, out, ok
+	return instr, ok
 
 }

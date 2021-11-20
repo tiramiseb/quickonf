@@ -2,19 +2,22 @@ package instructions
 
 import (
 	"bytes"
-	"time"
+	"sync"
 
 	"github.com/tiramiseb/quickonf/internal/helper"
 	"github.com/tiramiseb/quickonf/internal/output"
 )
 
 func init() {
-	register("apt", Apt, 1, 0)
+	register(Instruction{"apt", Apt, 1, 0})
 }
+
+var aptMutex sync.Mutex
 
 // Apt installs a package from apt repositories
 func Apt(args []string, out *output.Instruction) ([]string, bool) {
 	pkg := args[0]
+	out.Infof("waiting for apt to be available to install %s", pkg)
 	var buf bytes.Buffer
 	wait, err := helper.Exec(nil, &buf, "dpkg", "--get-selections", pkg)
 	if err != nil {
@@ -25,7 +28,6 @@ func Apt(args []string, out *output.Instruction) ([]string, bool) {
 		out.Errorf("cannot check if %s is installed: %s", pkg, err)
 		return nil, false
 	}
-	time.Sleep(4 * time.Second)
 	if bytes.Contains(buf.Bytes(), []byte("install")) {
 		out.Successf("%s is already installed", pkg)
 		return nil, true
@@ -34,6 +36,8 @@ func Apt(args []string, out *output.Instruction) ([]string, bool) {
 		out.Successf("would install %s", pkg)
 		return nil, true
 	}
+	aptMutex.Lock()
+	defer aptMutex.Unlock()
 	wait, err = helper.Exec([]string{"DEBIAN_FRONTEND=noninteractive"}, nil, "apt-get", "--yes", "--quiet", "install", pkg)
 	if err != nil {
 		out.Errorf("cannot install %s: %s", pkg, err)

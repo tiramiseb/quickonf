@@ -10,7 +10,7 @@ import (
 type lexer struct {
 	r *bufio.Reader
 
-	tokens []*token
+	tokens tokens
 
 	curLine int
 	curCol  int
@@ -40,7 +40,7 @@ func newLexer(r io.Reader) *lexer {
 }
 
 // scan is the lexer, it transforms an io.Reader to a list of tokens
-func (l *lexer) scan() ([]*token, error) {
+func (l *lexer) scan() (tokens, error) {
 	var err error
 	currentContext := contextStartOfLine
 	for err == nil {

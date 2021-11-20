@@ -6,9 +6,7 @@ import (
 
 type Group struct {
 	Name     string
-	Commands []*Command
-
-	variables map[string]string
+	Commands []Command
 }
 
 func (g *Group) Run() {
@@ -20,12 +18,4 @@ func (g *Group) Run() {
 		}
 	}
 	out.Close()
-}
-
-func (g *Group) setVariable(name, value string) {
-	g.variables[name] = value
-}
-
-func (g *Group) getVariable(name string) string {
-	return g.variables[name]
 }
