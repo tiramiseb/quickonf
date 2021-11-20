@@ -109,7 +109,7 @@ func (l *lexer) indentation() (lexerContext, error) {
 		switch b {
 		case ' ':
 		case '\t':
-			l.curCol = 8 - (l.curCol % 8)
+			l.curCol = l.curCol + 8 - (l.curCol % 8)
 		case '\n':
 			return contextStartOfLine, nil
 		case '#':
