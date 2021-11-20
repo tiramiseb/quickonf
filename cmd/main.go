@@ -9,8 +9,8 @@ import (
 func main() {
 
 	var conf string
-	flag.StringVar(&conf, "config", "quickonf.yaml", "List all steps")
-	flag.StringVar(&conf, "c", "quickonf.yaml", "List all steps (shorthand)")
+	flag.StringVar(&conf, "config", "quickonf.qconf", "List all steps")
+	flag.StringVar(&conf, "c", "quickonf.qconf", "List all steps (shorthand)")
 
 	var dryrun bool
 	flag.BoolVar(&dryrun, "dry-run", false, "Try all steps without modifying the system")
@@ -52,7 +52,7 @@ Quickonf usage:
 
 Options:
 
-  -config, -c: path to the configuration file (default quickonf.yaml)
+  -config, -c: path to the configuration file (default quickonf.qconf)
   -dry-run, -d: simulate steps without modifying the system
   -help, -h: show this help
 
