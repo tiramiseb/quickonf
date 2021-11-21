@@ -10,9 +10,13 @@ type Instruction struct {
 	Arguments   []string
 }
 
-func (i *Instruction) Run(groupOut *output.Group) bool {
+func (i *Instruction) Run(groupOut *output.Group, vars variables) bool {
 	out := groupOut.NewInstruction(i.Instruction.Name)
 	out.Info("Running...")
-	_, ok := i.Instruction.Run(i.Arguments, out)
+	args := make([]string, len(i.Arguments))
+	for i, src := range i.Arguments {
+		args[i] = vars.translateVariables(src)
+	}
+	_, ok := i.Instruction.Run(args, out)
 	return ok
 }

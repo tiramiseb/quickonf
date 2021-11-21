@@ -6,5 +6,5 @@ import (
 
 type Command interface {
 	// Run the command and return true if it succeeds
-	Run(*output.Group) bool
+	Run(*output.Group, variables) bool
 }

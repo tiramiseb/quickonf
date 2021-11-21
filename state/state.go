@@ -27,6 +27,7 @@ func (s *State) Run() {
 	for _, group := range s.Groups {
 		limit.Acquire(limitCtx, 1)
 		gr := group
+		gr.variables = newVariablesSet()
 		go func() {
 			gr.Run()
 			limit.Release(1)
