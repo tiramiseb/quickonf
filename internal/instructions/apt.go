@@ -15,7 +15,7 @@ func init() {
 		"Do not install the package",
 		[]string{"Name of the package to install"},
 		nil,
-		"Ipcalc\n	apt ipcalc",
+		"Install the \"ipcalc\" tool\n  apt ipcalc",
 	})
 }
 

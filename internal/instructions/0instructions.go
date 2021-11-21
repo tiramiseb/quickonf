@@ -1,6 +1,9 @@
 package instructions
 
 import (
+	"sort"
+	"strings"
+
 	"github.com/tiramiseb/quickonf/internal/output"
 )
 
@@ -35,4 +38,18 @@ func Get(name string) (Instruction, bool) {
 	instr, ok := registry[name]
 	return instr, ok
 
+}
+
+// GetAll returns all registered instructions, sorted alphabetically
+func GetAll() []Instruction {
+	all := make([]Instruction, len(registry))
+	i := 0
+	for _, ins := range registry {
+		all[i] = ins
+		i++
+	}
+	sort.Slice(all, func(i, j int) bool {
+		return strings.Compare(all[i].Name, all[j].Name) <= 0
+	})
+	return all
 }
