@@ -1,6 +1,9 @@
 package conf
 
-import "fmt"
+import (
+	"encoding/binary"
+	"fmt"
+)
 
 type tokenType int
 
@@ -17,13 +20,12 @@ type token struct {
 	column int
 
 	typ     tokenType
-	content interface{}
+	content string
 }
 
 type tokens []*token
 
-func identifyToken(line int, column int, content interface{}) *token {
-	// TODO Identify special tokens
+func identifyToken(line int, column int, content string) *token {
 	typ := tokenDefault
 	content = string(content.([]uint8))
 	return &token{line, column, typ, content}
@@ -46,5 +48,6 @@ func (t tokens) indentation() (int, *token) {
 	if t[0].typ != tokenIndentation {
 		return 0, t[0]
 	}
-	return t[0].content.(int), t[1]
+	size, _ := binary.Uvarint([]byte(t[0].content))
+	return int(size), t[1]
 }

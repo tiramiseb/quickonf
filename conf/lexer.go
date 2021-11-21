@@ -2,6 +2,7 @@ package conf
 
 import (
 	"bufio"
+	"encoding/binary"
 	"errors"
 	"io"
 	"strings"
@@ -115,18 +116,24 @@ func (l *lexer) indentation() (lexerContext, error) {
 		case '#':
 			return contextComment, nil
 		case '"':
-			l.tokens = append(l.tokens, &token{l.curLine, 1, tokenIndentation, l.curCol - 1})
+			buf := make([]byte, binary.MaxVarintLen64)
+			binary.PutUvarint(buf, uint64(l.curCol-1))
+			l.tokens = append(l.tokens, &token{l.curLine, 1, tokenIndentation, string(buf)})
 			l.curWordLine = l.curLine
 			l.curWordCol = l.curCol
 			l.currentWord = l.currentWord[:0]
 			return contextQuotes, nil
 		case '\\':
-			l.tokens = append(l.tokens, &token{l.curLine, 1, tokenIndentation, l.curCol - 1})
+			buf := make([]byte, binary.MaxVarintLen64)
+			binary.PutUvarint(buf, uint64(l.curCol-1))
+			l.tokens = append(l.tokens, &token{l.curLine, 1, tokenIndentation, string(buf)})
 			l.curWordLine = l.curLine
 			l.curWordCol = l.curCol
 			return contextDefault, nil
 		default:
-			l.tokens = append(l.tokens, &token{l.curLine, 1, tokenIndentation, l.curCol - 1})
+			buf := make([]byte, binary.MaxVarintLen64)
+			binary.PutUvarint(buf, uint64(l.curCol-1))
+			l.tokens = append(l.tokens, &token{l.curLine, 1, tokenIndentation, string(buf)})
 			l.currentWord = []byte{b}
 			l.curWordLine = l.curLine
 			l.curWordCol = l.curCol
@@ -164,7 +171,7 @@ func (l *lexer) groupName() (lexerContext, error) {
 				l.curLine, 1, tokenGroupName,
 				strings.TrimSpace(string(l.currentWord)),
 			})
-			l.tokens = append(l.tokens, &token{l.curLine, l.curCol, tokenEOL, nil})
+			l.tokens = append(l.tokens, &token{l.curLine, l.curCol, tokenEOL, ""})
 			return contextStartOfLine, nil
 		case '#':
 			l.tokens = append(l.tokens, &token{
@@ -192,14 +199,14 @@ func (l *lexer) defaut() (lexerContext, error) {
 		}
 		switch b {
 		case '\n':
-			l.tokens = append(l.tokens, identifyToken(l.curWordLine, l.curWordCol, l.currentWord))
-			l.tokens = append(l.tokens, &token{l.curLine, l.curCol, tokenEOL, nil})
+			l.tokens = append(l.tokens, identifyToken(l.curWordLine, l.curWordCol, string(l.currentWord)))
+			l.tokens = append(l.tokens, &token{l.curLine, l.curCol, tokenEOL, ""})
 			return contextStartOfLine, nil
 		case ' ', '\t':
-			l.tokens = append(l.tokens, identifyToken(l.curWordLine, l.curWordCol, l.currentWord))
+			l.tokens = append(l.tokens, identifyToken(l.curWordLine, l.curWordCol, string(l.currentWord)))
 			return contextSpace, nil
 		case '#':
-			l.tokens = append(l.tokens, identifyToken(l.curWordLine, l.curWordCol, l.currentWord))
+			l.tokens = append(l.tokens, identifyToken(l.curWordLine, l.curWordCol, string(l.currentWord)))
 			return contextComment, nil
 		case '"':
 			return contextQuotes, nil
@@ -258,7 +265,7 @@ func (l *lexer) space() (lexerContext, error) {
 		switch b {
 		case ' ', '\t':
 		case '\n':
-			l.tokens = append(l.tokens, &token{l.curLine, l.curCol, tokenEOL, nil})
+			l.tokens = append(l.tokens, &token{l.curLine, l.curCol, tokenEOL, ""})
 			return contextStartOfLine, nil
 		case '#':
 			return contextComment, nil

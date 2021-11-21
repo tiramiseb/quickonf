@@ -70,7 +70,7 @@ func (p *parser) parseGroup(line tokens) (group *state.Group, next tokens) {
 		}
 		return
 	}
-	group = &state.Group{Name: line[0].content.(string)}
+	group = &state.Group{Name: line[0].content}
 	// Next line MUST start with an indentation
 	indent, _ := next.indentation()
 	if indent == 0 {
