@@ -1,8 +1,6 @@
 package state
 
 import (
-	"time"
-
 	"github.com/tiramiseb/quickonf/internal/output"
 )
 
@@ -16,7 +14,6 @@ func (i *If) Run(groupOut *output.Group, vars variables) bool {
 	if !success {
 		out := groupOut.NewInstruction("=")
 		out.Infof(`"%s" is false, not running commands...`, i.Operation.String())
-		time.Sleep(2 * time.Second)
 		return true
 	}
 	for _, cmd := range i.Commands {
