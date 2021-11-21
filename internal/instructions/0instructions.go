@@ -12,10 +12,13 @@ type Run func(args []string, out *output.Instruction) (result []string, success 
 
 // Instruction is a single instruction definition
 type Instruction struct {
-	Name            string
-	Run             Run
-	NumberArguments int
-	NumberOutputs   int
+	Name      string   // The name of the instruction (used as a command)
+	Run       Run      // The function to run the instruction
+	Action    string   // [used for doc] Action description
+	DryRun    string   // [used for doc] Action description in dry run mode
+	Arguments []string // [used for doc & counting args] Arguments description
+	Outputs   []string // [used for doc & counting outputs] Outputs description
+	Example   string   // [used for doc] Example(s)
 }
 
 var (

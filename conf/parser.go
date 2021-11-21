@@ -165,16 +165,16 @@ func (p *parser) instruction(toks []*token) state.Command {
 		p.errs = append(p.errs, toks[0].errorf(`no instruction named "%s"`, instructionName))
 		return nil
 	}
-	if len(targets) > instruction.NumberOutputs {
+	if len(targets) > len(instruction.Outputs) {
 		p.errs = append(
 			p.errs,
-			toks[1].errorf("expected maximum %d targets, got %d", instruction.NumberOutputs, len(targets)),
+			toks[1].errorf("expected maximum %d targets, got %d", len(instruction.Outputs), len(targets)),
 		)
 	}
-	if len(args) != instruction.NumberArguments {
+	if len(args) != len(instruction.Arguments) {
 		p.errs = append(
 			p.errs,
-			toks[1].errorf("expected %d arguments, got %d", instruction.NumberArguments, len(args)),
+			toks[1].errorf("expected %d arguments, got %d", len(instruction.Arguments), len(args)),
 		)
 		return nil
 	}

@@ -9,7 +9,14 @@ import (
 )
 
 func init() {
-	register(Instruction{"apt", Apt, 1, 0})
+	register(Instruction{
+		"apt", Apt,
+		"Install a package using apt",
+		"Do not install the package",
+		[]string{"Name of the package to install"},
+		nil,
+		"Ipcalc\n	apt ipcalc",
+	})
 }
 
 var aptMutex sync.Mutex
