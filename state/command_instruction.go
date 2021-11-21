@@ -8,6 +8,7 @@ import (
 type Instruction struct {
 	Instruction instructions.Instruction
 	Arguments   []string
+	Targets     []string
 }
 
 func (i *Instruction) Run(groupOut *output.Group, vars variables) bool {
@@ -17,6 +18,12 @@ func (i *Instruction) Run(groupOut *output.Group, vars variables) bool {
 	for i, src := range i.Arguments {
 		args[i] = vars.translateVariables(src)
 	}
-	_, ok := i.Instruction.Run(args, out)
+	result, ok := i.Instruction.Run(args, out)
+	for i, tgt := range i.Targets {
+		if len(result) <= i {
+			break
+		}
+		vars.define(tgt, result[i])
+	}
 	return ok
 }

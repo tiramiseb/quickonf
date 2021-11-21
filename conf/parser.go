@@ -97,31 +97,86 @@ func (p *parser) parseCommands(line tokens, currentIndent int) (commands []state
 			next = line
 			return
 		}
-		instr := p.instruction(line[1:])
-		if instr != nil {
-			commands = append(commands, instr)
+		var cmd state.Command
+		switch firstToken.typ {
+		case tokenIf:
+			cmd, next = p.ifThen(line[2:], currentIndent)
+		default:
+			cmd = p.instruction(line[1:])
 		}
-		line = p.nextLine()
+		if cmd != nil {
+			commands = append(commands, cmd)
+		}
+		if next == nil {
+			line = p.nextLine()
+		} else {
+			line = next
+			next = nil
+		}
 	}
 }
 
-func (p *parser) instruction(line []*token) state.Command {
-	instructionName := line[0].content.(string)
-	args := make([]string, len(line)-1)
-	for i, tok := range line[1:] {
-		args[i] = tok.content.(string)
+func (p *parser) ifThen(toks []*token, currentIndent int) (state.Command, tokens) {
+	// Later, add support for "and", "or", etc
+	left := toks[0]
+	operator := toks[1]
+	right := toks[2]
+	if left.typ != tokenDefault {
+		p.errs = append(p.errs, left.errorf(`expected value, got "%s"`, left.content))
+	}
+	if !operator.isOperator() {
+		p.errs = append(p.errs, operator.errorf(`expected operator, got "%s"`, operator.content))
+	}
+	if right.typ != tokenDefault {
+		p.errs = append(p.errs, right.errorf(`expected value, got "%s"`, right.content))
+	}
+	var operation state.Operation
+	switch operator.typ {
+	case tokenEqual:
+		operation = &state.Equal{Left: left.content, Right: right.content}
+	}
+	next := p.nextLine()
+	indent, _ := next.indentation()
+	if indent <= currentIndent {
+		p.errs = append(p.errs, operator.error(`expected commands in the if clause`))
+	}
+	cmds, next := p.parseCommands(next, indent)
+	cmd := &state.If{Operation: operation, Commands: cmds}
+	return cmd, next
+}
+
+func (p *parser) instruction(toks []*token) state.Command {
+	var targets []string
+	for equalPos, tok := range toks {
+		if tok.typ == tokenEqual {
+			for i := 0; i < equalPos; i++ {
+				targets[i] = toks[i].content
+			}
+			toks = toks[equalPos+1:]
+		}
+	}
+	instructionName := toks[0].content
+	args := make([]string, len(toks)-1)
+	for i, tok := range toks[1:] {
+		args[i] = tok.content
 	}
 	instruction, ok := instructions.Get(instructionName)
 	if !ok {
-		p.errs = append(p.errs, line[0].errorf(`no instruction named "%s"`, instructionName))
+		p.errs = append(p.errs, toks[0].errorf(`no instruction named "%s"`, instructionName))
 		return nil
+	}
+	if len(targets) > instruction.NumberOutputs {
+		p.errs = append(
+			p.errs,
+			toks[1].errorf("expected maximum %d targets, got %d", instruction.NumberOutputs, len(targets)),
+		)
 	}
 	if len(args) != instruction.NumberArguments {
 		p.errs = append(
 			p.errs,
-			line[1].errorf("expected %d arguments, got %d", instruction.NumberArguments, len(args)),
+			toks[1].errorf("expected %d arguments, got %d", instruction.NumberArguments, len(args)),
 		)
 		return nil
 	}
-	return &state.Instruction{Instruction: instruction, Arguments: args}
+	return &state.Instruction{Instruction: instruction, Arguments: args, Targets: targets}
 }

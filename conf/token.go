@@ -12,7 +12,12 @@ const (
 	tokenIndentation
 	tokenEOL
 	tokenDefault
+
+	tokenIf
+	tokenEqual
 )
+
+var tokenOperators = []tokenType{tokenEqual}
 
 type token struct {
 	// Position of the first character of the token (for debugging)
@@ -27,8 +32,22 @@ type tokens []*token
 
 func identifyToken(line int, column int, content string) *token {
 	typ := tokenDefault
-	content = string(content.([]uint8))
+	switch content {
+	case "if":
+		typ = tokenIf
+	case "=":
+		typ = tokenEqual
+	}
 	return &token{line, column, typ, content}
+}
+
+func (t *token) isOperator() bool {
+	for _, ope := range tokenOperators {
+		if t.typ == ope {
+			return true
+		}
+	}
+	return false
 }
 
 func (t *token) error(msg string) error {

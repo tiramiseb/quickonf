@@ -13,7 +13,7 @@ type Group struct {
 func (g *Group) Run() {
 	out := output.NewGroup(g.Name)
 	for _, command := range g.Commands {
-		if ok := command.Run(out, g.variables); !ok {
+		if !command.Run(out, g.variables) {
 			out.Fail()
 			return
 		}
