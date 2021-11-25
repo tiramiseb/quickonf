@@ -27,12 +27,15 @@ func (i *Instruction) Run(groupOut *output.Group, vars variables, options Option
 		args[i] = vars.translateVariables(src)
 	}
 	slow(options)
-	result, ok := i.Instruction.Run(args, out)
+	result, ok := i.Instruction.Run(args, out, options.DryRun)
+	if !ok {
+		return false
+	}
 	for i, tgt := range i.Targets {
 		if len(result) <= i {
 			break
 		}
 		vars.define(tgt, result[i])
 	}
-	return ok
+	return true
 }
