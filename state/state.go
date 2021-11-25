@@ -14,13 +14,19 @@ type State struct {
 	Groups   []*Group
 }
 
-func (s *State) Run() {
+func (s *State) Run(options Options) {
+	nb := len(s.Groups)
 	if s.Filtered {
-		output.SetTitle(fmt.Sprintf("Applying %d steps", len(s.Groups)))
+		if nb > 1 {
+			output.SetTitle(fmt.Sprintf("Applying %d steps", nb))
+		} else {
+			output.SetTitle(fmt.Sprintf("Applying %d step", nb))
+
+		}
 	} else {
 		output.SetTitle("Applying all steps")
 	}
-	output.Start(len(s.Groups))
+	output.Start(nb)
 	defer output.End()
 	limit := semaphore.NewWeighted(8)
 	limitCtx := context.Background()
@@ -29,7 +35,7 @@ func (s *State) Run() {
 		gr := group
 		gr.variables = newVariablesSet()
 		go func() {
-			gr.Run()
+			gr.Run(options)
 			limit.Release(1)
 		}()
 	}

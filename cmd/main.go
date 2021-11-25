@@ -4,6 +4,8 @@ import (
 	"flag"
 	"fmt"
 	"os"
+
+	"github.com/tiramiseb/quickonf/state"
 )
 
 func main() {
@@ -15,6 +17,10 @@ func main() {
 	var dryrun bool
 	flag.BoolVar(&dryrun, "dry-run", false, "Try all steps without modifying the system")
 	flag.BoolVar(&dryrun, "d", false, "Try all steps without modifying the system (shorthand)")
+
+	var slow bool
+	flag.BoolVar(&slow, "slow", false, "Run the steps slowly (wait 500ms between instructions)")
+	flag.BoolVar(&slow, "s", false, "Run the steps slowly (shorthand)")
 
 	var help bool
 	flag.BoolVar(&help, "help", false, "Show help")
@@ -28,9 +34,12 @@ func main() {
 	}
 
 	args := flag.Args()
-
+	options := state.Options{
+		DryRun: dryrun,
+		Slow:   slow,
+	}
 	if len(args) == 0 {
-		apply(conf, nil)
+		apply(conf, nil, options)
 		return
 	} else if args[0] == "list" {
 		list()
@@ -43,7 +52,7 @@ func main() {
 		instructionHelp(args[1])
 		return
 	}
-	apply(conf, args)
+	apply(conf, args, options)
 }
 
 func showHelp() {
@@ -54,6 +63,7 @@ Options:
 
   -config, -c: path to the configuration file (default quickonf.qconf)
   -dry-run, -d: simulate steps without modifying the system
+  -slow, -s: run steps slowly (1s between two instructions - useful for debug)
   -help, -h: show this help
 
   Commands:

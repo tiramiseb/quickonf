@@ -6,9 +6,10 @@ import (
 	"os/user"
 
 	"github.com/tiramiseb/quickonf/conf"
+	"github.com/tiramiseb/quickonf/state"
 )
 
-func apply(config string, filters []string) {
+func apply(config string, filters []string, options state.Options) {
 	r, err := os.Open(config)
 	if err != nil {
 		fmt.Println("Could not open configuration file", config)
@@ -35,5 +36,5 @@ func apply(config string, filters []string) {
 		os.Exit(1)
 
 	}
-	state.Run()
+	state.Run(options)
 }

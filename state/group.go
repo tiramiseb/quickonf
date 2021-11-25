@@ -10,10 +10,10 @@ type Group struct {
 	variables variables
 }
 
-func (g *Group) Run() {
+func (g *Group) Run(options Options) {
 	out := output.NewGroup(g.Name)
 	for _, command := range g.Commands {
-		if !command.Run(out, g.variables) {
+		if !command.Run(out, g.variables, options) {
 			out.Fail()
 			return
 		}
