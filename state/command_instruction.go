@@ -13,6 +13,14 @@ type Instruction struct {
 
 func (i *Instruction) Run(groupOut *output.Group, vars variables, options Options) bool {
 	out := groupOut.NewInstruction(i.Instruction.Name)
+	if len(i.Arguments) != len(i.Instruction.Arguments) {
+		out.Error("wrong number of arguments")
+		return false
+	}
+	if len(i.Targets) > len(i.Instruction.Outputs) {
+		out.Error("too many targets")
+		return false
+	}
 	out.Info("Running...")
 	args := make([]string, len(i.Arguments))
 	for i, src := range i.Arguments {
