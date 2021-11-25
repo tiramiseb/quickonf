@@ -223,11 +223,6 @@ func (l *lexer) defaut() (lexerContext, error) {
 }
 
 func (l *lexer) quotes() (lexerContext, error) {
-	b, err := l.next()
-	if err != nil {
-		return contextQuotes, err
-	}
-	l.currentWord = append(l.currentWord, b)
 	for {
 		b, err := l.next()
 		if err != nil {
