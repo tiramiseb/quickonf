@@ -1,6 +1,9 @@
 package conf
 
 import (
+	"path"
+	"strings"
+
 	"github.com/tiramiseb/quickonf/internal/instructions"
 	"github.com/tiramiseb/quickonf/state"
 )
@@ -31,7 +34,7 @@ func (p *parser) nextLine() (toks tokens) {
 // All functions called from this function receive the "next" line for
 // processing and return the "next" line for processing by another sub-parser.
 // It is necessary in order to know how to process next line
-func (p *parser) parse() (groups []*state.Group) {
+func (p *parser) parse(filters []string) (groups []*state.Group, err error) {
 	// for _, t := range p.tokens {
 	// 	DDcontent := fmt.Sprintf("%s", t.content)
 	// 	if len(DDcontent) > 70 {
@@ -39,13 +42,21 @@ func (p *parser) parse() (groups []*state.Group) {
 	// 	}
 	// 	fmt.Printf("[%d:%d] %d >> %s\n", t.line, t.column, t.typ, DDcontent)
 	// }
+	// return nil, nil
+	for i, f := range filters {
+		filters[i] = "*" + strings.ToLower(f) + "*"
+		_, err = path.Match(f, "")
+		if err != nil {
+			return
+		}
+	}
 	next := p.nextLine()
 	for {
 		if next == nil {
 			break
 		}
 		var group *state.Group
-		group, next = p.parseGroup(next)
+		group, next = p.parseGroup(next, filters)
 		if group != nil {
 			groups = append(groups, group)
 		}
@@ -53,7 +64,7 @@ func (p *parser) parse() (groups []*state.Group) {
 	return
 }
 
-func (p *parser) parseGroup(line tokens) (group *state.Group, next tokens) {
+func (p *parser) parseGroup(line tokens, filters []string) (group *state.Group, next tokens) {
 	next = p.nextLine()
 	if len(line) == 0 {
 		return
@@ -70,8 +81,22 @@ func (p *parser) parseGroup(line tokens) (group *state.Group, next tokens) {
 		}
 		return
 	}
-	group = &state.Group{Name: line[0].content}
-	// Next line MUST start with an indentation
+	groupName := line[0].content
+	for _, f := range filters {
+		ok, _ := path.Match(f, strings.ToLower(groupName))
+		if !ok {
+			// Skip to next group
+			for {
+				indent, _ := next.indentation()
+				if indent == 0 {
+					return
+				}
+				next = p.nextLine()
+			}
+		}
+	}
+
+	group = &state.Group{Name: groupName}
 	indent, _ := next.indentation()
 	if indent == 0 {
 		return
