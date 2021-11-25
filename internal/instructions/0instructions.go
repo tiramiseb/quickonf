@@ -7,26 +7,27 @@ import (
 	"github.com/tiramiseb/quickonf/internal/output"
 )
 
-// Dryrun indicates if instructions must run in "dry-run" mode or not
-var Dryrun = false
-
-// Run is the runnur for an instruction
-type Run func(args []string, out *output.Instruction) (result []string, success bool)
+// Run is the runner for an instruction.
+//
+// args are the instruction arguments
+// out is where the instruction must write its output
+// dry is a boolean indicating the dry-run mode
+// result is the instruction output values
+// success is a boolean indicating if the instruction succeeded or not
+type run func(args []string, out *output.Instruction, dry bool) (result []string, success bool)
 
 // Instruction is a single instruction definition
 type Instruction struct {
 	Name      string   // The name of the instruction (used as a command)
-	Run       Run      // The function to run the instruction
 	Action    string   // [used for doc] Action description
 	DryRun    string   // [used for doc] Action description in dry run mode
 	Arguments []string // [used for doc & counting args] Arguments description
 	Outputs   []string // [used for doc & counting outputs] Outputs description
 	Example   string   // [used for doc] Example(s)
+	Run       run      // The function to run the instruction
 }
 
-var (
-	registry = map[string]Instruction{}
-)
+var registry = map[string]Instruction{}
 
 func register(instr Instruction) {
 	registry[instr.Name] = instr
