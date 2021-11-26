@@ -5,8 +5,6 @@ import (
 	"os"
 	"os/exec"
 	"os/user"
-	"strconv"
-	"syscall"
 )
 
 // Exec executes a command
@@ -17,21 +15,8 @@ func Exec(env []string, output io.Writer, cmd string, args ...string) (wait func
 }
 
 func ExecAs(usr *user.User, env []string, output io.Writer, cmd string, args ...string) (wait func() error, err error) {
-	uid, err := strconv.Atoi(usr.Uid)
-	if err != nil {
-		return nil, err
-	}
-	gid, err := strconv.Atoi(usr.Gid)
-	if err != nil {
-		return nil, err
-	}
-	command := execCmd(env, output, cmd, args...)
-	command.SysProcAttr = &syscall.SysProcAttr{
-		Credential: &syscall.Credential{
-			Uid: uint32(uid),
-			Gid: uint32(gid),
-		},
-	}
+	args = append([]string{"-u", usr.Username, cmd}, args...)
+	command := execCmd(env, output, "runuser", args...)
 	err = command.Start()
 	return command.Wait, err
 }
