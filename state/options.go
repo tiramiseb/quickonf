@@ -11,6 +11,6 @@ type Options struct {
 
 func slow(options Options) {
 	if options.Slow {
-		time.Sleep(time.Second)
+		time.Sleep(500 * time.Millisecond)
 	}
 }
