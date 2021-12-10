@@ -2,6 +2,7 @@ package group
 
 import (
 	"github.com/charmbracelet/lipgloss"
+	"github.com/tiramiseb/quickonf/program/style"
 )
 
 var (
@@ -39,6 +40,6 @@ var (
 		instructionError:   errorStyle,
 	}
 
-	instructionMessageStyle = lipgloss.NewStyle().
+	instructionMessageStyle = style.Main.Copy().
 				PaddingLeft(2)
 )
