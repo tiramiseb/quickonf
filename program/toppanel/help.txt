@@ -1,0 +1,8 @@
+Navigation:
+  ↑ : move up, one group at a time
+  ↓ : move down, one group at a time
+  → : move back to the latest running group
+
+Miscellaneous:
+  h : close this help dialog
+  q : quit Quickonf

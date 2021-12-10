@@ -6,7 +6,10 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 
 	"github.com/tiramiseb/quickonf/program/group"
+	"github.com/tiramiseb/quickonf/program/style"
 )
+
+const Height = 1
 
 type Model struct {
 	nbWaiting   int
@@ -52,5 +55,5 @@ func (m *Model) update() {
 			}
 		}
 	}
-	m.View = style.Copy().Width(m.width).Render(status)
+	m.View = style.Footer.Width(m.width).Render(status)
 }

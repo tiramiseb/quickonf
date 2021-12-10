@@ -4,7 +4,10 @@ import (
 	"fmt"
 
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/tiramiseb/quickonf/program/style"
 )
+
+const Height = 3
 
 type Model struct {
 	width int
@@ -41,7 +44,7 @@ func (m *Model) update() {
 	if len(m.title) > m.width {
 		title = title[:m.width]
 	}
-	m.View = headerStyle.Copy().
+	m.View = style.Header.
 		Width(m.width).
 		Render(title)
 }

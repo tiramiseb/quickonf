@@ -2,12 +2,15 @@ package program
 
 import (
 	"fmt"
+	"log"
 
 	tea "github.com/charmbracelet/bubbletea"
 
 	"github.com/tiramiseb/quickonf/program/footer"
 	"github.com/tiramiseb/quickonf/program/groupslist"
 	"github.com/tiramiseb/quickonf/program/header"
+	"github.com/tiramiseb/quickonf/program/style"
+	"github.com/tiramiseb/quickonf/program/toppanel"
 	"github.com/tiramiseb/quickonf/state"
 )
 
@@ -16,6 +19,7 @@ type model struct {
 
 	header     *header.Model
 	footer     *footer.Model
+	toppanel   *toppanel.Model
 	groupslist *groupslist.Model
 }
 
@@ -28,6 +32,7 @@ func newModel(st *state.State) *model {
 
 		header:     header.New(st.Filtered, nb),
 		footer:     footer.New(nb),
+		toppanel:   toppanel.New(80),
 		groupslist: groupslist.New(80, 24, verticalMargins, st),
 	}
 }
@@ -40,16 +45,29 @@ func (m *model) Init() tea.Cmd {
 func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
-		if k := msg.String(); k == "ctrl+c" || k == "q" || k == "esc" {
+		switch msg.String() {
+		case "ctrl+c", "q", "esc":
 			return m, tea.Quit
 		}
 	default:
 		m.header.Update(msg)
 		m.footer.Update(msg)
 	}
-	return m, m.groupslist.Update(msg)
+	return m, tea.Batch(
+		m.toppanel.Update(msg),
+		m.groupslist.Update(msg),
+	)
 }
 
 func (m *model) View() string {
-	return fmt.Sprintf("%s\n%s\n%s", m.header.View, m.groupslist.View(), m.footer.View)
+	log.Print(m.toppanel.Size)
+	return style.Main.Render(
+		fmt.Sprintf(
+			"%s\n%s%s\n%s",
+			m.header.View,
+			m.toppanel.View,
+			m.groupslist.View(m.toppanel.Size),
+			m.footer.View,
+		),
+	)
 }

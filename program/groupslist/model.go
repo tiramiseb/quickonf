@@ -17,7 +17,7 @@ type moveDownMessage struct{}
 
 type Model struct {
 	width           int
-	height          int
+	baseHeight      int
 	verticalMargins int
 
 	nextInQueue int // index of the next group to run
@@ -86,7 +86,7 @@ func (m *Model) Update(msg tea.Msg) tea.Cmd {
 		cmd = m.waitMoveDown
 	case tea.WindowSizeMsg:
 		m.width = msg.Width
-		m.height = msg.Height - m.verticalMargins
+		m.baseHeight = msg.Height - m.verticalMargins
 		for i := range m.groups {
 			m.groups[i], _ = m.groups[i].Update(msg)
 		}
@@ -165,7 +165,8 @@ func (m *Model) moveDown() tea.Msg {
 	return moveDownMessage{}
 }
 
-func (m *Model) View() string {
+func (m *Model) View(addmargin int) string {
+	height := m.baseHeight - addmargin
 	var views []string
 	var displayedHeight int
 	currentGroup := m.currentGroup
@@ -178,16 +179,16 @@ func (m *Model) View() string {
 			groupView = groupView[:m.keepLines]
 		}
 		displayedHeight += len(groupView)
-		if displayedHeight > m.height {
-			delta := displayedHeight - m.height
+		if displayedHeight > height {
+			delta := displayedHeight - height
 			groupView = groupView[delta:]
 			views = append(groupView, views...)
 			break
 		}
 		views = append(groupView, views...)
 	}
-	if displayedHeight < m.height {
-		views = append([]string{strings.Repeat("\n", m.height-displayedHeight-1)}, views...)
+	if displayedHeight < height {
+		views = append([]string{strings.Repeat("\n", height-displayedHeight-1)}, views...)
 	}
 	return strings.Join(views, "\n")
 }
