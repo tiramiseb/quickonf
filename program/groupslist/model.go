@@ -88,17 +88,17 @@ func (m *Model) Update(msg tea.Msg) tea.Cmd {
 		m.width = msg.Width
 		m.baseHeight = msg.Height - m.verticalMargins
 		for i := range m.groups {
-			m.groups[i], _ = m.groups[i].Update(msg)
+			m.groups[i].Update(msg)
 		}
 	case group.ChangeMessage:
-		m.groups[msg.Gidx], cmd = m.groups[msg.Gidx].Update(msg)
+		cmd = m.groups[msg.Gidx].Update(msg)
 	case group.RunningMessage:
-		m.groups[msg.Gidx], cmd = m.groups[msg.Gidx].Update(msg)
+		cmd = m.groups[msg.Gidx].Update(msg)
 	case group.SucceededMessage:
-		m.groups[msg.Gidx], _ = m.groups[msg.Gidx].Update(msg)
+		m.groups[msg.Gidx].Update(msg)
 		cmd = m.runNext()
 	case group.FailedMessage:
-		m.groups[msg.Gidx], _ = m.groups[msg.Gidx].Update(msg)
+		m.groups[msg.Gidx].Update(msg)
 		cmd = m.runNext()
 	}
 	return cmd

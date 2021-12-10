@@ -72,34 +72,35 @@ func (m *Model) Run(options state.Options) tea.Cmd {
 	return m.listen
 }
 
-func (m *Model) Update(msg tea.Msg) (*Model, tea.Cmd) {
+func (m *Model) Update(msg tea.Msg) tea.Cmd {
+	var cmd tea.Cmd
 	switch msg := msg.(type) {
 	case tea.WindowSizeMsg:
 		m.width = msg.Width
-		m.update()
 	case ChangeMessage:
-		if msg.Gidx == m.idx {
-			m.update()
-			return m, m.listen
+		if msg.Gidx != m.idx {
+			return nil
 		}
+		cmd = m.listen
 	case RunningMessage:
-		if msg.Gidx == m.idx {
-			m.status = statusRunning
-			m.update()
-			return m, m.listen
+		if msg.Gidx != m.idx {
+			return nil
 		}
+		m.status = statusRunning
+		cmd = m.listen
 	case SucceededMessage:
-		if msg.Gidx == m.idx {
-			m.status = statusSucceeded
-			m.update()
+		if msg.Gidx != m.idx {
+			return nil
 		}
+		m.status = statusSucceeded
 	case FailedMessage:
-		if msg.Gidx == m.idx {
-			m.status = statusFailed
-			m.update()
+		if msg.Gidx != m.idx {
+			return nil
 		}
+		m.status = statusFailed
 	}
-	return m, nil
+	m.update()
+	return cmd
 }
 
 func (m *Model) update() {
