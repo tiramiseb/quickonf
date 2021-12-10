@@ -2,6 +2,7 @@ package footer
 
 import (
 	"fmt"
+	"strings"
 
 	tea "github.com/charmbracelet/bubbletea"
 
@@ -45,7 +46,7 @@ func (m *Model) Update(msg tea.Msg) {
 }
 
 func (m *Model) update() {
-	status := fmt.Sprintf(" %d remaining -> %d running -> %d finished / %d failed ", m.nbWaiting, m.nbRunning, m.nbSucceeded, m.nbFailed)
+	status := fmt.Sprintf(" %d remaining -> %d running -> %d finished / %d failed", m.nbWaiting, m.nbRunning, m.nbSucceeded, m.nbFailed)
 	if len(status) > m.width {
 		status = fmt.Sprintf("%d rem -> %d run -> %d fin / %d fail", m.nbWaiting, m.nbRunning, m.nbSucceeded, m.nbFailed)
 		if len(status) > m.width {
@@ -55,5 +56,17 @@ func (m *Model) update() {
 			}
 		}
 	}
-	m.View = style.Footer.Width(m.width).Render(status)
+
+	left := style.FooterLeft.Render(status)
+	var (
+		spacing = m.width - len(status)
+		right   string
+	)
+
+	if m.width-len(status) > 11 {
+		right = style.FooterRight.Render(" [h: help] ")
+		spacing = m.width - len(status) - 11
+	}
+	center := style.Footer.Render(strings.Repeat(" ", spacing))
+	m.View = left + center + right
 }

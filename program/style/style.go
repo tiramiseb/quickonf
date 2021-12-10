@@ -24,6 +24,11 @@ var (
 
 	Footer = lipgloss.NewStyle().
 		Background(lipgloss.Color("#000000")).
-		Foreground(lipgloss.Color("#ffffff")).
-		Italic(true)
+		Foreground(lipgloss.Color("#ffffff"))
+
+	FooterLeft = Footer.Copy().
+			Italic(true)
+
+	FooterRight = Footer.Copy().
+			Bold(true)
 )
