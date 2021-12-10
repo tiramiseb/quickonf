@@ -1,4 +1,4 @@
-package instructions
+package commands
 
 import (
 	"bytes"
@@ -7,7 +7,6 @@ import (
 	"strings"
 
 	"github.com/tiramiseb/quickonf/internal/helper"
-	"github.com/tiramiseb/quickonf/internal/output"
 )
 
 var xdgDirs = []string{
@@ -47,7 +46,7 @@ var xdgUserDir = Instruction{
 	},
 	nil,
 	"Change downloads directory for john\n  file.user.directory Downs\n  xdg.user.dir john DOWNLOAD Downs",
-	func(args []string, out *output.Instruction, dry bool) ([]string, bool) {
+	func(args []string, out output, dry bool) ([]string, bool) {
 		username := args[0]
 		name := args[1]
 		path := args[2]
@@ -81,7 +80,7 @@ var xdgUserDir = Instruction{
 
 		current := strings.TrimSpace(buf.String())
 		if current == path {
-			out.Infof("XDG user dir %s for %s is already %s", name, username, path)
+			out.Successf("XDG user dir %s for %s is already %s", name, username, path)
 			return nil, true
 		}
 

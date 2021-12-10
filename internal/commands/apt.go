@@ -1,11 +1,10 @@
-package instructions
+package commands
 
 import (
 	"bytes"
 	"sync"
 
 	"github.com/tiramiseb/quickonf/internal/helper"
-	"github.com/tiramiseb/quickonf/internal/output"
 )
 
 func init() {
@@ -21,9 +20,8 @@ var apt = Instruction{
 	[]string{"Name of the package to install"},
 	nil,
 	"Install the \"ipcalc\" tool\n  apt ipcalc",
-	func(args []string, out *output.Instruction, dry bool) ([]string, bool) {
+	func(args []string, out output, dry bool) ([]string, bool) {
 		pkg := args[0]
-		out.Infof("waiting for apt to be available to install %s", pkg)
 		var buf bytes.Buffer
 		wait, err := helper.Exec(nil, &buf, "dpkg", "--get-selections", pkg)
 		if err != nil {
@@ -42,6 +40,7 @@ var apt = Instruction{
 			out.Successf("would install %s", pkg)
 			return nil, true
 		}
+		out.Infof("waiting for apt to be available to install %s", pkg)
 		aptMutex.Lock()
 		defer aptMutex.Unlock()
 		wait, err = helper.Exec([]string{"DEBIAN_FRONTEND=noninteractive"}, nil, "apt-get", "--yes", "--quiet", "install", pkg)
@@ -49,7 +48,7 @@ var apt = Instruction{
 			out.Errorf("could not install %s: %s", pkg, err)
 			return nil, false
 		}
-		out.Loadf("installing %s", pkg)
+		out.Infof("installing %s", pkg)
 		if err := wait(); err != nil {
 			out.Errorf("could not install %s: %s", pkg, err)
 			return nil, false

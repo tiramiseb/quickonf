@@ -6,6 +6,7 @@ import (
 	"os/user"
 
 	"github.com/tiramiseb/quickonf/conf"
+	"github.com/tiramiseb/quickonf/program"
 	"github.com/tiramiseb/quickonf/state"
 )
 
@@ -25,6 +26,7 @@ func apply(config string, filters []string, options state.Options) {
 		}
 		os.Exit(1)
 	}
+	state.Options = options
 	usr, err := user.Current()
 	if err != nil {
 		fmt.Println("Could not get current user")
@@ -36,5 +38,5 @@ func apply(config string, filters []string, options state.Options) {
 		os.Exit(1)
 
 	}
-	state.Run(options)
+	program.Run(state)
 }

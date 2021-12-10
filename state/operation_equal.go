@@ -10,7 +10,7 @@ type Equal struct {
 	Right string
 }
 
-func (e *Equal) Compare(vars variables) bool {
+func (e *Equal) Compare(vars Variables) bool {
 	left := vars.translateVariables(e.Left)
 	right := vars.translateVariables(e.Right)
 
@@ -19,5 +19,5 @@ func (e *Equal) Compare(vars variables) bool {
 }
 
 func (e *Equal) String() string {
-	return fmt.Sprintf("%s=%s", e.Left, e.Right)
+	return fmt.Sprintf("%s = %s", e.Left, e.Right)
 }

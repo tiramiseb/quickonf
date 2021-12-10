@@ -1,11 +1,10 @@
-package instructions
+package commands
 
 import (
 	"os/user"
 	"path/filepath"
 
 	"github.com/tiramiseb/quickonf/internal/helper"
-	"github.com/tiramiseb/quickonf/internal/output"
 )
 
 const xdgUserMimetypeFile = "/etc/xdg/mimeapps.list"
@@ -25,7 +24,7 @@ var xdgUserMimeDefault = Instruction{
 	},
 	nil,
 	"Use Chromium\n  xdg.user.mime-default john text/html chromium_chromium",
-	func(args []string, out *output.Instruction, dry bool) ([]string, bool) {
+	func(args []string, out output, dry bool) ([]string, bool) {
 		username := args[0]
 		mimetype := args[1]
 		app := args[2]

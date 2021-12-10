@@ -1,9 +1,8 @@
-package instructions
+package commands
 
 import (
 	"strings"
 
-	"github.com/tiramiseb/quickonf/internal/output"
 	"gopkg.in/ini.v1"
 )
 
@@ -23,7 +22,7 @@ var xdgMimeDefault = Instruction{
 	},
 	nil,
 	"Use Chromium\n  xdg.mime-default text/html chromium_chromium",
-	func(args []string, out *output.Instruction, dry bool) ([]string, bool) {
+	func(args []string, out output, dry bool) ([]string, bool) {
 		mimetype := args[0]
 		app := args[1]
 
@@ -32,7 +31,7 @@ var xdgMimeDefault = Instruction{
 	},
 }
 
-func xdgCommonMimeDefault(file, mimetype, app string, out *output.Instruction, dry bool) bool {
+func xdgCommonMimeDefault(file, mimetype, app string, out output, dry bool) bool {
 
 	if !strings.HasSuffix(".desktop", app) {
 		app += ".desktop"

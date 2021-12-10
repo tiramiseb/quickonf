@@ -1,43 +1,50 @@
 package state
 
 import (
-	"context"
-	"fmt"
-
-	"golang.org/x/sync/semaphore"
-
-	"github.com/tiramiseb/quickonf/internal/output"
+	"math/rand"
+	"time"
 )
 
+// State is a global state, containing groups and optinos
 type State struct {
+	Options  Options
 	Filtered bool
 	Groups   []*Group
 }
 
-func (s *State) Run(options Options) {
-	nb := len(s.Groups)
-	if s.Filtered {
-		if nb > 1 {
-			output.SetTitle(fmt.Sprintf("Applying %d steps", nb))
-		} else {
-			output.SetTitle(fmt.Sprintf("Applying %d step", nb))
+// Group is a list of successive commands
+type Group struct {
+	Name         string
+	Instructions []Instruction
+}
 
-		}
-	} else {
-		output.SetTitle("Applying all steps")
+// Instruction is a single instruction
+type Instruction interface {
+	// Name returns the instruction name
+	Name() string
+	// Run the instruction and return true if it succeeds
+	Run(Output, Variables, Options) bool
+}
+
+type Output interface {
+	NewLine(name string) Output
+	Info(message string)
+	Infof(format string, a ...interface{})
+	Success(message string)
+	Successf(format string, a ...interface{})
+	Error(message string)
+	Errorf(format string, a ...interface{})
+}
+
+// Options is a list of options for a state
+type Options struct {
+	DryRun             bool
+	Slow               bool
+	NbConcurrentGroups int
+}
+
+func slow(options Options) {
+	if options.Slow {
+		time.Sleep(time.Duration(rand.Intn(500)+500) * time.Millisecond)
 	}
-	output.Start(nb)
-	defer output.End()
-	limit := semaphore.NewWeighted(8)
-	limitCtx := context.Background()
-	for _, group := range s.Groups {
-		limit.Acquire(limitCtx, 1)
-		gr := group
-		gr.variables = newVariablesSet()
-		go func() {
-			gr.Run(options)
-			limit.Release(1)
-		}()
-	}
-	limit.Acquire(limitCtx, 8)
 }

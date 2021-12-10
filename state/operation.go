@@ -1,6 +1,6 @@
 package state
 
 type Operation interface {
-	Compare(vars variables) bool
+	Compare(vars Variables) bool
 	String() string
 }

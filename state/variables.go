@@ -8,9 +8,9 @@ import (
 	"github.com/tiramiseb/quickonf/internal/helper"
 )
 
-type variables map[string]string
+type Variables map[string]string
 
-var globalVars = variables{}
+var globalVars = Variables{}
 
 func init() {
 	// Initialize global variables, required by some instructions
@@ -30,19 +30,19 @@ func init() {
 	globalVars.define("oscodename", codename)
 }
 
-func newVariablesSet() variables {
-	v := variables{}
+func NewVariablesSet() Variables {
+	v := Variables{}
 	for key, val := range globalVars {
 		v[key] = val
 	}
 	return v
 }
 
-func (v variables) define(key, val string) {
+func (v Variables) define(key, val string) {
 	v["<"+key+">"] = val
 }
 
-func (v variables) translateVariables(src string) string {
+func (v Variables) translateVariables(src string) string {
 	for key, val := range v {
 		src = strings.ReplaceAll(src, key, val)
 	}

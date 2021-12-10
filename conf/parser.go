@@ -4,7 +4,7 @@ import (
 	"path"
 	"strings"
 
-	"github.com/tiramiseb/quickonf/internal/instructions"
+	"github.com/tiramiseb/quickonf/internal/commands"
 	"github.com/tiramiseb/quickonf/state"
 )
 
@@ -101,7 +101,7 @@ func (p *parser) parseGroup(line tokens, filters []string) (group *state.Group, 
 	if indent == 0 {
 		return
 	}
-	group.Commands, next = p.parseCommands(next, indent)
+	group.Instructions, next = p.parseInstructions(next, indent)
 	nextIndent, firstToken := next.indentation()
 	if nextIndent > 0 {
 		p.errs = append(p.errs, firstToken.errorf("invalid indentation (expecting none or %d)", indent))
@@ -110,7 +110,7 @@ func (p *parser) parseGroup(line tokens, filters []string) (group *state.Group, 
 	return
 }
 
-func (p *parser) parseCommands(line tokens, currentIndent int) (commands []state.Command, next tokens) {
+func (p *parser) parseInstructions(line tokens, currentIndent int) (instructions []state.Instruction, next tokens) {
 	// Read a list of commands
 	for {
 		thisIndent, firstToken := line.indentation()
@@ -122,15 +122,15 @@ func (p *parser) parseCommands(line tokens, currentIndent int) (commands []state
 			next = line
 			return
 		}
-		var cmd state.Command
+		var ins state.Instruction
 		switch firstToken.typ {
 		case tokenIf:
-			cmd, next = p.ifThen(line[2:], currentIndent)
+			ins, next = p.ifThen(line[2:], currentIndent)
 		default:
-			cmd = p.instruction(line[1:])
+			ins = p.command(line[1:])
 		}
-		if cmd != nil {
-			commands = append(commands, cmd)
+		if ins != nil {
+			instructions = append(instructions, ins)
 		}
 		if next == nil {
 			line = p.nextLine()
@@ -141,7 +141,7 @@ func (p *parser) parseCommands(line tokens, currentIndent int) (commands []state
 	}
 }
 
-func (p *parser) ifThen(toks []*token, currentIndent int) (state.Command, tokens) {
+func (p *parser) ifThen(toks []*token, currentIndent int) (state.Instruction, tokens) {
 	// Later, add support for "and", "or", etc
 	left := toks[0]
 	operator := toks[1]
@@ -165,12 +165,12 @@ func (p *parser) ifThen(toks []*token, currentIndent int) (state.Command, tokens
 	if indent <= currentIndent {
 		p.errs = append(p.errs, operator.error(`expected commands in the if clause`))
 	}
-	cmds, next := p.parseCommands(next, indent)
-	cmd := &state.If{Operation: operation, Commands: cmds}
-	return cmd, next
+	inss, next := p.parseInstructions(next, indent)
+	ins := &state.If{Operation: operation, Instructions: inss}
+	return ins, next
 }
 
-func (p *parser) instruction(toks []*token) state.Command {
+func (p *parser) command(toks []*token) state.Instruction {
 	var targets []string
 	for equalPos, tok := range toks {
 		if tok.typ == tokenEqual {
@@ -180,28 +180,28 @@ func (p *parser) instruction(toks []*token) state.Command {
 			toks = toks[equalPos+1:]
 		}
 	}
-	instructionName := toks[0].content
+	commandName := toks[0].content
 	args := make([]string, len(toks)-1)
 	for i, tok := range toks[1:] {
 		args[i] = tok.content
 	}
-	instruction, ok := instructions.Get(instructionName)
+	command, ok := commands.Get(commandName)
 	if !ok {
-		p.errs = append(p.errs, toks[0].errorf(`no instruction named "%s"`, instructionName))
+		p.errs = append(p.errs, toks[0].errorf(`no command named "%s"`, commandName))
 		return nil
 	}
-	if len(targets) > len(instruction.Outputs) {
+	if len(targets) > len(command.Outputs) {
 		p.errs = append(
 			p.errs,
-			toks[1].errorf("expected maximum %d targets, got %d", len(instruction.Outputs), len(targets)),
+			toks[1].errorf("expected maximum %d targets, got %d", len(command.Outputs), len(targets)),
 		)
 	}
-	if len(args) != len(instruction.Arguments) {
+	if len(args) != len(command.Arguments) {
 		p.errs = append(
 			p.errs,
-			toks[1].errorf("expected %d arguments, got %d", len(instruction.Arguments), len(args)),
+			toks[1].errorf("expected %d arguments, got %d", len(command.Arguments), len(args)),
 		)
 		return nil
 	}
-	return &state.Instruction{Instruction: instruction, Arguments: args, Targets: targets}
+	return &state.Command{Command: command, Arguments: args, Targets: targets}
 }
