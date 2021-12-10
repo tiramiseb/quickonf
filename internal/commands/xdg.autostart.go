@@ -18,7 +18,7 @@ func init() {
 	register(xdgAutostart)
 }
 
-var xdgAutostart = Instruction{
+var xdgAutostart = Command{
 	"xdg.autostart",
 	"Mark an application as auto-starting",
 	"Do not change auto-start status",

@@ -35,7 +35,7 @@ func init() {
 	register(xdgUserDir)
 }
 
-var xdgUserDir = Instruction{
+var xdgUserDir = Command{
 	"xdg.user.dir",
 	"Set a XDG user dir",
 	"Do not change XDG user dir",

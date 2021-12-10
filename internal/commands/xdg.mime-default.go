@@ -12,7 +12,7 @@ func init() {
 	register(xdgMimeDefault)
 }
 
-var xdgMimeDefault = Instruction{
+var xdgMimeDefault = Command{
 	"xdg.mime-default",
 	"Set the default application for a mimetype",
 	"Do not change default application configuration",

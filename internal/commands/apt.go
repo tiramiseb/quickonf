@@ -13,7 +13,7 @@ func init() {
 
 var aptMutex sync.Mutex
 
-var apt = Instruction{
+var apt = Command{
 	"apt",
 	"Install a package using apt",
 	"Do not install the package",

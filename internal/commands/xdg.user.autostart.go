@@ -20,7 +20,7 @@ func init() {
 	register(xdgUserAutostart)
 }
 
-var xdgUserAutostart = Instruction{
+var xdgUserAutostart = Command{
 	"xdg.user.autostart",
 	"Mark an application as auto-starting, for a specific user",
 	"Do not change auto-start status",
