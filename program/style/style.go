@@ -22,7 +22,10 @@ var (
 			Background(lipgloss.Color("#000000")).
 			Foreground(lipgloss.Color("#aaaaff"))
 	TopPanelMoving = TopPanel.Copy().
-			BorderTop(false)
+			BorderTop(false).
+			BorderLeft(true).
+			BorderRight(true).
+			BorderBottom(true)
 
 	Footer = lipgloss.NewStyle().
 		Background(lipgloss.Color("#000000")).

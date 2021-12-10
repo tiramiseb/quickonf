@@ -81,7 +81,7 @@ func (m *Model) startHide() tea.Msg {
 	if m.moving {
 		return nil
 	}
-	m.partialLines = len(m.targetContent)
+	m.partialLines = len(m.targetContent) + 1
 	m.moving = true
 	return m.hide()
 }
@@ -109,7 +109,7 @@ func (m *Model) hide() tea.Msg {
 
 func (m *Model) show() tea.Msg {
 	m.partialLines++
-	if m.partialLines >= len(m.targetContent) {
+	if m.partialLines > len(m.targetContent) {
 		m.moving = false
 		m.partialLines = 0
 		return nil
@@ -123,10 +123,10 @@ func (m *Model) update() {
 		m.Size = 0
 	} else if m.moving {
 		content := m.targetContent[len(m.targetContent)-m.partialLines:]
-		m.View = style.TopPanel.Width(m.width - 2).Render(
+		m.View = style.TopPanelMoving.Width(m.width - 2).Render(
 			strings.Join(content, "\n"),
 		)
-		m.Size = len(content) + 1
+		m.Size = len(content)
 	} else {
 		m.View = style.TopPanel.Width(m.width - 2).Render(
 			strings.Join(m.targetContent, "\n"),
