@@ -9,7 +9,7 @@ import (
 	"github.com/tiramiseb/quickonf/state"
 )
 
-const moveStepDuration = 15 * time.Millisecond
+const moveStepDuration = 10 * time.Millisecond
 
 type moveUpMessage struct{}
 
