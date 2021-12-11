@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/tiramiseb/quickonf/state"
+	"github.com/tiramiseb/quickonf/internal/state"
 )
 
 func main() {

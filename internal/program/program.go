@@ -3,7 +3,7 @@ package program
 import (
 	tea "github.com/charmbracelet/bubbletea"
 
-	"github.com/tiramiseb/quickonf/state"
+	"github.com/tiramiseb/quickonf/internal/state"
 )
 
 func Run(st *state.State) {

@@ -2,7 +2,7 @@ package group
 
 import (
 	"github.com/charmbracelet/lipgloss"
-	"github.com/tiramiseb/quickonf/program/style"
+	"github.com/tiramiseb/quickonf/internal/program/style"
 )
 
 var (

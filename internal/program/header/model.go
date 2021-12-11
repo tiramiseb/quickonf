@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	tea "github.com/charmbracelet/bubbletea"
-	"github.com/tiramiseb/quickonf/program/style"
+	"github.com/tiramiseb/quickonf/internal/program/style"
 )
 
 const Height = 3

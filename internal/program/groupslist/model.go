@@ -5,8 +5,8 @@ import (
 	"time"
 
 	tea "github.com/charmbracelet/bubbletea"
-	"github.com/tiramiseb/quickonf/program/group"
-	"github.com/tiramiseb/quickonf/state"
+	"github.com/tiramiseb/quickonf/internal/program/group"
+	"github.com/tiramiseb/quickonf/internal/state"
 )
 
 const moveStepDuration = 10 * time.Millisecond

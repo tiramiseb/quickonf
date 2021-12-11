@@ -2,16 +2,15 @@ package program
 
 import (
 	"fmt"
-	"log"
 
 	tea "github.com/charmbracelet/bubbletea"
 
-	"github.com/tiramiseb/quickonf/program/footer"
-	"github.com/tiramiseb/quickonf/program/groupslist"
-	"github.com/tiramiseb/quickonf/program/header"
-	"github.com/tiramiseb/quickonf/program/style"
-	"github.com/tiramiseb/quickonf/program/toppanel"
-	"github.com/tiramiseb/quickonf/state"
+	"github.com/tiramiseb/quickonf/internal/program/footer"
+	"github.com/tiramiseb/quickonf/internal/program/groupslist"
+	"github.com/tiramiseb/quickonf/internal/program/header"
+	"github.com/tiramiseb/quickonf/internal/program/style"
+	"github.com/tiramiseb/quickonf/internal/program/toppanel"
+	"github.com/tiramiseb/quickonf/internal/state"
 )
 
 type model struct {
@@ -60,7 +59,6 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (m *model) View() string {
-	log.Print(m.toppanel.Size)
 	return style.Main.Render(
 		fmt.Sprintf(
 			"%s\n%s%s\n%s",

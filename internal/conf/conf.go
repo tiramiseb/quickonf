@@ -3,7 +3,7 @@ package conf
 import (
 	"io"
 
-	"github.com/tiramiseb/quickonf/state"
+	"github.com/tiramiseb/quickonf/internal/state"
 )
 
 func Read(r io.Reader, filters []string) (*state.State, []error) {

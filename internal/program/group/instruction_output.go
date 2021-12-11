@@ -3,7 +3,7 @@ package group
 import (
 	"fmt"
 
-	"github.com/tiramiseb/quickonf/state"
+	"github.com/tiramiseb/quickonf/internal/state"
 )
 
 type instructionStatus int

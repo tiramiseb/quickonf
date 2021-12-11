@@ -5,7 +5,7 @@ import (
 	"strings"
 
 	"github.com/tiramiseb/quickonf/internal/commands"
-	"github.com/tiramiseb/quickonf/state"
+	"github.com/tiramiseb/quickonf/internal/state"
 )
 
 type parser struct {

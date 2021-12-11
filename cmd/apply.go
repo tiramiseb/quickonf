@@ -5,9 +5,9 @@ import (
 	"os"
 	"os/user"
 
-	"github.com/tiramiseb/quickonf/conf"
-	"github.com/tiramiseb/quickonf/program"
-	"github.com/tiramiseb/quickonf/state"
+	"github.com/tiramiseb/quickonf/internal/conf"
+	"github.com/tiramiseb/quickonf/internal/program"
+	"github.com/tiramiseb/quickonf/internal/state"
 )
 
 func apply(config string, filters []string, options state.Options) {
