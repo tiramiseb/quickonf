@@ -3,12 +3,12 @@ package program
 import (
 	tea "github.com/charmbracelet/bubbletea"
 
-	"github.com/tiramiseb/quickonf/internal/state"
+	"github.com/tiramiseb/quickonf/internal/instructions"
 )
 
-func Run(st *state.State) {
+func Run(g []*instructions.Group) {
 	program := tea.NewProgram(
-		newModel(st),
+		newModel(g),
 		tea.WithAltScreen(),
 		tea.WithMouseCellMotion(),
 	)

@@ -5,7 +5,7 @@ import (
 	"strings"
 )
 
-type output interface {
+type Output interface {
 	Info(message string)
 	Infof(format string, a ...interface{})
 	Success(message string)
@@ -14,24 +14,46 @@ type output interface {
 	Errorf(format string, a ...interface{})
 }
 
-// Run is the runner for a command.
+type Status int
+
+const (
+	StatusInfo Status = iota
+	StatusSuccess
+	StatusError
+)
+
+// apply is a generated function that applies the result of the command to the system. It is returned by the run command, for potential future call.
 //
-// args are the command arguments
-// out is where the command must write its output
-// dry is a boolean indicating the dry-run mode
-// result is the command output values
+// Output is written to the output given to the run command
+//
 // success is a boolean indicating if the command succeeded or not
-type run func(args []string, out output, dry bool) (result []string, success bool)
+// type Apply func() (success bool)
+
+// run is the function that runs the command and prepares an apply function
+//
+// args are the command arguments (same as for "run")
+// result is the command output values
+// message is the message to display to the user
+// apply is the function that would be executed in order to apply the command to the system. If nil, it means there is nothing to apply (the system is already in the requested state)
+// success is a boolean indicating if preparing the apply function succeeded or not
+type run func(args []string) (result []string, message string, apply *Apply, status Status)
 
 // Command is a single command definition
 type Command struct {
 	Name      string   // The name of the command
 	Action    string   // [used for doc] Action description
-	DryRun    string   // [used for doc] Action description in dry run mode
 	Arguments []string // [used for doc & counting args] Arguments description
 	Outputs   []string // [used for doc & counting outputs] Outputs description
 	Example   string   // [used for doc] Example(s)
 	Run       run      // The function to run the command
+	Reset     func()   // The function to reset data in order to cleanly re-run the command
+}
+
+// Apply is the process to apply a given instance of a command on the system
+type Apply struct {
+	Name  string
+	Intro string
+	Run   func(Output) (success bool)
 }
 
 var registry = map[string]Command{}

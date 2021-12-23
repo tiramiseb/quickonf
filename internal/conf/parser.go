@@ -1,11 +1,8 @@
 package conf
 
 import (
-	"path"
-	"strings"
-
 	"github.com/tiramiseb/quickonf/internal/commands"
-	"github.com/tiramiseb/quickonf/internal/state"
+	"github.com/tiramiseb/quickonf/internal/instructions"
 )
 
 type parser struct {
@@ -34,7 +31,7 @@ func (p *parser) nextLine() (toks tokens) {
 // All functions called from this function receive the "next" line for
 // processing and return the "next" line for processing by another sub-parser.
 // It is necessary in order to know how to process next line
-func (p *parser) parse(filters []string) (groups []*state.Group, err error) {
+func (p *parser) parse() (groups []*instructions.Group, err error) {
 	// for _, t := range p.tokens {
 	// 	DDcontent := fmt.Sprintf("%s", t.content)
 	// 	if len(DDcontent) > 70 {
@@ -43,20 +40,13 @@ func (p *parser) parse(filters []string) (groups []*state.Group, err error) {
 	// 	fmt.Printf("[%d:%d] %d >> %s\n", t.line, t.column, t.typ, DDcontent)
 	// }
 	// return nil, nil
-	for i, f := range filters {
-		filters[i] = "*" + strings.ToLower(f) + "*"
-		_, err = path.Match(f, "")
-		if err != nil {
-			return
-		}
-	}
 	next := p.nextLine()
 	for {
 		if next == nil {
 			break
 		}
-		var group *state.Group
-		group, next = p.parseGroup(next, filters)
+		var group *instructions.Group
+		group, next = p.parseGroup(next)
 		if group != nil {
 			groups = append(groups, group)
 		}
@@ -64,7 +54,7 @@ func (p *parser) parse(filters []string) (groups []*state.Group, err error) {
 	return
 }
 
-func (p *parser) parseGroup(line tokens, filters []string) (group *state.Group, next tokens) {
+func (p *parser) parseGroup(line tokens) (group *instructions.Group, next tokens) {
 	next = p.nextLine()
 	if len(line) == 0 {
 		return
@@ -81,22 +71,8 @@ func (p *parser) parseGroup(line tokens, filters []string) (group *state.Group, 
 		}
 		return
 	}
-	groupName := line[0].content
-	for _, f := range filters {
-		ok, _ := path.Match(f, strings.ToLower(groupName))
-		if !ok {
-			// Skip to next group
-			for {
-				indent, _ := next.indentation()
-				if indent == 0 {
-					return
-				}
-				next = p.nextLine()
-			}
-		}
-	}
 
-	group = &state.Group{Name: groupName}
+	group = &instructions.Group{Name: line[0].content}
 	indent, _ := next.indentation()
 	if indent == 0 {
 		return
@@ -110,7 +86,7 @@ func (p *parser) parseGroup(line tokens, filters []string) (group *state.Group, 
 	return
 }
 
-func (p *parser) parseInstructions(line tokens, currentIndent int) (instructions []state.Instruction, next tokens) {
+func (p *parser) parseInstructions(line tokens, currentIndent int) (instrs []instructions.Instruction, next tokens) {
 	// Read a list of commands
 	for {
 		thisIndent, firstToken := line.indentation()
@@ -122,7 +98,7 @@ func (p *parser) parseInstructions(line tokens, currentIndent int) (instructions
 			next = line
 			return
 		}
-		var ins state.Instruction
+		var ins instructions.Instruction
 		switch firstToken.typ {
 		case tokenIf:
 			ins, next = p.ifThen(line[2:], currentIndent)
@@ -130,7 +106,7 @@ func (p *parser) parseInstructions(line tokens, currentIndent int) (instructions
 			ins = p.command(line[1:])
 		}
 		if ins != nil {
-			instructions = append(instructions, ins)
+			instrs = append(instrs, ins)
 		}
 		if next == nil {
 			line = p.nextLine()
@@ -141,7 +117,7 @@ func (p *parser) parseInstructions(line tokens, currentIndent int) (instructions
 	}
 }
 
-func (p *parser) ifThen(toks []*token, currentIndent int) (state.Instruction, tokens) {
+func (p *parser) ifThen(toks []*token, currentIndent int) (instructions.Instruction, tokens) {
 	// Later, add support for "and", "or", etc
 	left := toks[0]
 	operator := toks[1]
@@ -155,10 +131,10 @@ func (p *parser) ifThen(toks []*token, currentIndent int) (state.Instruction, to
 	if right.typ != tokenDefault {
 		p.errs = append(p.errs, right.errorf(`expected value, got "%s"`, right.content))
 	}
-	var operation state.Operation
+	var operation instructions.Operation
 	switch operator.typ {
 	case tokenEqual:
-		operation = &state.Equal{Left: left.content, Right: right.content}
+		operation = &instructions.Equal{Left: left.content, Right: right.content}
 	}
 	next := p.nextLine()
 	indent, _ := next.indentation()
@@ -166,11 +142,11 @@ func (p *parser) ifThen(toks []*token, currentIndent int) (state.Instruction, to
 		p.errs = append(p.errs, operator.error(`expected commands in the if clause`))
 	}
 	inss, next := p.parseInstructions(next, indent)
-	ins := &state.If{Operation: operation, Instructions: inss}
+	ins := &instructions.If{Operation: operation, Instructions: inss}
 	return ins, next
 }
 
-func (p *parser) command(toks []*token) state.Instruction {
+func (p *parser) command(toks []*token) instructions.Instruction {
 	var targets []string
 	for equalPos, tok := range toks {
 		if tok.typ == tokenEqual {
@@ -203,5 +179,5 @@ func (p *parser) command(toks []*token) state.Instruction {
 		)
 		return nil
 	}
-	return &state.Command{Command: command, Arguments: args, Targets: targets}
+	return &instructions.Command{Command: command, Arguments: args, Targets: targets}
 }

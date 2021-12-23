@@ -1,4 +1,4 @@
-package state
+package instructions
 
 import (
 	"fmt"

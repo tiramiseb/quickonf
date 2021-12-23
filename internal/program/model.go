@@ -1,71 +1,119 @@
 package program
 
 import (
-	"fmt"
-
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/charmbracelet/lipgloss"
 
-	"github.com/tiramiseb/quickonf/internal/program/footer"
-	"github.com/tiramiseb/quickonf/internal/program/groupslist"
-	"github.com/tiramiseb/quickonf/internal/program/header"
-	"github.com/tiramiseb/quickonf/internal/program/style"
-	"github.com/tiramiseb/quickonf/internal/program/toppanel"
-	"github.com/tiramiseb/quickonf/internal/state"
+	"github.com/tiramiseb/quickonf/internal/instructions"
+	"github.com/tiramiseb/quickonf/internal/program/groupapplys"
+	"github.com/tiramiseb/quickonf/internal/program/groupchecks"
+	"github.com/tiramiseb/quickonf/internal/program/separator"
+	"github.com/tiramiseb/quickonf/internal/program/titlebar"
 )
 
 type model struct {
-	state *state.State
+	titlebar  tea.Model
+	checks    tea.Model
+	separator tea.Model
+	applys    tea.Model
 
-	header     *header.Model
-	footer     *footer.Model
-	toppanel   *toppanel.Model
-	groupslist *groupslist.Model
+	leftPartEndColumn    int
+	rightPartStartColumn int
+	activeApply          bool // If false, "check" is active
 }
 
-const verticalMargins = header.Height + footer.Height
-
-func newModel(st *state.State) *model {
-	nb := len(st.Groups)
+func newModel(g []*instructions.Group) *model {
 	return &model{
-		state: st,
-
-		header:     header.New(st.Filtered, nb),
-		footer:     footer.New(nb),
-		toppanel:   toppanel.New(80),
-		groupslist: groupslist.New(80, 24, verticalMargins, st),
+		titlebar:  titlebar.New(),
+		checks:    groupchecks.New(g),
+		applys:    groupapplys.New(),
+		separator: separator.New(),
 	}
 }
 
 func (m *model) Init() tea.Cmd {
 	tea.LogToFile("/tmp/tmplog", "")
-	return m.groupslist.Init()
+	return m.checks.Init()
 }
 
 func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+	var cmd tea.Cmd
 	switch msg := msg.(type) {
+	case tea.WindowSizeMsg:
+		cmds := make([]tea.Cmd, 4)
+		m.titlebar, cmds[0] = m.titlebar.Update(
+			tea.WindowSizeMsg{Height: 1, Width: msg.Width},
+		)
+		leftWidth := (msg.Width - 1) / 2
+		rightWidth := msg.Width - leftWidth - 1
+		m.checks, cmds[1] = m.checks.Update(
+			tea.WindowSizeMsg{Height: msg.Height - 1, Width: leftWidth},
+		)
+		m.applys, cmds[2] = m.applys.Update(
+			tea.WindowSizeMsg{Height: msg.Height - 1, Width: rightWidth},
+		)
+		m.leftPartEndColumn = leftWidth - 1
+		m.rightPartStartColumn = leftWidth + 1
+		m.separator, cmds[3] = m.separator.Update(tea.WindowSizeMsg{Height: msg.Height - 1, Width: 1})
+		cmd = tea.Batch(cmds...)
 	case tea.KeyMsg:
 		switch msg.String() {
-		case "ctrl+c", "q", "esc":
-			return m, tea.Quit
+		case "right":
+			m.checks, _ = m.checks.Update(groupchecks.ActiveMsg{Active: false})
+			m.applys, _ = m.applys.Update(groupapplys.ActiveMsg{Active: true})
+			m.activeApply = true
+		case "left":
+			m.checks, _ = m.checks.Update(groupchecks.ActiveMsg{Active: true})
+			m.applys, _ = m.applys.Update(groupapplys.ActiveMsg{Active: false})
+			m.activeApply = false
 		}
+		m.titlebar, cmd = m.titlebar.Update(msg)
+		if cmd == nil {
+			if m.activeApply {
+				m.applys, cmd = m.applys.Update(msg)
+			} else {
+				m.checks, cmd = m.checks.Update(msg)
+			}
+		}
+	case tea.MouseMsg:
+		unknown := tea.MouseMsg{
+			Type: tea.MouseUnknown,
+		}
+		switch msg.Y {
+		case 0:
+			m.titlebar, cmd = m.titlebar.Update(msg)
+			m.applys, _ = m.applys.Update(unknown)
+			m.applys, _ = m.applys.Update(unknown)
+		default:
+			m.titlebar, _ = m.titlebar.Update(unknown)
+			msg.Y--
+			if msg.X <= m.leftPartEndColumn {
+				m.checks, cmd = m.checks.Update(msg)
+				m.applys, _ = m.applys.Update(unknown)
+			} else if msg.X >= m.leftPartEndColumn {
+				msg.X -= m.rightPartStartColumn
+				m.applys, cmd = m.applys.Update(msg)
+				m.checks, _ = m.checks.Update(unknown)
+			}
+		}
+	case separator.CursorMsg:
+		m.separator, cmd = m.separator.Update(msg)
 	default:
-		m.header.Update(msg)
-		m.footer.Update(msg)
+		cmds := make([]tea.Cmd, 3)
+		m.titlebar, cmds[0] = m.titlebar.Update(msg)
+		m.checks, cmds[1] = m.checks.Update(msg)
+		m.applys, cmds[2] = m.applys.Update(msg)
+		cmd = tea.Batch(cmds...)
 	}
-	return m, tea.Batch(
-		m.toppanel.Update(msg),
-		m.groupslist.Update(msg),
-	)
+	return m, cmd
 }
 
 func (m *model) View() string {
-	return style.Main.Render(
-		fmt.Sprintf(
-			"%s\n%s%s\n%s",
-			m.header.View,
-			m.toppanel.View,
-			m.groupslist.View(m.toppanel.Size),
-			m.footer.View,
-		),
-	)
+	return m.titlebar.View() + "\n" +
+		lipgloss.JoinHorizontal(
+			lipgloss.Top,
+			m.checks.View(),
+			m.separator.View(),
+			m.applys.View(),
+		)
 }

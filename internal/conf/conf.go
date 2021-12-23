@@ -3,19 +3,19 @@ package conf
 import (
 	"io"
 
-	"github.com/tiramiseb/quickonf/internal/state"
+	"github.com/tiramiseb/quickonf/internal/instructions"
 )
 
-func Read(r io.Reader, filters []string) (*state.State, []error) {
+func Read(r io.Reader) ([]*instructions.Group, []error) {
 	lxr := newLexer(r)
 	tokens, err := lxr.scan()
 	if err != nil {
 		return nil, []error{err}
 	}
 	p := parser{tokens: tokens}
-	groups, err := p.parse(filters)
+	groups, err := p.parse()
 	if err != nil {
 		return nil, []error{err}
 	}
-	return &state.State{Filtered: len(filters) > 0, Groups: groups}, p.errs
+	return groups, p.errs
 }

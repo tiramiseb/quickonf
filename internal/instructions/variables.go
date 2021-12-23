@@ -1,11 +1,11 @@
-package state
+package instructions
 
 import (
 	"bytes"
 	"os"
 	"strings"
 
-	"github.com/tiramiseb/quickonf/internal/helper"
+	"github.com/tiramiseb/quickonf/internal/commands/helper"
 )
 
 type Variables map[string]string
