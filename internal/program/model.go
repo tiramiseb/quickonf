@@ -5,8 +5,8 @@ import (
 	"github.com/charmbracelet/lipgloss"
 
 	"github.com/tiramiseb/quickonf/internal/instructions"
-	"github.com/tiramiseb/quickonf/internal/program/groupapplys"
-	"github.com/tiramiseb/quickonf/internal/program/groupchecks"
+	"github.com/tiramiseb/quickonf/internal/program/applys"
+	"github.com/tiramiseb/quickonf/internal/program/checks"
 	"github.com/tiramiseb/quickonf/internal/program/separator"
 	"github.com/tiramiseb/quickonf/internal/program/titlebar"
 )
@@ -25,8 +25,8 @@ type model struct {
 func newModel(g []*instructions.Group) *model {
 	return &model{
 		titlebar:  titlebar.New(),
-		checks:    groupchecks.New(g),
-		applys:    groupapplys.New(),
+		checks:    checks.New(g),
+		applys:    applys.New(),
 		separator: separator.New(),
 	}
 }
@@ -59,12 +59,12 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case tea.KeyMsg:
 		switch msg.String() {
 		case "right":
-			m.checks, _ = m.checks.Update(groupchecks.ActiveMsg{Active: false})
-			m.applys, _ = m.applys.Update(groupapplys.ActiveMsg{Active: true})
+			m.checks, _ = m.checks.Update(checks.ActiveMsg{Active: false})
+			m.applys, _ = m.applys.Update(applys.ActiveMsg{Active: true})
 			m.activeApply = true
 		case "left":
-			m.checks, _ = m.checks.Update(groupchecks.ActiveMsg{Active: true})
-			m.applys, _ = m.applys.Update(groupapplys.ActiveMsg{Active: false})
+			m.checks, _ = m.checks.Update(checks.ActiveMsg{Active: true})
+			m.applys, _ = m.applys.Update(applys.ActiveMsg{Active: false})
 			m.activeApply = false
 		}
 		m.titlebar, cmd = m.titlebar.Update(msg)

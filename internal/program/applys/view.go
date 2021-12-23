@@ -1,4 +1,4 @@
-package groupapplys
+package applys
 
 import (
 	"strings"

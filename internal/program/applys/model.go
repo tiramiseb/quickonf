@@ -1,4 +1,4 @@
-package groupapplys
+package applys
 
 import (
 	tea "github.com/charmbracelet/bubbletea"
