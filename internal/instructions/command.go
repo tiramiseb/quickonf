@@ -40,5 +40,7 @@ func (c *Command) Run(vars Variables) ([]commands.Apply, []CheckReport, bool) {
 }
 
 func (c *Command) Reset() {
-	c.Command.Reset()
+	if c.Command.Reset != nil {
+		c.Command.Reset()
+	}
 }
