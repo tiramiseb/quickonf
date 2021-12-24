@@ -1,9 +1,12 @@
 package commands
 
 import (
+	"errors"
 	"fmt"
+	"io/fs"
 	"os"
 	"path/filepath"
+	"strconv"
 
 	"github.com/tiramiseb/quickonf/internal/commands/shared"
 )
@@ -39,8 +42,9 @@ var fileUserDirectory = Command{
 			if info.IsDir() {
 				return nil, fmt.Sprintf("Directory %s already exists", path), nil, StatusSuccess
 			}
+			return nil, fmt.Sprintf("%s already exists but is not a directory", path), nil, StatusError
 		}
-		if !os.IsNotExist(err) {
+		if !errors.Is(err, fs.ErrNotExist) {
 			return nil, err.Error(), nil, StatusError
 		}
 
@@ -50,6 +54,20 @@ var fileUserDirectory = Command{
 			func(out Output) bool {
 				if err := os.MkdirAll(path, 0755); err != nil {
 					out.Errorf("Could not create directory %s: %s", path, err)
+					return false
+				}
+				uid, err := strconv.Atoi(usr.Uid)
+				if err != nil {
+					out.Errorf("could not get UID: %s", err)
+					return false
+				}
+				gid, err := strconv.Atoi(usr.Gid)
+				if err != nil {
+					out.Errorf("could not get GID: %s", err)
+					return false
+				}
+				if err := os.Chown(path, uid, gid); err != nil {
+					out.Errorf("Could not give ownership of %s to %s: %s", path, username, err)
 					return false
 				}
 				out.Successf("Created directory %s", path)
