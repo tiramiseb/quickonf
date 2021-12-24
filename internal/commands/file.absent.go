@@ -1,7 +1,9 @@
 package commands
 
 import (
+	"errors"
 	"fmt"
+	"io/fs"
 	"os"
 	"path/filepath"
 )
@@ -25,7 +27,7 @@ var fileAbsent = Command{
 		}
 		_, err := os.Lstat(path)
 		if err != nil {
-			if os.IsNotExist(err) {
+			if errors.Is(err, fs.ErrNotExist) {
 				return nil, fmt.Sprintf("%s does not exist", path), nil, StatusSuccess
 			}
 			return nil, err.Error(), nil, StatusError
