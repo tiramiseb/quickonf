@@ -1,7 +1,6 @@
 package apply
 
 import (
-	"log"
 	"strings"
 
 	tea "github.com/charmbracelet/bubbletea"
@@ -71,7 +70,6 @@ func New(group *instructions.Group, idx, width int) *model {
 }
 
 func (m *model) listen() tea.Msg {
-	log.Print("LISTEN")
 	return <-m.messages
 }
 
@@ -80,17 +78,13 @@ func (m *model) Init() tea.Cmd {
 }
 
 func (m *model) run() tea.Msg {
-	log.Print("RUN")
 	// TODO Allow re-running...
 	if m.status != StatusWaiting {
 		return nil
 	}
-	log.Print("GO")
 	if m.group.Apply(m.commandOutputs()) {
-		log.Print("OK")
 		return SuccessMsg{m.idx}
 	} else {
-		log.Print("KO")
 		return FailMsg{m.idx}
 	}
 }
@@ -107,7 +101,6 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.collapsed = !m.collapsed
 		case "enter", "x", "X":
 			if m.status == StatusWaiting {
-				log.Print("LANCER")
 				return m, m.run
 			}
 		}
@@ -121,13 +114,11 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			}
 		}
 	case ChangeMsg:
-		log.Print("CHANGE")
 		if msg.Gidx != m.idx {
 			return m, nil
 		}
 		cmd = m.listen
 	case SuccessMsg:
-		log.Print("SUCCESS")
 		if msg.Gidx != m.idx {
 			return m, nil
 		}

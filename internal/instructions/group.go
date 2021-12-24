@@ -1,8 +1,6 @@
 package instructions
 
 import (
-	"log"
-
 	"github.com/tiramiseb/quickonf/internal/commands"
 )
 
@@ -45,9 +43,7 @@ func (g *Group) Reset() {
 
 // Apply applies modifications for this group
 func (g *Group) Apply(out GroupOutput) bool {
-	log.Print("APPLY ", len(g.Applys))
 	for _, apply := range g.Applys {
-		log.Print("=> ", apply.Name)
 		if !apply.Run(out.NewCommandOutput(apply.Name)) {
 			return false
 		}
