@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"bytes"
 	"fmt"
-	"log"
 	"os"
 	"os/user"
 	"path/filepath"
@@ -59,8 +58,6 @@ func xdgDir(usr *user.User, dirname string) (string, error) {
 		}
 		xdgDirsStorage[usr.Username] = dirs
 	}
-	log.Print("USER DIRS")
-	log.Print(dirs)
 	dir, ok := dirs[strings.ToUpper(dirname)]
 	if !ok {
 		return "", fmt.Errorf(`"%s" is not a valid XDG user dir`, dirname)
