@@ -53,6 +53,9 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		cmd = m.windowSize(msg)
 		m.redrawContent()
 	case tea.KeyMsg:
+		if len(m.groups) == 0 {
+			break
+		}
 		switch msg.String() {
 		case "up":
 			m.cursorUp()
