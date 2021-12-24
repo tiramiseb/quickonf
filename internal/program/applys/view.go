@@ -113,5 +113,8 @@ func (m *model) updateActive() {
 }
 
 func (m *model) View() string {
+	if len(m.groups) == 0 {
+		return m.subtitleStyle.Render("Check") + "\n" + m.boxStyle.Render("Nothing to apply...")
+	}
 	return m.subtitleStyle.Render("Check") + "\n" + m.boxStyle.Render(m.view)
 }
