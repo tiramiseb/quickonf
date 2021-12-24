@@ -1,16 +1,20 @@
 package commands
 
 import (
+	"bufio"
 	"fmt"
+	"os"
 	"strings"
 	"sync"
 
 	"github.com/tiramiseb/quickonf/internal/commands/helper"
 )
 
+const dpkgStatusPath = "/var/lib/dpkg/status"
+
 var (
-	aptMutex    sync.Mutex
-	aptPackages = aptPackagesList{}
+	dpkgMutex    sync.Mutex
+	dpkgPackages = dpkgPackagesList{}
 )
 
 func init() {
@@ -25,7 +29,7 @@ var apt = Command{
 	"Install the \"ipcalc\" tool\n  apt ipcalc",
 	func(args []string) (result []string, msg string, apply *Apply, status Status) {
 		pkg := args[0]
-		ok, err := aptPackages.installed(pkg)
+		ok, err := dpkgPackages.installed(pkg)
 		if err != nil {
 			return nil, err.Error(), nil, StatusError
 		}
@@ -38,8 +42,8 @@ var apt = Command{
 			fmt.Sprintf("will install %s", pkg),
 			func(out Output) bool {
 				out.Infof("waiting for apt to be available to install %s", pkg)
-				aptMutex.Lock()
-				defer aptMutex.Unlock()
+				dpkgMutex.Lock()
+				defer dpkgMutex.Unlock()
 				wait, err := helper.Exec([]string{"DEBIAN_FRONTEND=noninteractive"}, nil, "apt-get", "--yes", "--quiet", "install", pkg)
 				if err != nil {
 					out.Errorf("could not install %s: %s", pkg, err)
@@ -57,35 +61,54 @@ var apt = Command{
 		return nil, fmt.Sprintf("need to install %s", pkg), apply, StatusInfo
 	},
 	func() {
-		aptPackages = aptPackagesList{}
+		dpkgPackages = dpkgPackagesList{}
 	},
 }
 
-type aptPackagesList struct {
+type dpkgPackage struct {
+	name string
+}
+
+type dpkgPackagesList struct {
 	initOnce sync.Once
-	content  *helper.SearchableStrings
+	packages []dpkgPackage
 }
 
-func (a *aptPackagesList) installed(pkg string) (bool, error) {
+func (d *dpkgPackagesList) installed(name string) (bool, error) {
 	var err error
-	a.initOnce.Do(func() { err = a.init() })
-	return a.content.Contains(pkg), err
+	d.initOnce.Do(func() { err = d.init() })
+	for _, pkg := range d.packages {
+		if pkg.name == name {
+			return true, err
+		}
+
+	}
+	return false, err
 }
 
-func (a *aptPackagesList) init() error {
-	a.content = &helper.SearchableStrings{}
-	lines, err := helper.ExecOutAsLines(nil, "dpkg", "--get-selections")
+func (d *dpkgPackagesList) init() error {
+	dpkgMutex.Lock()
+	defer dpkgMutex.Unlock()
+	f, err := os.Open(dpkgStatusPath)
 	if err != nil {
-		return fmt.Errorf("could not get list of installed packages: %w", err)
+		return err
 	}
-	for _, l := range lines {
-		fields := strings.Fields(l)
-		if len(fields) != 2 {
+	scanner := bufio.NewScanner(f)
+	pkg := dpkgPackage{}
+	for scanner.Scan() {
+		line := strings.TrimSpace(scanner.Text())
+		if line == "" {
+			d.packages = append(d.packages, pkg)
+			pkg = dpkgPackage{}
+		}
+		info := strings.SplitN(line, ": ", 2)
+		if len(info) != 2 {
 			continue
 		}
-		if fields[1] == "install" {
-			a.content.Add(fields[0])
+		switch info[0] {
+		case "Package":
+			pkg.name = info[1]
 		}
 	}
-	return nil
+	return scanner.Err()
 }
