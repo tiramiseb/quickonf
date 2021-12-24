@@ -81,7 +81,7 @@ var xdgUserDir = Command{
 		"Directory path",
 	},
 	nil,
-	"Change downloads directory for john\n  file.user.directory Downs\n  xdg.user.dir john DOWNLOAD Downs",
+	"Change downloads directory for john\n  file.user.directory john Downs\n  xdg.user.dir john DOWNLOAD Downs",
 	func(args []string) (result []string, msg string, apply *Apply, status Status) {
 		username := args[0]
 		name := args[1]
