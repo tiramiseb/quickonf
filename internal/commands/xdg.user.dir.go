@@ -92,7 +92,9 @@ var xdgUserDir = Command{
 			return nil, err.Error(), nil, StatusError
 		}
 
-		if !filepath.IsAbs(path) {
+		if path == "" {
+			path = "$HOME/"
+		} else if !filepath.IsAbs(path) {
 			path = filepath.Join("$HOME", path)
 		}
 
