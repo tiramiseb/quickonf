@@ -2,7 +2,7 @@ package check
 
 import (
 	"github.com/tiramiseb/quickonf/internal/instructions"
-	"github.com/tiramiseb/quickonf/internal/program/style"
+	"github.com/tiramiseb/quickonf/internal/program/common/style"
 )
 
 func (m *model) updateGroupname() {

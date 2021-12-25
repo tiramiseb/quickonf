@@ -1,23 +1,15 @@
-package check
+package apply
 
 import (
 	"strings"
 
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
+
 	"github.com/tiramiseb/quickonf/internal/commands"
 	"github.com/tiramiseb/quickonf/internal/instructions"
-	"github.com/tiramiseb/quickonf/internal/program/style"
+	"github.com/tiramiseb/quickonf/internal/program/common/style"
 )
-
-type TriggerMsg struct {
-	Gidx int
-}
-
-type DoneMsg struct {
-	Gidx  int
-	Group *instructions.Group
-}
 
 type Status int
 
@@ -41,6 +33,14 @@ var InstructionStyles = map[commands.Status]lipgloss.Style{
 	commands.StatusSuccess: style.InstructionSuccess,
 }
 
+type SuccessMsg struct {
+	Gidx int
+}
+
+type FailMsg struct {
+	Gidx int
+}
+
 type model struct {
 	group *instructions.Group
 	idx   int
@@ -51,38 +51,43 @@ type model struct {
 	collapsedView string
 	fullView      string
 	collapsed     bool
+
+	outputs  []*commandOutput
+	messages chan ChangeMsg
 }
 
-func New(i int, g *instructions.Group) *model {
-	return &model{
-		group:     g,
-		idx:       i,
-		width:     2,
-		status:    StatusWaiting,
-		collapsed: true,
+func New(group *instructions.Group, idx, width int) *model {
+	m := &model{
+		group: group,
+		idx:   idx,
+
+		width: width,
+
+		messages: make(chan ChangeMsg),
 	}
+	m.updateGroupname()
+	m.updateView()
+	return m
+}
+
+func (m *model) listen() tea.Msg {
+	return <-m.messages
 }
 
 func (m *model) Init() tea.Cmd {
-	return m.trigger
-}
-
-func (m *model) trigger() tea.Msg {
-	if m.status == StatusWaiting {
-		m.status = StatusRunning
-		return TriggerMsg{m.idx}
-	}
-	return nil
+	return m.listen
 }
 
 func (m *model) run() tea.Msg {
-	if m.group.Run() {
-		m.status = StatusSucceeded
-	} else {
-		m.status = StatusFailed
-		m.collapsed = false
+	// TODO Allow re-running...
+	if m.status != StatusWaiting {
+		return nil
 	}
-	return DoneMsg{m.idx, m.group}
+	if m.group.Apply(m.commandOutputs()) {
+		return SuccessMsg{m.idx}
+	} else {
+		return FailMsg{m.idx}
+	}
 }
 
 func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
@@ -96,10 +101,8 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case " ", "t", "T":
 			m.collapsed = !m.collapsed
 		case "enter", "x", "X":
-			if m.status != StatusRunning {
-				m.group.Reset()
-				m.status = StatusWaiting
-				return m, m.trigger
+			if m.status == StatusWaiting {
+				return m, m.run
 			}
 		}
 	case tea.MouseMsg:
@@ -111,15 +114,21 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				m.collapsed = !m.collapsed
 			}
 		}
-	case TriggerMsg:
+	case ChangeMsg:
 		if msg.Gidx != m.idx {
 			return m, nil
 		}
-		cmd = m.run
-	case DoneMsg:
+		cmd = m.listen
+	case SuccessMsg:
 		if msg.Gidx != m.idx {
 			return m, nil
 		}
+		m.status = StatusSucceeded
+	case FailMsg:
+		if msg.Gidx != m.idx {
+			return m, nil
+		}
+		m.status = StatusFailed
 	}
 	m.updateView()
 	return m, cmd
@@ -130,21 +139,28 @@ func (m *model) updateView() {
 	lines := []string{
 		GroupStyles[m.status].Render("⏷ " + m.groupName),
 	}
-	if len(m.group.Reports) > 0 {
-		for _, report := range m.group.Reports {
+	if len(m.outputs) == 0 {
+		for _, apply := range m.group.Applys {
 			lines = append(
 				lines,
-				m.instructionLine(report),
+				m.instructionLine(
+					apply.Name,
+					commands.StatusInfo,
+					apply.Intro,
+				),
 			)
 		}
 	} else {
-		lines = append(
-			lines,
-			m.instructionLine(instructions.CheckReport{
-				Name:   "Empty",
-				Status: commands.StatusInfo,
-			}),
-		)
+		for _, message := range m.outputs {
+			lines = append(
+				lines,
+				m.instructionLine(
+					message.name,
+					message.status,
+					message.message,
+				),
+			)
+		}
 	}
 	m.fullView = strings.Join(lines, "\n")
 }

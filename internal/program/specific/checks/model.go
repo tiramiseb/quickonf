@@ -3,9 +3,10 @@ package checks
 import (
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
+
 	"github.com/tiramiseb/quickonf/internal/instructions"
-	"github.com/tiramiseb/quickonf/internal/program/check"
-	"github.com/tiramiseb/quickonf/internal/program/separator"
+	"github.com/tiramiseb/quickonf/internal/program/specific/check"
+	"github.com/tiramiseb/quickonf/internal/program/specific/separator"
 )
 
 type ActiveMsg struct {

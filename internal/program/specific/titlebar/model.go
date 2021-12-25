@@ -5,8 +5,9 @@ import (
 
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
-	"github.com/tiramiseb/quickonf/internal/program/button"
-	"github.com/tiramiseb/quickonf/internal/program/style"
+
+	"github.com/tiramiseb/quickonf/internal/program/common/button"
+	"github.com/tiramiseb/quickonf/internal/program/common/style"
 )
 
 type model struct {

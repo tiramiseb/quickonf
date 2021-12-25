@@ -5,7 +5,7 @@ import (
 	"strings"
 
 	"github.com/tiramiseb/quickonf/internal/commands"
-	"github.com/tiramiseb/quickonf/internal/program/style"
+	"github.com/tiramiseb/quickonf/internal/program/common/style"
 )
 
 func (m *model) updateGroupname() {

@@ -5,8 +5,9 @@ import (
 
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
-	"github.com/tiramiseb/quickonf/internal/program/apply"
-	"github.com/tiramiseb/quickonf/internal/program/style"
+
+	"github.com/tiramiseb/quickonf/internal/program/common/style"
+	"github.com/tiramiseb/quickonf/internal/program/specific/apply"
 )
 
 func (m *model) windowSize(msg tea.WindowSizeMsg) tea.Cmd {

@@ -4,7 +4,8 @@ import (
 	"strings"
 
 	tea "github.com/charmbracelet/bubbletea"
-	"github.com/tiramiseb/quickonf/internal/program/style"
+
+	"github.com/tiramiseb/quickonf/internal/program/common/style"
 )
 
 type CursorMsg struct {

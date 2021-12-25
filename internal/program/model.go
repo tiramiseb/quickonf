@@ -5,10 +5,10 @@ import (
 	"github.com/charmbracelet/lipgloss"
 
 	"github.com/tiramiseb/quickonf/internal/instructions"
-	"github.com/tiramiseb/quickonf/internal/program/applys"
-	"github.com/tiramiseb/quickonf/internal/program/checks"
-	"github.com/tiramiseb/quickonf/internal/program/separator"
-	"github.com/tiramiseb/quickonf/internal/program/titlebar"
+	"github.com/tiramiseb/quickonf/internal/program/specific/applys"
+	"github.com/tiramiseb/quickonf/internal/program/specific/checks"
+	"github.com/tiramiseb/quickonf/internal/program/specific/separator"
+	"github.com/tiramiseb/quickonf/internal/program/specific/titlebar"
 )
 
 type model struct {
