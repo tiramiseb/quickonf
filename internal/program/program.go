@@ -7,6 +7,7 @@ import (
 )
 
 func Run(g []*instructions.Group) {
+	instructions.SortGroups(g)
 	program := tea.NewProgram(
 		newModel(g),
 		tea.WithAltScreen(),

@@ -1,6 +1,8 @@
 package conf
 
 import (
+	"strconv"
+
 	"github.com/tiramiseb/quickonf/internal/commands"
 	"github.com/tiramiseb/quickonf/internal/instructions"
 )
@@ -77,7 +79,7 @@ func (p *parser) parseGroup(line tokens) (group *instructions.Group, next tokens
 	if indent == 0 {
 		return
 	}
-	group.Instructions, next = p.parseInstructions(next, indent)
+	group.Instructions, next = p.parseInstructions(next, group, indent)
 	nextIndent, firstToken := next.indentation()
 	if nextIndent > 0 {
 		p.errs = append(p.errs, firstToken.errorf("invalid indentation (expecting none or %d)", indent))
@@ -86,7 +88,7 @@ func (p *parser) parseGroup(line tokens) (group *instructions.Group, next tokens
 	return
 }
 
-func (p *parser) parseInstructions(line tokens, currentIndent int) (instrs []instructions.Instruction, next tokens) {
+func (p *parser) parseInstructions(line tokens, group *instructions.Group, currentIndent int) (instrs []instructions.Instruction, next tokens) {
 	// Read a list of commands
 	for {
 		thisIndent, firstToken := line.indentation()
@@ -100,8 +102,14 @@ func (p *parser) parseInstructions(line tokens, currentIndent int) (instrs []ins
 		}
 		var ins instructions.Instruction
 		switch firstToken.typ {
+		case tokenPriority:
+			p.priority(line[1:], group)
 		case tokenIf:
-			ins, next = p.ifThen(line[2:], currentIndent)
+			if len(line) < 3 {
+				p.errs = append(p.errs, firstToken.error("expected an operation"))
+				break
+			}
+			ins, next = p.ifThen(line[2:], group, currentIndent)
 		default:
 			ins = p.command(line[1:])
 		}
@@ -117,8 +125,23 @@ func (p *parser) parseInstructions(line tokens, currentIndent int) (instrs []ins
 	}
 }
 
-func (p *parser) ifThen(toks []*token, currentIndent int) (instructions.Instruction, tokens) {
+func (p *parser) priority(toks []*token, group *instructions.Group) {
+	if len(toks) != 2 {
+		p.errs = append(p.errs, toks[0].error("expected a priority value, as an integer"))
+	}
+	priority, err := strconv.Atoi(toks[1].content)
+	if err != nil {
+		p.errs = append(p.errs, toks[1].errorf("%s is not a valid integer", toks[1]))
+	}
+	group.Priority = priority
+}
+
+func (p *parser) ifThen(toks []*token, group *instructions.Group, currentIndent int) (instructions.Instruction, tokens) {
 	// Later, add support for "and", "or", etc
+	if len(toks) != 3 {
+		p.errs = append(p.errs, toks[0].error("expected a value followed by an operator followed by another value"))
+		return nil, nil
+	}
 	left := toks[0]
 	operator := toks[1]
 	right := toks[2]
@@ -141,7 +164,7 @@ func (p *parser) ifThen(toks []*token, currentIndent int) (instructions.Instruct
 	if indent <= currentIndent {
 		p.errs = append(p.errs, operator.error(`expected commands in the if clause`))
 	}
-	inss, next := p.parseInstructions(next, indent)
+	inss, next := p.parseInstructions(next, group, indent)
 	ins := &instructions.If{Operation: operation, Instructions: inss}
 	return ins, next
 }

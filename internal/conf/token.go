@@ -13,6 +13,7 @@ const (
 	tokenEOL
 	tokenDefault
 
+	tokenPriority
 	tokenIf
 	tokenEqual
 )
@@ -33,6 +34,8 @@ type tokens []*token
 func identifyToken(line int, column int, content string) *token {
 	typ := tokenDefault
 	switch content {
+	case "priority":
+		typ = tokenPriority
 	case "if":
 		typ = tokenIf
 	case "=":

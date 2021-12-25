@@ -1,6 +1,8 @@
 package instructions
 
 import (
+	"sort"
+
 	"github.com/tiramiseb/quickonf/internal/commands"
 )
 
@@ -12,6 +14,7 @@ type GroupOutput interface {
 // Group is a list of successive commands
 type Group struct {
 	Name         string
+	Priority     int
 	Instructions []Instruction
 
 	Applys  []commands.Apply
@@ -49,4 +52,10 @@ func (g *Group) Apply(out GroupOutput) bool {
 		}
 	}
 	return true
+}
+
+func SortGroups(groups []*Group) {
+	sort.Slice(groups, func(i, j int) bool {
+		return groups[i].Priority > groups[j].Priority
+	})
 }
