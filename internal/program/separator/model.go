@@ -18,7 +18,7 @@ type model struct {
 }
 
 func New() *model {
-	return &model{height: 10}
+	return &model{height: 4}
 }
 
 func (m *model) Init() tea.Cmd {

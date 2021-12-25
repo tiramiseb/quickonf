@@ -57,7 +57,7 @@ func New(i int, g *instructions.Group) *model {
 	return &model{
 		group:     g,
 		idx:       i,
-		width:     20,
+		width:     2,
 		status:    StatusWaiting,
 		collapsed: true,
 	}

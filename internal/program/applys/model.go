@@ -39,7 +39,7 @@ type model struct {
 }
 
 func New() *model {
-	return &model{boxHeight: 20}
+	return &model{width: 2, boxHeight: 1}
 }
 
 func (m *model) Init() tea.Cmd {
@@ -130,7 +130,7 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		}
 		m.groups = make([]tea.Model, len(m.srcGroups))
 		for i, g := range m.srcGroups {
-			m.groups[i] = apply.New(g, i, m.width)
+			m.groups[i] = apply.New(g, i, m.width-2)
 			cmd = m.groups[i].Init()
 		}
 		m.redrawContent()

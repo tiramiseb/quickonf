@@ -1,8 +1,6 @@
 package checks
 
 import (
-	"runtime"
-
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 	"github.com/tiramiseb/quickonf/internal/instructions"
@@ -47,18 +45,21 @@ func New(groups []*instructions.Group) *model {
 	}
 	return &model{
 		groups:    gs,
+		width:     2,
+		boxHeight: 1,
 		active:    true,
-		boxHeight: 20,
 	}
 }
 
 func (m *model) Init() tea.Cmd {
-	nb := runtime.NumCPU()
-	cmds := make([]tea.Cmd, nb)
-	for i := 0; i < nb; i++ {
-		cmds[i] = m.next()
-	}
-	return tea.Batch(cmds...)
+	// Need to discriminate on priority before running in parallel
+	// nb := runtime.NumCPU()
+	// cmds := make([]tea.Cmd, nb)
+	// for i := 0; i < nb; i++ {
+	// 	cmds[i] = m.next()
+	// }
+	// return tea.Batch(cmds...)
+	return m.next()
 }
 
 func (m *model) next() tea.Cmd {
@@ -155,7 +156,6 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		} else {
 			cmd = tea.Batch(cmd, m.cursorPosition)
 		}
-
 	}
 	return m, cmd
 }
