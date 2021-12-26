@@ -13,7 +13,7 @@ func init() {
 }
 
 var file = Command{
-	"file",
+	"file.content",
 	"Create a file owned by root",
 	[]string{
 		"Absolute path of the file",
@@ -48,7 +48,7 @@ var file = Command{
 		}
 
 		apply = &Apply{
-			"file",
+			"file.content",
 			fmt.Sprintf("Will write requested content to %s", path),
 			func(out Output) bool {
 				if err := os.WriteFile(path, []byte(content), 0644); err != nil {
