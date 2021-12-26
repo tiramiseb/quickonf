@@ -9,6 +9,7 @@ func (p *parser) command(toks []*token) instructions.Instruction {
 	var targets []string
 	for equalPos, tok := range toks {
 		if tok.typ == tokenEqual {
+			targets = make([]string, equalPos)
 			for i := 0; i < equalPos; i++ {
 				targets[i] = toks[i].content
 			}
