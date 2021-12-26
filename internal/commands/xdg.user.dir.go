@@ -54,7 +54,7 @@ func xdgDir(usr *user.User, dirname string) (string, error) {
 			if len(matches) != 3 {
 				continue
 			}
-			dirs[matches[1]] = matches[2]
+			dirs[matches[1]] = strings.Replace(matches[2], "$HOME", usr.HomeDir, 1)
 		}
 		xdgDirsStorage[usr.Username] = dirs
 	}
@@ -81,7 +81,7 @@ var xdgUserDir = Command{
 	"Change downloads directory for john\n  file.user.directory john Downs\n  xdg.user.dir john DOWNLOAD Downs",
 	func(args []string) (result []string, msg string, apply *Apply, status Status) {
 		username := args[0]
-		name := args[1]
+		name := strings.ToUpper(args[1])
 		path := args[2]
 
 		usr, err := shared.Users.Get(username)
@@ -90,9 +90,9 @@ var xdgUserDir = Command{
 		}
 
 		if path == "" {
-			path = "$HOME/"
+			path = usr.HomeDir + "/"
 		} else if !filepath.IsAbs(path) {
-			path = filepath.Join("$HOME", path)
+			path = filepath.Join(usr.HomeDir, path)
 		}
 
 		dir, err := xdgDir(usr, name)
