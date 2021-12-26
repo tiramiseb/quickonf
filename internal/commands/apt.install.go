@@ -12,11 +12,11 @@ func init() {
 }
 
 var apt = Command{
-	"apt",
+	"apt.install",
 	"Install a package using apt",
 	[]string{"Name of the package to install"},
 	nil,
-	"Install the \"ipcalc\" tool\n  apt ipcalc",
+	"Install the \"ipcalc\" tool\n  apt.install ipcalc",
 	func(args []string) (result []string, msg string, apply *Apply, status Status) {
 		pkg := args[0]
 		ok, err := shared.DpkgPackages.Installed(pkg)
@@ -28,7 +28,7 @@ var apt = Command{
 		}
 
 		apply = &Apply{
-			"apt",
+			"apt.install",
 			fmt.Sprintf("will install %s", pkg),
 			func(out Output) bool {
 				out.Infof("Waiting for apt to be available to install %s", pkg)
