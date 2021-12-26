@@ -16,7 +16,7 @@ var fileAbsent = Command{
 	"file.absent",
 	"Make sure a file is absent",
 	[]string{
-		"Absolute path of the file to remove",
+		"Absolute path of the file to remove (including directory with content)",
 	},
 	nil,
 	`Make sure there is no "Photos" directory for jack\n  file.absent /home/jack/Photos`,
@@ -37,7 +37,7 @@ var fileAbsent = Command{
 			"file.absent",
 			fmt.Sprintf("Will remove %s", path),
 			func(out Output) bool {
-				if err := os.Remove(path); err != nil {
+				if err := os.RemoveAll(path); err != nil {
 					out.Errorf("could not remove %s: %s", path, err)
 					return false
 				}
