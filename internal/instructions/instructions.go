@@ -18,13 +18,3 @@ type Instruction interface {
 	// Reset everything, to have it as it has never run
 	Reset()
 }
-
-// type Output interface {
-// 	NewLine(name string) Output
-// 	Info(message string)
-// 	Infof(format string, a ...interface{})
-// 	Success(message string)
-// 	Successf(format string, a ...interface{})
-// 	Error(message string)
-// 	Errorf(format string, a ...interface{})
-// }
