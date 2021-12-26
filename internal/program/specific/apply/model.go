@@ -12,6 +12,8 @@ import (
 	"github.com/tiramiseb/quickonf/internal/program/common/style"
 )
 
+type ResetOutputsMsg struct{}
+
 var GroupStyles = map[group.Status]lipgloss.Style{
 	group.StatusWaiting:   style.GroupWaiting,
 	group.StatusRunning:   style.GroupRunning,

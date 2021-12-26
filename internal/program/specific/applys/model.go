@@ -65,26 +65,25 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (m *model) maybeAddGroupToApplys(grp *instructions.Group) (tea.Cmd, bool) {
-	alreadyIncluded := false
-
 	// Check if the group is already in the list of appliable groups
 	for i, g := range m.srcGroups {
 		if grp == g {
-			alreadyIncluded = true
 			if len(g.Applys) == 0 {
 				m.srcGroups[i] = m.srcGroups[len(m.srcGroups)-1]
 				m.srcGroups = m.srcGroups[:len(m.srcGroups)-1]
-			} else {
-				g.Reports = nil
+				return nil, true
 			}
+			var cmd tea.Cmd
+			m.groups[i], cmd = m.groups[i].Update(apply.ResetOutputsMsg{})
+			return cmd, true
 		}
 	}
 
 	// This group is not already in the list, add it
-	if !alreadyIncluded && len(grp.Applys) > 0 {
+	if len(grp.Applys) > 0 {
 		gidx := len(m.groups)
 		m.srcGroups = append(m.srcGroups, grp)
-		m.groups = append(m.groups, apply.New(grp, gidx, m.width-2))
+		m.groups = append(m.groups, apply.New(grp, gidx, m.width))
 		return m.groups[gidx].Init(), true
 	}
 	return nil, false
