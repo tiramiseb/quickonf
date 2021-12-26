@@ -31,24 +31,24 @@ var apt = Command{
 			"apt",
 			fmt.Sprintf("will install %s", pkg),
 			func(out Output) bool {
-				out.Infof("waiting for apt to be available to install %s", pkg)
+				out.Infof("Waiting for apt to be available to install %s", pkg)
 				shared.DpkgMutex.Lock()
 				defer shared.DpkgMutex.Unlock()
 				wait, err := helper.Exec([]string{"DEBIAN_FRONTEND=noninteractive"}, nil, "apt-get", "--yes", "--quiet", "install", pkg)
 				if err != nil {
-					out.Errorf("could not install %s: %s", pkg, err)
+					out.Errorf("Could not install %s: %s", pkg, err)
 					return false
 				}
-				out.Infof("installing %s", pkg)
+				out.Infof("Installing %s", pkg)
 				if err := wait(); err != nil {
-					out.Errorf("could not install %s: %s", pkg, err)
+					out.Errorf("Could not install %s: %s", pkg, err)
 					return false
 				}
-				out.Successf("installed %s", pkg)
+				out.Successf("Installed %s", pkg)
 				return true
 			},
 		}
-		return nil, fmt.Sprintf("need to install %s", pkg), apply, StatusInfo
+		return nil, fmt.Sprintf("Need to install %s", pkg), apply, StatusInfo
 	},
 	shared.DpkgPackages.Reset,
 }

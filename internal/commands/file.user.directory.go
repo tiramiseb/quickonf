@@ -58,12 +58,12 @@ var fileUserDirectory = Command{
 				}
 				uid, err := strconv.Atoi(usr.Uid)
 				if err != nil {
-					out.Errorf("could not get UID: %s", err)
+					out.Errorf("Could not get UID: %s", err)
 					return false
 				}
 				gid, err := strconv.Atoi(usr.Gid)
 				if err != nil {
-					out.Errorf("could not get GID: %s", err)
+					out.Errorf("Could not get GID: %s", err)
 					return false
 				}
 				if err := os.Chown(path, uid, gid); err != nil {
@@ -74,7 +74,7 @@ var fileUserDirectory = Command{
 				return true
 			},
 		}
-		return nil, fmt.Sprintf("need to create directory %s", path), apply, StatusInfo
+		return nil, fmt.Sprintf("Need to create directory %s", path), apply, StatusInfo
 	},
 	nil,
 }

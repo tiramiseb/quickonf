@@ -56,7 +56,7 @@ var fileDirectoryMove = Command{
 				return true
 			},
 		}
-		return nil, fmt.Sprintf("need to move %s to %s", source, destination), apply, StatusInfo
+		return nil, fmt.Sprintf("Need to move %s to %s", source, destination), apply, StatusInfo
 	},
 	nil,
 }

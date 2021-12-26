@@ -60,7 +60,7 @@ var file = Command{
 			},
 		}
 
-		return nil, fmt.Sprintf("need to write requested content to %s", path), apply, StatusInfo
+		return nil, fmt.Sprintf("Need to write requested content to %s", path), apply, StatusInfo
 	},
 	nil,
 }

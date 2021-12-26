@@ -38,7 +38,7 @@ var fileAbsent = Command{
 			fmt.Sprintf("Will remove %s", path),
 			func(out Output) bool {
 				if err := os.RemoveAll(path); err != nil {
-					out.Errorf("could not remove %s: %s", path, err)
+					out.Errorf("Could not remove %s: %s", path, err)
 					return false
 				}
 				out.Successf("Removed %s", path)
@@ -46,7 +46,7 @@ var fileAbsent = Command{
 			},
 		}
 
-		return nil, fmt.Sprintf("need to remove %s", path), apply, StatusInfo
+		return nil, fmt.Sprintf("Need to remove %s", path), apply, StatusInfo
 
 	},
 	nil,

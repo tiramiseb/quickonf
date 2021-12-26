@@ -111,11 +111,11 @@ var xdgUserDir = Command{
 				var buf bytes.Buffer
 				wait, err := helper.ExecAs(usr, nil, &buf, "xdg-user-dirs-update", "--set", name, path)
 				if err != nil {
-					out.Errorf("could not change XDG user dir %s: %s", name, err)
+					out.Errorf("Could not change XDG user dir %s: %s", name, err)
 					return false
 				}
 				if err := wait(); err != nil {
-					out.Errorf("could not change XDG user dir %s: %s", name, buf.String())
+					out.Errorf("Could not change XDG user dir %s: %s", name, buf.String())
 					return false
 				}
 				out.Successf("XDG user dir %s for %s set to %s", name, username, path)
@@ -123,7 +123,7 @@ var xdgUserDir = Command{
 			},
 		}
 
-		return nil, fmt.Sprintf("need to set %s directory to %s", name, path), apply, StatusInfo
+		return nil, fmt.Sprintf("Need to set %s directory to %s", name, path), apply, StatusInfo
 	},
 	resetXdgDir,
 }
