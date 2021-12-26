@@ -40,7 +40,7 @@ func Exec(env []string, output io.Writer, cmd string, args ...string) (wait func
 }
 
 func ExecAs(usr *user.User, env []string, output io.Writer, cmd string, args ...string) (wait func() error, err error) {
-	args = append([]string{"-u", usr.Username, cmd}, args...)
+	args = append([]string{"-u", usr.Username, "--", cmd}, args...)
 	command := execCmd(env, output, "runuser", args...)
 	err = command.Start()
 	return command.Wait, err
