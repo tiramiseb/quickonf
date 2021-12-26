@@ -29,7 +29,7 @@ var apt = Command{
 
 		apply = &Apply{
 			"apt.install",
-			fmt.Sprintf("will install %s", pkg),
+			fmt.Sprintf("Will install %s", pkg),
 			func(out Output) bool {
 				out.Infof("Waiting for apt to be available to install %s", pkg)
 				shared.DpkgMutex.Lock()
