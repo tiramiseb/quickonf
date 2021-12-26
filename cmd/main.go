@@ -4,14 +4,16 @@ import (
 	"fmt"
 	"os"
 	"os/user"
+	"path/filepath"
 
 	"github.com/tiramiseb/quickonf/internal/conf"
+	"github.com/tiramiseb/quickonf/internal/instructions"
 	"github.com/tiramiseb/quickonf/internal/program"
 )
 
 func main() {
 	config := "quickonf.qconf"
-	if len(os.Args) > 0 {
+	if len(os.Args) > 1 {
 		config = os.Args[1]
 	}
 
@@ -22,6 +24,7 @@ func main() {
 		os.Exit(1)
 	}
 	defer r.Close()
+	instructions.NewGlobalVar("confdir", filepath.Dir(config))
 	state, errs := conf.Read(r)
 	if errs != nil {
 		fmt.Println("Configuration file", config, "is invalid:")

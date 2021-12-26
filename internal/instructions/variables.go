@@ -30,6 +30,10 @@ func init() {
 	globalVars.define("oscodename", codename)
 }
 
+func NewGlobalVar(key, value string) {
+	globalVars.define(key, value)
+}
+
 func NewVariablesSet() Variables {
 	v := Variables{}
 	for key, val := range globalVars {
