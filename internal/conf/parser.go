@@ -1,9 +1,6 @@
 package conf
 
 import (
-	"strconv"
-
-	"github.com/tiramiseb/quickonf/internal/commands"
 	"github.com/tiramiseb/quickonf/internal/instructions"
 )
 
@@ -144,93 +141,4 @@ func (p *parser) parseInstructions(prefixAllWith []*token, line tokens, group *i
 			next = nil
 		}
 	}
-}
-
-func (p *parser) priority(toks []*token, group *instructions.Group) {
-	if len(toks) != 2 {
-		p.errs = append(p.errs, toks[0].error("expected a priority value, as an integer"))
-	}
-	priority, err := strconv.Atoi(toks[1].content)
-	if err != nil {
-		p.errs = append(p.errs, toks[1].errorf("%s is not a valid integer", toks[1]))
-	}
-	group.Priority = priority
-}
-
-func (p *parser) ifThen(toks []*token, group *instructions.Group, currentIndent int) (instructions.Instruction, tokens) {
-	// Later, add support for "and", "or", etc
-	if len(toks) != 3 {
-		p.errs = append(p.errs, toks[0].error("expected a value followed by an operator followed by another value"))
-		return nil, nil
-	}
-	left := toks[0]
-	operator := toks[1]
-	right := toks[2]
-	if left.typ != tokenDefault {
-		p.errs = append(p.errs, left.errorf(`expected value, got "%s"`, left.content))
-	}
-	if !operator.isOperator() {
-		p.errs = append(p.errs, operator.errorf(`expected operator, got "%s"`, operator.content))
-	}
-	if right.typ != tokenDefault {
-		p.errs = append(p.errs, right.errorf(`expected value, got "%s"`, right.content))
-	}
-	var operation instructions.Operation
-	switch operator.typ {
-	case tokenEqual:
-		operation = &instructions.Equal{Left: left.content, Right: right.content}
-	}
-	next := p.nextLine()
-	indent, _ := next.indentation()
-	if indent <= currentIndent {
-		p.errs = append(p.errs, operator.error(`expected commands in the if clause`))
-	}
-	inss, next := p.parseInstructions(nil, next, group, indent)
-	ins := &instructions.If{Operation: operation, Instructions: inss}
-	return ins, next
-}
-
-func (p *parser) repeat(toks []*token, group *instructions.Group, currentIndent int) ([]instructions.Instruction, tokens) {
-	next := p.nextLine()
-	indent, _ := next.indentation()
-	if indent <= currentIndent {
-		p.errs = append(p.errs, toks[0].error(`expected arguments in the repeat clause`))
-	}
-	return p.parseInstructions(toks, next, group, indent)
-}
-
-func (p *parser) command(toks []*token) instructions.Instruction {
-	var targets []string
-	for equalPos, tok := range toks {
-		if tok.typ == tokenEqual {
-			for i := 0; i < equalPos; i++ {
-				targets[i] = toks[i].content
-			}
-			toks = toks[equalPos+1:]
-		}
-	}
-	commandName := toks[0].content
-	args := make([]string, len(toks)-1)
-	for i, tok := range toks[1:] {
-		args[i] = tok.content
-	}
-	command, ok := commands.Get(commandName)
-	if !ok {
-		p.errs = append(p.errs, toks[0].errorf(`no command named "%s"`, commandName))
-		return nil
-	}
-	if len(targets) > len(command.Outputs) {
-		p.errs = append(
-			p.errs,
-			toks[1].errorf("expected maximum %d targets, got %d", len(command.Outputs), len(targets)),
-		)
-	}
-	if len(args) != len(command.Arguments) {
-		p.errs = append(
-			p.errs,
-			toks[1].errorf("expected %d arguments, got %d", len(command.Arguments), len(args)),
-		)
-		return nil
-	}
-	return &instructions.Command{Command: command, Arguments: args, Targets: targets}
 }
