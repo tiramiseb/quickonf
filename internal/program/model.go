@@ -59,12 +59,14 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case tea.KeyMsg:
 		switch msg.String() {
 		case "right":
-			m.checks, _ = m.checks.Update(checks.ActiveMsg{Active: false})
-			m.applys, _ = m.applys.Update(applys.ActiveMsg{Active: true})
+			activeMsg := separator.ActiveMsg{IsRightActive: true}
+			m.checks, _ = m.checks.Update(activeMsg)
+			m.applys, _ = m.applys.Update(activeMsg)
 			m.activeApply = true
 		case "left":
-			m.checks, _ = m.checks.Update(checks.ActiveMsg{Active: true})
-			m.applys, _ = m.applys.Update(applys.ActiveMsg{Active: false})
+			activeMsg := separator.ActiveMsg{IsRightActive: false}
+			m.checks, _ = m.checks.Update(activeMsg)
+			m.applys, _ = m.applys.Update(activeMsg)
 			m.activeApply = false
 		}
 		m.titlebar, cmd = m.titlebar.Update(msg)

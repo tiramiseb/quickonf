@@ -8,23 +8,15 @@ import (
 
 	"github.com/tiramiseb/quickonf/internal/commands"
 	"github.com/tiramiseb/quickonf/internal/instructions"
+	"github.com/tiramiseb/quickonf/internal/program/common/group"
 	"github.com/tiramiseb/quickonf/internal/program/common/style"
 )
 
-type Status int
-
-const (
-	StatusWaiting Status = iota
-	StatusRunning
-	StatusFailed
-	StatusSucceeded
-)
-
-var GroupStyles = map[Status]lipgloss.Style{
-	StatusWaiting:   style.GroupWaiting,
-	StatusRunning:   style.GroupRunning,
-	StatusFailed:    style.GroupFail,
-	StatusSucceeded: style.GroupSuccess,
+var GroupStyles = map[group.Status]lipgloss.Style{
+	group.StatusWaiting:   style.GroupWaiting,
+	group.StatusRunning:   style.GroupRunning,
+	group.StatusFailed:    style.GroupFail,
+	group.StatusSucceeded: style.GroupSuccess,
 }
 
 var InstructionStyles = map[commands.Status]lipgloss.Style{
@@ -33,37 +25,29 @@ var InstructionStyles = map[commands.Status]lipgloss.Style{
 	commands.StatusSuccess: style.InstructionSuccess,
 }
 
-type SuccessMsg struct {
-	Gidx int
-}
-
-type FailMsg struct {
-	Gidx int
-}
-
 type model struct {
 	group *instructions.Group
 	idx   int
 
 	width         int
 	groupName     string
-	status        Status
+	status        group.Status
 	collapsedView string
 	fullView      string
 	collapsed     bool
 
 	outputs  []*commandOutput
-	messages chan ChangeMsg
+	messages chan group.Msg
 }
 
-func New(group *instructions.Group, idx, width int) *model {
+func New(grp *instructions.Group, idx, width int) *model {
 	m := &model{
-		group: group,
+		group: grp,
 		idx:   idx,
 
 		width: width,
 
-		messages: make(chan ChangeMsg),
+		messages: make(chan group.Msg),
 	}
 	m.updateGroupname()
 	m.updateView()
@@ -72,6 +56,7 @@ func New(group *instructions.Group, idx, width int) *model {
 
 func (m *model) listen() tea.Msg {
 	return <-m.messages
+
 }
 
 func (m *model) Init() tea.Cmd {
@@ -80,13 +65,20 @@ func (m *model) Init() tea.Cmd {
 
 func (m *model) run() tea.Msg {
 	// TODO Allow re-running...
-	if m.status != StatusWaiting {
+	if m.status != group.StatusWaiting {
 		return nil
 	}
+	m.status = group.StatusRunning
+	var result group.MsgType
 	if m.group.Apply(m.commandOutputs()) {
-		return SuccessMsg{m.idx}
+		result = group.ApplySuccess
 	} else {
-		return FailMsg{m.idx}
+		result = group.ApplyFail
+	}
+	return group.Msg{
+		Gidx:  m.idx,
+		Group: m.group,
+		Type:  result,
 	}
 }
 
@@ -101,7 +93,7 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case " ", "t", "T":
 			m.collapsed = !m.collapsed
 		case "enter", "x", "X":
-			if m.status == StatusWaiting {
+			if m.status == group.StatusWaiting {
 				return m, m.run
 			}
 		}
@@ -114,21 +106,18 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				m.collapsed = !m.collapsed
 			}
 		}
-	case ChangeMsg:
+	case group.Msg:
 		if msg.Gidx != m.idx {
 			return m, nil
 		}
-		cmd = m.listen
-	case SuccessMsg:
-		if msg.Gidx != m.idx {
-			return m, nil
+		switch msg.Type {
+		case group.ApplyChange:
+			cmd = m.listen
+		case group.ApplySuccess:
+			m.status = group.StatusSucceeded
+		case group.ApplyFail:
+			m.status = group.StatusFailed
 		}
-		m.status = StatusSucceeded
-	case FailMsg:
-		if msg.Gidx != m.idx {
-			return m, nil
-		}
-		m.status = StatusFailed
 	}
 	m.updateView()
 	return m, cmd

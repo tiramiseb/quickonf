@@ -4,11 +4,8 @@ import (
 	"fmt"
 
 	"github.com/tiramiseb/quickonf/internal/commands"
+	"github.com/tiramiseb/quickonf/internal/program/common/group"
 )
-
-type ChangeMsg struct {
-	Gidx int
-}
 
 type commandOutputs struct {
 	m *model
@@ -34,35 +31,59 @@ type commandOutput struct {
 func (c *commandOutput) Info(message string) {
 	c.status = commands.StatusInfo
 	c.message = message
-	c.m.messages <- ChangeMsg{c.m.idx}
+	c.m.messages <- group.Msg{
+		Gidx:  c.m.idx,
+		Group: c.m.group,
+		Type:  group.ApplyChange,
+	}
 }
 
 func (c *commandOutput) Infof(format string, a ...interface{}) {
 	c.status = commands.StatusInfo
 	c.message = fmt.Sprintf(format, a...)
-	c.m.messages <- ChangeMsg{c.m.idx}
+	c.m.messages <- group.Msg{
+		Gidx:  c.m.idx,
+		Group: c.m.group,
+		Type:  group.ApplyChange,
+	}
 }
 
 func (c *commandOutput) Success(message string) {
 	c.status = commands.StatusSuccess
 	c.message = message
-	c.m.messages <- ChangeMsg{c.m.idx}
+	c.m.messages <- group.Msg{
+		Gidx:  c.m.idx,
+		Group: c.m.group,
+		Type:  group.ApplyChange,
+	}
 }
 
 func (c *commandOutput) Successf(format string, a ...interface{}) {
 	c.status = commands.StatusSuccess
 	c.message = fmt.Sprintf(format, a...)
-	c.m.messages <- ChangeMsg{c.m.idx}
+	c.m.messages <- group.Msg{
+		Gidx:  c.m.idx,
+		Group: c.m.group,
+		Type:  group.ApplyChange,
+	}
 }
 
 func (c *commandOutput) Error(message string) {
 	c.status = commands.StatusError
 	c.message = message
-	c.m.messages <- ChangeMsg{c.m.idx}
+	c.m.messages <- group.Msg{
+		Gidx:  c.m.idx,
+		Group: c.m.group,
+		Type:  group.ApplyChange,
+	}
 }
 
 func (c *commandOutput) Errorf(format string, a ...interface{}) {
 	c.status = commands.StatusError
 	c.message = fmt.Sprintf(format, a...)
-	c.m.messages <- ChangeMsg{c.m.idx}
+	c.m.messages <- group.Msg{
+		Gidx:  c.m.idx,
+		Group: c.m.group,
+		Type:  group.ApplyChange,
+	}
 }

@@ -8,8 +8,12 @@ import (
 	"github.com/tiramiseb/quickonf/internal/program/common/style"
 )
 
+type ActiveMsg struct {
+	IsRightActive bool
+}
+
 type CursorMsg struct {
-	PointingApply bool
+	PointingRight bool
 	Position      int
 }
 
@@ -38,7 +42,7 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 func (m *model) View() string {
 	var cursor string
-	if m.currentCursor.PointingApply {
+	if m.currentCursor.PointingRight {
 		cursor = "⏵"
 	} else {
 		cursor = "⏴"

@@ -1,13 +1,11 @@
-package checks
+package box
 
 import (
 	"strings"
 
 	tea "github.com/charmbracelet/bubbletea"
-	"github.com/charmbracelet/lipgloss"
-
 	"github.com/tiramiseb/quickonf/internal/program/common/style"
-	"github.com/tiramiseb/quickonf/internal/program/specific/check"
+	"github.com/tiramiseb/quickonf/internal/program/specific/separator"
 )
 
 func (m *model) windowSize(msg tea.WindowSizeMsg) tea.Cmd {
@@ -21,17 +19,21 @@ func (m *model) windowSize(msg tea.WindowSizeMsg) tea.Cmd {
 		m.boxHeight = 0
 	}
 	m.updateActive()
-	check.GroupStyles = map[check.Status]lipgloss.Style{
-		check.StatusWaiting:   style.GroupWaiting.Copy().Width(newMsg.Width),
-		check.StatusRunning:   style.GroupRunning.Copy().Width(newMsg.Width),
-		check.StatusFailed:    style.GroupFail.Copy().Width(newMsg.Width),
-		check.StatusSucceeded: style.GroupSuccess.Copy().Width(newMsg.Width),
-	}
 	cmds := make([]tea.Cmd, len(m.groups))
 	for i, g := range m.groups {
 		m.groups[i], cmds[i] = g.Update(newMsg)
 	}
 	return tea.Batch(cmds...)
+}
+
+func (m *model) updateActive() {
+	if m.active {
+		m.subtitleStyle = style.ActiveBoxTitle.Copy().Width(m.width)
+		m.boxStyle = style.ActiveBox.Copy().Width(m.width - 2).Height(m.boxHeight)
+	} else {
+		m.subtitleStyle = style.BoxTitle.Copy().Width(m.width)
+		m.boxStyle = style.Box.Copy().Width(m.width - 2).Height(m.boxHeight)
+	}
 }
 
 // redrawContent draws content for all groups, even if they are not displayed
@@ -53,7 +55,6 @@ func (m *model) redrawContent() {
 
 // updateView extracts lines to display from content for all groups
 func (m *model) updateView() {
-
 	// Find where is the selected group
 	startOfSelectedGroup := -1
 	sizeOfSelectedGroup := -1
@@ -100,19 +101,18 @@ findGroup:
 	m.view = strings.Join(m.allGroupsView[firstLineInView:lastLineInView], "\n")
 	m.viewLineToGroup = m.allLineToGroup[firstLineInView:lastLineInView]
 	m.selectedGroupFirstLine = startOfSelectedGroup - firstLineInView
-
 }
 
-func (m *model) updateActive() {
-	if m.active {
-		m.subtitleStyle = style.ActiveBoxTitle.Copy().Width(m.width)
-		m.boxStyle = style.ActiveBox.Copy().Width(m.width - 2).Height(m.boxHeight)
-	} else {
-		m.subtitleStyle = style.BoxTitle.Copy().Width(m.width)
-		m.boxStyle = style.Box.Copy().Width(m.width - 2).Height(m.boxHeight)
+func (m *model) cursorPosition() tea.Msg {
+	return separator.CursorMsg{
+		PointingRight: m.cursorPointsRight,
+		Position:      m.selectedGroupFirstLine,
 	}
 }
 
 func (m *model) View() string {
-	return m.subtitleStyle.Render("Check") + "\n" + m.boxStyle.Render(m.view)
+	if len(m.groups) == 0 {
+		return m.subtitleStyle.Render(m.title) + "\n" + m.boxStyle.Render(m.msgIfEmpty)
+	}
+	return m.subtitleStyle.Render(m.title) + "\n" + m.boxStyle.Render(m.view)
 }

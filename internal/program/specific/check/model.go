@@ -8,32 +8,15 @@ import (
 
 	"github.com/tiramiseb/quickonf/internal/commands"
 	"github.com/tiramiseb/quickonf/internal/instructions"
+	"github.com/tiramiseb/quickonf/internal/program/common/group"
 	"github.com/tiramiseb/quickonf/internal/program/common/style"
 )
 
-type TriggerMsg struct {
-	Gidx int
-}
-
-type DoneMsg struct {
-	Gidx  int
-	Group *instructions.Group
-}
-
-type Status int
-
-const (
-	StatusWaiting Status = iota
-	StatusRunning
-	StatusFailed
-	StatusSucceeded
-)
-
-var GroupStyles = map[Status]lipgloss.Style{
-	StatusWaiting:   style.GroupWaiting,
-	StatusRunning:   style.GroupRunning,
-	StatusFailed:    style.GroupFail,
-	StatusSucceeded: style.GroupSuccess,
+var GroupStyles = map[group.Status]lipgloss.Style{
+	group.StatusWaiting:   style.GroupWaiting,
+	group.StatusRunning:   style.GroupRunning,
+	group.StatusFailed:    style.GroupFail,
+	group.StatusSucceeded: style.GroupSuccess,
 }
 
 var InstructionStyles = map[commands.Status]lipgloss.Style{
@@ -48,7 +31,7 @@ type model struct {
 
 	width         int
 	groupName     string
-	status        Status
+	status        group.Status
 	collapsedView string
 	fullView      string
 	collapsed     bool
@@ -59,7 +42,7 @@ func New(i int, g *instructions.Group) *model {
 		group:     g,
 		idx:       i,
 		width:     2,
-		status:    StatusWaiting,
+		status:    group.StatusWaiting,
 		collapsed: true,
 	}
 }
@@ -69,21 +52,29 @@ func (m *model) Init() tea.Cmd {
 }
 
 func (m *model) trigger() tea.Msg {
-	if m.status == StatusWaiting {
-		m.status = StatusRunning
-		return TriggerMsg{m.idx}
+	if m.status == group.StatusWaiting {
+		m.status = group.StatusRunning
+		return group.Msg{
+			Gidx:  m.idx,
+			Group: m.group,
+			Type:  group.CheckTrigger,
+		}
 	}
 	return nil
 }
 
 func (m *model) run() tea.Msg {
 	if m.group.Run() {
-		m.status = StatusSucceeded
+		m.status = group.StatusSucceeded
 	} else {
-		m.status = StatusFailed
+		m.status = group.StatusFailed
 		m.collapsed = false
 	}
-	return DoneMsg{m.idx, m.group}
+	return group.Msg{
+		Gidx:  m.idx,
+		Group: m.group,
+		Type:  group.CheckDone,
+	}
 }
 
 func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
@@ -97,9 +88,9 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case " ", "t", "T":
 			m.collapsed = !m.collapsed
 		case "enter", "x", "X":
-			if m.status != StatusRunning {
+			if m.status != group.StatusRunning {
 				m.group.Reset()
-				m.status = StatusWaiting
+				m.status = group.StatusWaiting
 				return m, m.trigger
 			}
 		}
@@ -112,14 +103,13 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				m.collapsed = !m.collapsed
 			}
 		}
-	case TriggerMsg:
+	case group.Msg:
 		if msg.Gidx != m.idx {
 			return m, nil
 		}
-		cmd = m.run
-	case DoneMsg:
-		if msg.Gidx != m.idx {
-			return m, nil
+		switch msg.Type {
+		case group.CheckTrigger:
+			cmd = m.run
 		}
 	}
 	m.updateView()
