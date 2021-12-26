@@ -112,6 +112,18 @@ func (p *parser) parseInstructions(prefixAllWith []*token, line tokens, group *i
 		}
 		var ins instructions.Instruction
 		switch firstToken.typ {
+		case tokenExpand:
+			if len(line) > 3 {
+				p.errs = append(p.errs, firstToken.error("expected a variable name as the only argument"))
+				break
+			}
+			ins = p.expand(line[2])
+		case tokenIf:
+			if len(line) < 3 {
+				p.errs = append(p.errs, firstToken.error("expected an operation"))
+				break
+			}
+			ins, next = p.ifThen(line[2:], group, currentIndent)
 		case tokenPriority:
 			p.priority(line[1:], group)
 		case tokenRepeat:
@@ -122,12 +134,6 @@ func (p *parser) parseInstructions(prefixAllWith []*token, line tokens, group *i
 			var inss []instructions.Instruction
 			inss, next = p.repeat(line[2:], group, currentIndent)
 			instrs = append(instrs, inss...)
-		case tokenIf:
-			if len(line) < 3 {
-				p.errs = append(p.errs, firstToken.error("expected an operation"))
-				break
-			}
-			ins, next = p.ifThen(line[2:], group, currentIndent)
 		default:
 			ins = p.command(line[1:])
 		}

@@ -13,10 +13,11 @@ const (
 	tokenEOL
 	tokenDefault
 
+	tokenEqual
+	tokenExpand
+	tokenIf
 	tokenPriority
 	tokenRepeat
-	tokenIf
-	tokenEqual
 )
 
 var tokenOperators = []tokenType{tokenEqual}
@@ -35,14 +36,16 @@ type tokens []*token
 func identifyToken(line int, column int, content string) *token {
 	typ := tokenDefault
 	switch content {
+	case "=":
+		typ = tokenEqual
+	case "expand":
+		typ = tokenExpand
+	case "if":
+		typ = tokenIf
 	case "priority":
 		typ = tokenPriority
 	case "repeat":
 		typ = tokenRepeat
-	case "if":
-		typ = tokenIf
-	case "=":
-		typ = tokenEqual
 	}
 	return &token{line, column, typ, content}
 }
