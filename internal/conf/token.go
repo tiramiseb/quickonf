@@ -14,6 +14,7 @@ const (
 	tokenDefault
 
 	tokenPriority
+	tokenRepeat
 	tokenIf
 	tokenEqual
 )
@@ -36,6 +37,8 @@ func identifyToken(line int, column int, content string) *token {
 	switch content {
 	case "priority":
 		typ = tokenPriority
+	case "repeat":
+		typ = tokenRepeat
 	case "if":
 		typ = tokenIf
 	case "=":

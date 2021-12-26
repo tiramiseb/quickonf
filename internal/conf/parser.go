@@ -34,14 +34,6 @@ func (p *parser) nextLine() (toks tokens) {
 // processing and return the "next" line for processing by another sub-parser.
 // It is necessary in order to know how to process next line
 func (p *parser) parse() (groups []*instructions.Group, err error) {
-	// for _, t := range p.tokens {
-	// 	DDcontent := fmt.Sprintf("%s", t.content)
-	// 	if len(DDcontent) > 70 {
-	// 		DDcontent = DDcontent[:70]
-	// 	}
-	// 	fmt.Printf("[%d:%d] %d >> %s\n", t.line, t.column, t.typ, DDcontent)
-	// }
-	// return nil, nil
 	next := p.nextLine()
 	for {
 		if next == nil {
@@ -79,7 +71,7 @@ func (p *parser) parseGroup(line tokens) (group *instructions.Group, next tokens
 	if indent == 0 {
 		return
 	}
-	group.Instructions, next = p.parseInstructions(next, group, indent)
+	group.Instructions, next = p.parseInstructions(nil, next, group, indent)
 	nextIndent, firstToken := next.indentation()
 	if nextIndent > 0 {
 		p.errs = append(p.errs, firstToken.errorf("invalid indentation (expecting none or %d)", indent))
@@ -88,8 +80,9 @@ func (p *parser) parseGroup(line tokens) (group *instructions.Group, next tokens
 	return
 }
 
-func (p *parser) parseInstructions(line tokens, group *instructions.Group, currentIndent int) (instrs []instructions.Instruction, next tokens) {
+func (p *parser) parseInstructions(prefixAllWith []*token, line tokens, group *instructions.Group, currentIndent int) (instrs []instructions.Instruction, next tokens) {
 	// Read a list of commands
+	nbPrefixes := len(prefixAllWith)
 	for {
 		thisIndent, firstToken := line.indentation()
 		if thisIndent > currentIndent {
@@ -100,10 +93,38 @@ func (p *parser) parseInstructions(line tokens, group *instructions.Group, curre
 			next = line
 			return
 		}
+		if len(prefixAllWith) > 0 {
+			newLine := make(tokens, len(prefixAllWith)+len(line))
+			if line[0].typ == tokenIndentation {
+				newLine[0] = line[0]
+				for i, t := range prefixAllWith {
+					newLine[i+1] = t
+				}
+				for i := 1; i < len(line); i++ {
+					newLine[i+nbPrefixes] = line[i]
+				}
+			} else {
+				for i, t := range prefixAllWith {
+					newLine[i] = t
+				}
+				for i, t := range line {
+					newLine[i+nbPrefixes] = t
+				}
+			}
+			line = newLine
+		}
 		var ins instructions.Instruction
 		switch firstToken.typ {
 		case tokenPriority:
 			p.priority(line[1:], group)
+		case tokenRepeat:
+			if len(line) < 3 {
+				p.errs = append(p.errs, firstToken.error("expected something to repeat"))
+				break
+			}
+			var inss []instructions.Instruction
+			inss, next = p.repeat(line[2:], group, currentIndent)
+			instrs = append(instrs, inss...)
 		case tokenIf:
 			if len(line) < 3 {
 				p.errs = append(p.errs, firstToken.error("expected an operation"))
@@ -164,9 +185,18 @@ func (p *parser) ifThen(toks []*token, group *instructions.Group, currentIndent 
 	if indent <= currentIndent {
 		p.errs = append(p.errs, operator.error(`expected commands in the if clause`))
 	}
-	inss, next := p.parseInstructions(next, group, indent)
+	inss, next := p.parseInstructions(nil, next, group, indent)
 	ins := &instructions.If{Operation: operation, Instructions: inss}
 	return ins, next
+}
+
+func (p *parser) repeat(toks []*token, group *instructions.Group, currentIndent int) ([]instructions.Instruction, tokens) {
+	next := p.nextLine()
+	indent, _ := next.indentation()
+	if indent <= currentIndent {
+		p.errs = append(p.errs, toks[0].error(`expected arguments in the repeat clause`))
+	}
+	return p.parseInstructions(toks, next, group, indent)
 }
 
 func (p *parser) command(toks []*token) instructions.Instruction {
