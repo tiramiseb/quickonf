@@ -20,7 +20,7 @@ var file = Command{
 		"Content of the file",
 	},
 	nil,
-	"Say hello\n  file /home/hello.txt \"Hello World!\"",
+	"Say hello\n  file.content /home/hello.txt \"Hello World!\"",
 	func(args []string) (result []string, msg string, apply *Apply, status Status) {
 		path := args[0]
 		content := args[1]
