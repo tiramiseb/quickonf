@@ -12,6 +12,10 @@ type UpdateElementsMsg struct {
 
 type ForceRedrawMsg struct{}
 
+type ElementSelectedMsg struct {
+	Selected bool
+}
+
 type elementLine struct {
 	idx         int
 	elementline int
@@ -69,9 +73,11 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		}
 		switch msg.String() {
 		case "up":
-			m.cursorUp()
+			cmd = m.cursorUp()
+			m.redrawContent()
 		case "down":
-			m.cursorDown()
+			cmd = m.cursorDown()
+			m.redrawContent()
 		default:
 			m.elements[m.selectedElement], cmd = m.elements[m.selectedElement].Update(msg)
 			m.redrawContent()
@@ -103,11 +109,13 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 		// Mouse wheel movement
 		if msg.Type == tea.MouseWheelUp {
-			m.cursorUp()
+			cmd = m.cursorUp()
+			m.redrawContent()
 			break
 		}
 		if msg.Type == tea.MouseWheelDown {
-			m.cursorDown()
+			cmd = m.cursorDown()
+			m.redrawContent()
 			break
 		}
 
@@ -135,8 +143,11 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		cmd = tea.Batch(cmds...)
 		m.redrawContent()
 	case separator.ActiveMsg:
-		m.active = msg.IsRightActive == m.cursorPointsRight
+		isActive := msg.IsRightActive == m.cursorPointsRight
+		m.active = isActive
+		m.elements[m.selectedElement], cmd = m.elements[m.selectedElement].Update(ElementSelectedMsg{isActive})
 		m.updateActive()
+		m.redrawContent()
 	case ForceRedrawMsg:
 		m.redrawContent()
 	}
@@ -151,15 +162,23 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	return m, cmd
 }
 
-func (m *model) cursorUp() {
+func (m *model) cursorUp() tea.Cmd {
+	var cmd1, cmd2 tea.Cmd
+	m.elements[m.selectedElement], cmd1 = m.elements[m.selectedElement].Update(ElementSelectedMsg{false})
 	m.selectedElement--
 	if m.selectedElement < 0 {
 		m.selectedElement = 0
 	}
+	m.elements[m.selectedElement], cmd2 = m.elements[m.selectedElement].Update(ElementSelectedMsg{true})
+	return tea.Batch(cmd1, cmd2)
 }
-func (m *model) cursorDown() {
+func (m *model) cursorDown() tea.Cmd {
+	var cmd1, cmd2 tea.Cmd
+	m.elements[m.selectedElement], cmd1 = m.elements[m.selectedElement].Update(ElementSelectedMsg{false})
 	m.selectedElement++
 	if m.selectedElement >= len(m.elements) {
 		m.selectedElement = len(m.elements) - 1
 	}
+	m.elements[m.selectedElement], cmd2 = m.elements[m.selectedElement].Update(ElementSelectedMsg{true})
+	return tea.Batch(cmd1, cmd2)
 }

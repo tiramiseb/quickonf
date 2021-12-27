@@ -8,29 +8,36 @@ import (
 
 	"github.com/tiramiseb/quickonf/internal/commands"
 	"github.com/tiramiseb/quickonf/internal/instructions"
+	"github.com/tiramiseb/quickonf/internal/program/common/box"
 	"github.com/tiramiseb/quickonf/internal/program/common/group"
 	"github.com/tiramiseb/quickonf/internal/program/common/style"
 )
 
-var GroupStyles = map[group.Status]lipgloss.Style{
-	group.StatusWaiting:   style.GroupWaiting,
-	group.StatusRunning:   style.GroupRunning,
-	group.StatusFailed:    style.GroupFail,
-	group.StatusSucceeded: style.GroupSuccess,
-}
-
-var HoveredGroupStyles = map[group.Status]lipgloss.Style{
-	group.StatusWaiting:   style.HoveredGroupWaiting,
-	group.StatusRunning:   style.HoveredGroupRunning,
-	group.StatusFailed:    style.HoveredGroupFail,
-	group.StatusSucceeded: style.HoveredGroupSuccess,
-}
-
-var InstructionStyles = map[commands.Status]lipgloss.Style{
-	commands.StatusInfo:    style.InstructionInfo,
-	commands.StatusError:   style.InstructionError,
-	commands.StatusSuccess: style.InstructionSuccess,
-}
+var (
+	GroupStyles = map[group.Status]lipgloss.Style{
+		group.StatusWaiting:   style.GroupWaiting,
+		group.StatusRunning:   style.GroupRunning,
+		group.StatusFailed:    style.GroupFail,
+		group.StatusSucceeded: style.GroupSuccess,
+	}
+	HoveredGroupStyles = map[group.Status]lipgloss.Style{
+		group.StatusWaiting:   style.HoveredGroupWaiting,
+		group.StatusRunning:   style.HoveredGroupRunning,
+		group.StatusFailed:    style.HoveredGroupFail,
+		group.StatusSucceeded: style.HoveredGroupSuccess,
+	}
+	SelectedGroupStyles = map[group.Status]lipgloss.Style{
+		group.StatusWaiting:   style.SelectedGroupWaiting,
+		group.StatusRunning:   style.SelectedGroupRunning,
+		group.StatusFailed:    style.SelectedGroupFail,
+		group.StatusSucceeded: style.SelectedGroupSuccess,
+	}
+	InstructionStyles = map[commands.Status]lipgloss.Style{
+		commands.StatusInfo:    style.InstructionInfo,
+		commands.StatusError:   style.InstructionError,
+		commands.StatusSuccess: style.InstructionSuccess,
+	}
+)
 
 type model struct {
 	group *instructions.Group
@@ -43,6 +50,7 @@ type model struct {
 	fullView      string
 	collapsed     bool
 	hovered       bool
+	selected      bool
 }
 
 func New(i int, g *instructions.Group) *model {
@@ -125,6 +133,8 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case group.CheckTrigger:
 			cmd = m.run
 		}
+	case box.ElementSelectedMsg:
+		m.selected = msg.Selected
 	}
 	m.updateView()
 	return m, cmd
@@ -132,9 +142,12 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 func (m *model) updateView() {
 	var groupstyle lipgloss.Style
-	if m.hovered {
+	switch {
+	case m.hovered:
 		groupstyle = HoveredGroupStyles[m.status]
-	} else {
+	case m.selected:
+		groupstyle = SelectedGroupStyles[m.status]
+	default:
 		groupstyle = GroupStyles[m.status]
 	}
 	m.collapsedView = groupstyle.Render("⏵ " + m.groupName)
