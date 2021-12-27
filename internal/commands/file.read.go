@@ -25,7 +25,7 @@ var fileRead = Command{
 		if err != nil {
 			return nil, err.Error(), nil, StatusError
 		}
-		return []string{string(content)}, fmt.Sprintf("Read content of file %s", path), nil, StatusInfo
+		return []string{string(content)}, fmt.Sprintf("Read content of file %s", path), nil, StatusSuccess
 	},
 	nil,
 }
