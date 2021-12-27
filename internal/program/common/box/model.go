@@ -128,9 +128,17 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		clickedElement := -1
 		if line < len(m.viewLineToElement) {
 			elementline := m.viewLineToElement[line]
-			msg.Y = elementline.elementline
-			m.elements[elementline.idx], cmds[elementline.idx] = m.elements[elementline.idx].Update(msg)
-			clickedElement = elementline.idx
+			if msg.Type == tea.MouseRelease && elementline.idx != m.selectedElement {
+				var cmd1, cmd2 tea.Cmd
+				m.elements[m.selectedElement], cmd1 = m.elements[m.selectedElement].Update(ElementSelectedMsg{false})
+				m.selectedElement = elementline.idx
+				m.elements[elementline.idx], cmd2 = m.elements[elementline.idx].Update(ElementSelectedMsg{true})
+				cmds[elementline.idx] = tea.Batch(cmd1, cmd2)
+			} else {
+				msg.Y = elementline.elementline
+				m.elements[elementline.idx], cmds[elementline.idx] = m.elements[elementline.idx].Update(msg)
+				clickedElement = elementline.idx
+			}
 		}
 
 		// And provide unknown to all other elements
