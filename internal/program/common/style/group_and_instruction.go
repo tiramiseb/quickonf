@@ -14,6 +14,14 @@ var (
 			Background(failedBg)
 	GroupSuccess = baseGroup.Copy().
 			Background(successBg)
+	HoveredGroupWaiting = baseGroup.Copy().
+				Background(hoveredWaitingBg)
+	HoveredGroupRunning = baseGroup.Copy().
+				Background(hoveredRunningBg)
+	HoveredGroupFail = baseGroup.Copy().
+				Background(hoveredFailedBg)
+	HoveredGroupSuccess = baseGroup.Copy().
+				Background(hoveredSuccessBg)
 
 	baseInstruction = lipgloss.NewStyle().
 			Foreground(text)

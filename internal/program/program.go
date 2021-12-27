@@ -11,7 +11,7 @@ func Run(g []*instructions.Group) {
 	program := tea.NewProgram(
 		newModel(g),
 		tea.WithAltScreen(),
-		tea.WithMouseCellMotion(),
+		tea.WithMouseAllMotion(),
 	)
 	program.Start()
 }

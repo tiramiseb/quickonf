@@ -13,10 +13,14 @@ const (
 	buttonBg = lipgloss.Color("#0000ff")
 	buttonFg = lipgloss.Color("#ffff00")
 
-	waitingBg = lipgloss.Color("#555555")
-	runningBg = lipgloss.Color("#0000ff")
-	failedBg  = lipgloss.Color("#ff0000")
-	successBg = lipgloss.Color("#005500")
+	waitingBg        = lipgloss.Color("#555555")
+	hoveredWaitingBg = lipgloss.Color("#777777")
+	runningBg        = lipgloss.Color("#0000ff")
+	hoveredRunningBg = lipgloss.Color("#2222ff")
+	failedBg         = lipgloss.Color("#ff0000")
+	hoveredFailedBg  = lipgloss.Color("#ff2222")
+	successBg        = lipgloss.Color("#005500")
+	hoveredSuccessBg = lipgloss.Color("#227722")
 )
 
 var (

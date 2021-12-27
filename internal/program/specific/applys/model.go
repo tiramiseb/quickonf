@@ -47,6 +47,12 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			group.StatusFailed:    style.GroupFail.Copy().Width(m.width),
 			group.StatusSucceeded: style.GroupSuccess.Copy().Width(m.width),
 		}
+		apply.HoveredGroupStyles = map[group.Status]lipgloss.Style{
+			group.StatusWaiting:   style.HoveredGroupWaiting.Copy().Width(m.width),
+			group.StatusRunning:   style.HoveredGroupRunning.Copy().Width(m.width),
+			group.StatusFailed:    style.HoveredGroupFail.Copy().Width(m.width),
+			group.StatusSucceeded: style.HoveredGroupSuccess.Copy().Width(m.width),
+		}
 	case group.Msg:
 		switch msg.Type {
 		case group.CheckDone:

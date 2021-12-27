@@ -19,6 +19,13 @@ var GroupStyles = map[group.Status]lipgloss.Style{
 	group.StatusSucceeded: style.GroupSuccess,
 }
 
+var HoveredGroupStyles = map[group.Status]lipgloss.Style{
+	group.StatusWaiting:   style.HoveredGroupWaiting,
+	group.StatusRunning:   style.HoveredGroupRunning,
+	group.StatusFailed:    style.HoveredGroupFail,
+	group.StatusSucceeded: style.HoveredGroupSuccess,
+}
+
 var InstructionStyles = map[commands.Status]lipgloss.Style{
 	commands.StatusInfo:    style.InstructionInfo,
 	commands.StatusError:   style.InstructionError,
@@ -35,6 +42,7 @@ type model struct {
 	collapsedView string
 	fullView      string
 	collapsed     bool
+	hovered       bool
 }
 
 func New(i int, g *instructions.Group) *model {
@@ -97,10 +105,18 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case tea.MouseMsg:
 		switch msg.Type {
 		case tea.MouseUnknown:
-			return m, nil
+			if !m.hovered {
+				return m, nil
+			}
+			m.hovered = false
 		case tea.MouseRelease:
 			if msg.Y == 0 {
 				m.collapsed = !m.collapsed
+			}
+			fallthrough
+		default:
+			if !m.hovered {
+				m.hovered = true
 			}
 		}
 	case group.Msg:
@@ -117,9 +133,15 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (m *model) updateView() {
-	m.collapsedView = GroupStyles[m.status].Render("⏵ " + m.groupName)
+	var groupstyle lipgloss.Style
+	if m.hovered {
+		groupstyle = HoveredGroupStyles[m.status]
+	} else {
+		groupstyle = GroupStyles[m.status]
+	}
+	m.collapsedView = groupstyle.Render("⏵ " + m.groupName)
 	lines := []string{
-		GroupStyles[m.status].Render("⏷ " + m.groupName),
+		groupstyle.Render("⏷ " + m.groupName),
 	}
 	if len(m.group.Reports) > 0 {
 		for _, report := range m.group.Reports {
