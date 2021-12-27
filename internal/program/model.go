@@ -81,23 +81,32 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		unknown := tea.MouseMsg{
 			Type: tea.MouseUnknown,
 		}
+		var cmd1, cmd2, cmd3 tea.Cmd
 		switch msg.Y {
 		case 0:
-			m.titlebar, cmd = m.titlebar.Update(msg)
-			m.applys, _ = m.applys.Update(unknown)
-			m.applys, _ = m.applys.Update(unknown)
+			m.titlebar, cmd1 = m.titlebar.Update(msg)
+			m.checks, cmd2 = m.checks.Update(unknown)
+			m.applys, cmd3 = m.applys.Update(unknown)
 		default:
-			m.titlebar, _ = m.titlebar.Update(unknown)
+			m.titlebar, cmd1 = m.titlebar.Update(unknown)
 			msg.Y--
 			if msg.X <= m.leftPartEndColumn {
-				m.checks, cmd = m.checks.Update(msg)
-				m.applys, _ = m.applys.Update(unknown)
-			} else if msg.X >= m.leftPartEndColumn {
+				// Over checks
+				m.checks, cmd2 = m.checks.Update(msg)
+				m.applys, cmd3 = m.applys.Update(unknown)
+			} else if msg.X >= m.rightPartStartColumn {
+				// Over applies
 				msg.X -= m.rightPartStartColumn
-				m.applys, cmd = m.applys.Update(msg)
-				m.checks, _ = m.checks.Update(unknown)
+				m.checks, cmd2 = m.checks.Update(unknown)
+				m.applys, cmd3 = m.applys.Update(msg)
+			} else {
+				// Over the separator
+				m.titlebar, cmd1 = m.titlebar.Update(unknown)
+				m.checks, cmd2 = m.checks.Update(unknown)
+				m.applys, cmd3 = m.applys.Update(unknown)
 			}
 		}
+		cmd = tea.Batch(cmd1, cmd2, cmd3)
 	case separator.CursorMsg:
 		m.separator, cmd = m.separator.Update(msg)
 	default:

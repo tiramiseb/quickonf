@@ -115,9 +115,7 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			}
 			m.hovered = false
 		case tea.MouseRelease:
-			if msg.Y == 0 {
-				m.collapsed = !m.collapsed
-			}
+			m.collapsed = !m.collapsed
 			fallthrough
 		default:
 			if !m.hovered {

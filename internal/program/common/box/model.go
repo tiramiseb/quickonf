@@ -87,8 +87,16 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			break
 		}
 
-		// These situations mean the user did not click on any group
+		// These situations mean the event is not over a group
 		if msg.X <= 0 || msg.X >= m.width-1 || msg.Y <= 1 || msg.Y >= m.boxHeight+2 {
+			unknown := tea.MouseMsg{
+				Type: tea.MouseUnknown,
+			}
+			for i, g := range m.groups {
+				m.groups[i], cmds[i] = g.Update(unknown)
+			}
+			cmd = tea.Batch(cmds...)
+			m.redrawContent()
 			break
 		}
 
