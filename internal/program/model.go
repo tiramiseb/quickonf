@@ -59,54 +59,89 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case tea.KeyMsg:
 		switch msg.String() {
 		case "right":
-			activeMsg := separator.ActiveMsg{IsRightActive: true}
-			m.checks, _ = m.checks.Update(activeMsg)
-			m.applys, _ = m.applys.Update(activeMsg)
-			m.activeApply = true
+			cmd = m.activateApplies()
 		case "left":
-			activeMsg := separator.ActiveMsg{IsRightActive: false}
-			m.checks, _ = m.checks.Update(activeMsg)
-			m.applys, _ = m.applys.Update(activeMsg)
-			m.activeApply = false
-		}
-		m.titlebar, cmd = m.titlebar.Update(msg)
-		if cmd == nil {
-			if m.activeApply {
-				m.applys, cmd = m.applys.Update(msg)
-			} else {
-				m.checks, cmd = m.checks.Update(msg)
+			cmd = m.activateChecks()
+		default:
+			m.titlebar, cmd = m.titlebar.Update(msg)
+			if cmd == nil {
+				if m.activeApply {
+					m.applys, cmd = m.applys.Update(msg)
+				} else {
+					m.checks, cmd = m.checks.Update(msg)
+				}
 			}
 		}
 	case tea.MouseMsg:
 		unknown := tea.MouseMsg{
 			Type: tea.MouseUnknown,
 		}
-		var cmd1, cmd2, cmd3 tea.Cmd
+		var subCmd tea.Cmd
+		var cmds []tea.Cmd
 		switch msg.Y {
 		case 0:
-			m.titlebar, cmd1 = m.titlebar.Update(msg)
-			m.checks, cmd2 = m.checks.Update(unknown)
-			m.applys, cmd3 = m.applys.Update(unknown)
+			m.titlebar, subCmd = m.titlebar.Update(msg)
+			if subCmd != nil {
+				cmds = append(cmds, subCmd)
+			}
+			m.checks, subCmd = m.checks.Update(unknown)
+			if subCmd != nil {
+				cmds = append(cmds, subCmd)
+			}
+			m.applys, subCmd = m.applys.Update(unknown)
+			if subCmd != nil {
+				cmds = append(cmds, subCmd)
+			}
 		default:
-			m.titlebar, cmd1 = m.titlebar.Update(unknown)
+			m.titlebar, subCmd = m.titlebar.Update(unknown)
+			if subCmd != nil {
+				cmds = append(cmds, subCmd)
+			}
 			msg.Y--
 			if msg.X <= m.leftPartEndColumn {
 				// Over checks
-				m.checks, cmd2 = m.checks.Update(msg)
-				m.applys, cmd3 = m.applys.Update(unknown)
+				if msg.Type != tea.MouseMotion {
+					cmds = append(cmds, m.activateChecks())
+				}
+				m.checks, subCmd = m.checks.Update(msg)
+				if subCmd != nil {
+					cmds = append(cmds, subCmd)
+				}
+				m.applys, subCmd = m.applys.Update(unknown)
+				if subCmd != nil {
+					cmds = append(cmds, subCmd)
+				}
 			} else if msg.X >= m.rightPartStartColumn {
 				// Over applies
+				if msg.Type != tea.MouseMotion {
+					cmds = append(cmds, m.activateApplies())
+				}
 				msg.X -= m.rightPartStartColumn
-				m.checks, cmd2 = m.checks.Update(unknown)
-				m.applys, cmd3 = m.applys.Update(msg)
+				m.checks, subCmd = m.checks.Update(unknown)
+				if subCmd != nil {
+					cmds = append(cmds, subCmd)
+				}
+				m.applys, subCmd = m.applys.Update(msg)
+				if subCmd != nil {
+					cmds = append(cmds, subCmd)
+				}
 			} else {
 				// Over the separator
-				m.titlebar, cmd1 = m.titlebar.Update(unknown)
-				m.checks, cmd2 = m.checks.Update(unknown)
-				m.applys, cmd3 = m.applys.Update(unknown)
+				m.titlebar, subCmd = m.titlebar.Update(unknown)
+				if subCmd != nil {
+					cmds = append(cmds, subCmd)
+				}
+				m.checks, subCmd = m.checks.Update(unknown)
+				if subCmd != nil {
+					cmds = append(cmds, subCmd)
+				}
+				m.applys, subCmd = m.applys.Update(unknown)
+				if subCmd != nil {
+					cmds = append(cmds, subCmd)
+				}
 			}
 		}
-		cmd = tea.Batch(cmd1, cmd2, cmd3)
+		cmd = tea.Batch(cmds...)
 	case separator.CursorMsg:
 		m.separator, cmd = m.separator.Update(msg)
 	default:
@@ -117,6 +152,26 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		cmd = tea.Batch(cmds...)
 	}
 	return m, cmd
+}
+
+func (m *model) activateApplies() tea.Cmd {
+	var cmd1, cmd2, cmd3 tea.Cmd
+	activeMsg := separator.ActiveMsg{IsRightActive: true}
+	m.titlebar, cmd1 = m.titlebar.Update(activeMsg)
+	m.checks, cmd2 = m.checks.Update(activeMsg)
+	m.applys, cmd3 = m.applys.Update(activeMsg)
+	m.activeApply = true
+	return tea.Batch(cmd1, cmd2, cmd3)
+}
+
+func (m *model) activateChecks() tea.Cmd {
+	var cmd1, cmd2, cmd3 tea.Cmd
+	activeMsg := separator.ActiveMsg{IsRightActive: false}
+	m.titlebar, cmd1 = m.titlebar.Update(activeMsg)
+	m.checks, cmd2 = m.checks.Update(activeMsg)
+	m.applys, cmd3 = m.applys.Update(activeMsg)
+	m.activeApply = false
+	return tea.Batch(cmd1, cmd2, cmd3)
 }
 
 func (m *model) View() string {
