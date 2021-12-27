@@ -58,7 +58,7 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 func (m *model) makeView(width int) {
 	title := " Quickonf "
 	quitWidth := lipgloss.Width(m.quit.View())
-	spaceWidth := width - 10 - quitWidth - 1
+	spaceWidth := width - 10 - quitWidth - 1 // 10 = size of the title
 	switch {
 	case width < 10:
 		view := style.Title.Render(title[:width])
