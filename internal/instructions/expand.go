@@ -20,7 +20,7 @@ func (e *Expand) Run(vars Variables) ([]commands.Apply, []CheckReport, bool) {
 	vars.define(e.Variable, expanded)
 	return nil, []CheckReport{{
 		Name:    "expand",
-		Status:  commands.StatusInfo,
+		Status:  commands.StatusSuccess,
 		Message: fmt.Sprintf("Expanded content of variable %s", e.Variable),
 	}}, true
 }
