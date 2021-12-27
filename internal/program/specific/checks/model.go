@@ -54,9 +54,9 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		cmd1 tea.Cmd
 		cmd2 tea.Cmd
 	)
-	switch msg := msg.(type) {
+	switch theMsg := msg.(type) {
 	case tea.WindowSizeMsg:
-		groupWidth := msg.Width - 2 // 2 chars for box border
+		groupWidth := theMsg.Width - 2 // 2 chars for box border
 		check.GroupStyles = map[group.Status]lipgloss.Style{
 			group.StatusWaiting:   style.GroupWaiting.Copy().Width(groupWidth),
 			group.StatusRunning:   style.GroupRunning.Copy().Width(groupWidth),
@@ -70,15 +70,16 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			group.StatusSucceeded: style.HoveredGroupSuccess.Copy().Width(groupWidth),
 		}
 	case group.Msg:
-		switch msg.Type {
+		switch theMsg.Type {
 		case group.CheckTrigger:
-			m.groups[msg.Gidx], cmd1 = m.groups[msg.Gidx].Update(msg)
+			m.groups[theMsg.Gidx], cmd1 = m.groups[theMsg.Gidx].Update(msg)
 		case group.CheckDone:
 			cmds := make([]tea.Cmd, 2)
-			m.groups[msg.Gidx], cmds[0] = m.groups[msg.Gidx].Update(msg)
+			m.groups[theMsg.Gidx], cmds[0] = m.groups[theMsg.Gidx].Update(msg)
 			cmds[1] = m.next()
 			cmd1 = tea.Batch(cmds...)
 		}
+		msg = box.ForceRedrawMsg{}
 	}
 	m.box, cmd2 = m.box.Update(msg)
 	return m, tea.Batch(cmd1, cmd2)

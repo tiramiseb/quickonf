@@ -11,11 +11,6 @@ import (
 	"github.com/tiramiseb/quickonf/internal/program/specific/apply"
 )
 
-type groupLine struct {
-	gidx      int
-	groupline int
-}
-
 type model struct {
 	box    tea.Model
 	groups []tea.Model
@@ -38,9 +33,9 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		cmd1 tea.Cmd
 		cmd2 tea.Cmd
 	)
-	switch msg := msg.(type) {
+	switch theMsg := msg.(type) {
 	case tea.WindowSizeMsg:
-		m.width = msg.Width - 2 // 2 chars for box border
+		m.width = theMsg.Width - 2 // 2 chars for box border
 		apply.GroupStyles = map[group.Status]lipgloss.Style{
 			group.StatusWaiting:   style.GroupWaiting.Copy().Width(m.width),
 			group.StatusRunning:   style.GroupRunning.Copy().Width(m.width),
@@ -54,17 +49,18 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			group.StatusSucceeded: style.HoveredGroupSuccess.Copy().Width(m.width),
 		}
 	case group.Msg:
-		switch msg.Type {
+		switch theMsg.Type {
 		case group.CheckDone:
 			var updated bool
-			cmd1, updated = m.maybeAddGroupToApplys(msg.Group)
+			cmd1, updated = m.maybeAddGroupToApplys(theMsg.Group)
 			if updated {
-				m.box, cmd2 = m.box.Update(box.UpdateGroupsMsg{Groups: m.groups})
+				m.box, cmd2 = m.box.Update(box.UpdateElementsMsg{Elements: m.groups})
 				return m, tea.Batch(cmd1, cmd2)
 			}
 		case group.ApplyChange, group.ApplySuccess, group.ApplyFail:
-			m.groups[msg.Gidx], cmd1 = m.groups[msg.Gidx].Update(msg)
+			m.groups[theMsg.Gidx], cmd1 = m.groups[theMsg.Gidx].Update(msg)
 		}
+		msg = box.ForceRedrawMsg{}
 	}
 	m.box, cmd2 = m.box.Update(msg)
 	return m, tea.Batch(cmd1, cmd2)

@@ -19,9 +19,9 @@ func (m *model) windowSize(msg tea.WindowSizeMsg) tea.Cmd {
 		m.boxHeight = 0
 	}
 	m.updateActive()
-	cmds := make([]tea.Cmd, len(m.groups))
-	for i, g := range m.groups {
-		m.groups[i], cmds[i] = g.Update(newMsg)
+	cmds := make([]tea.Cmd, len(m.elements))
+	for i, g := range m.elements {
+		m.elements[i], cmds[i] = g.Update(newMsg)
 	}
 	return tea.Batch(cmds...)
 }
@@ -36,58 +36,58 @@ func (m *model) updateActive() {
 	}
 }
 
-// redrawContent draws content for all groups, even if they are not displayed
+// redrawContent draws content for all elements, even if they are not displayed
 func (m *model) redrawContent() {
-	result := make([]string, 0, len(m.groups)*2)
-	lineToGroup := make([]groupLine, 0, len(m.groups)*2)
-	for i, g := range m.groups {
-		groupView := strings.Split(g.View(), "\n")
-		thisLineToGroup := make([]groupLine, len(groupView))
-		for j := range thisLineToGroup {
-			thisLineToGroup[j] = groupLine{i, j}
+	result := make([]string, 0, len(m.elements)*2)
+	lineToElement := make([]elementLine, 0, len(m.elements)*2)
+	for i, g := range m.elements {
+		elementView := strings.Split(g.View(), "\n")
+		thisLineToElement := make([]elementLine, len(elementView))
+		for j := range thisLineToElement {
+			thisLineToElement[j] = elementLine{i, j}
 		}
-		result = append(result, groupView...)
-		lineToGroup = append(lineToGroup, thisLineToGroup...)
+		result = append(result, elementView...)
+		lineToElement = append(lineToElement, thisLineToElement...)
 	}
-	m.allGroupsView = result
-	m.allLineToGroup = lineToGroup
+	m.allElementsView = result
+	m.allLineToElement = lineToElement
 }
 
-// updateView extracts lines to display from content for all groups
+// updateView extracts lines to display from content for all elements
 func (m *model) updateView() {
-	// Find where is the selected group
-	startOfSelectedGroup := -1
-	sizeOfSelectedGroup := -1
-findGroup:
-	for i, groupline := range m.allLineToGroup {
+	// Find where is the selected element
+	startOfSelectedElement := -1
+	sizeOfSelectedElement := -1
+findElement:
+	for i, elementline := range m.allLineToElement {
 		switch {
-		case startOfSelectedGroup < 0 && groupline.gidx == m.selectedGroup:
-			startOfSelectedGroup = i
-		case startOfSelectedGroup >= 0 && groupline.gidx != m.selectedGroup:
-			sizeOfSelectedGroup = i - startOfSelectedGroup
-			break findGroup
+		case startOfSelectedElement < 0 && elementline.idx == m.selectedElement:
+			startOfSelectedElement = i
+		case startOfSelectedElement >= 0 && elementline.idx != m.selectedElement:
+			sizeOfSelectedElement = i - startOfSelectedElement
+			break findElement
 		}
 	}
 
-	// Put the selected group at the top of the view
-	firstLineInView := startOfSelectedGroup
+	// Put the selected element at the top of the view
+	firstLineInView := startOfSelectedElement
 	lastLineInView := firstLineInView + m.boxHeight
 
 	// Slide up if at the bottom of the list
-	if lastLineInView >= len(m.allLineToGroup) {
-		firstLineInView -= (lastLineInView - len(m.allLineToGroup))
+	if lastLineInView >= len(m.allLineToElement) {
+		firstLineInView -= (lastLineInView - len(m.allLineToElement))
 		if firstLineInView < 0 {
 			firstLineInView = 0
 		}
 		lastLineInView = firstLineInView + m.boxHeight
-		if lastLineInView >= len(m.allLineToGroup) {
-			lastLineInView = len(m.allLineToGroup)
+		if lastLineInView >= len(m.allLineToElement) {
+			lastLineInView = len(m.allLineToElement)
 		}
 	}
 
-	// Check if the view could be slided up to put the group in the middle
-	idealLinesAbove := (m.boxHeight - sizeOfSelectedGroup) / 2
-	idealFirstLineInVew := startOfSelectedGroup - idealLinesAbove
+	// Check if the view could be slided up to put the element in the middle
+	idealLinesAbove := (m.boxHeight - sizeOfSelectedElement) / 2
+	idealFirstLineInVew := startOfSelectedElement - idealLinesAbove
 	if idealFirstLineInVew < 0 {
 		idealFirstLineInVew = 0
 	}
@@ -98,20 +98,20 @@ findGroup:
 	}
 
 	// Extract the view
-	m.view = strings.Join(m.allGroupsView[firstLineInView:lastLineInView], "\n")
-	m.viewLineToGroup = m.allLineToGroup[firstLineInView:lastLineInView]
-	m.selectedGroupFirstLine = startOfSelectedGroup - firstLineInView
+	m.view = strings.Join(m.allElementsView[firstLineInView:lastLineInView], "\n")
+	m.viewLineToElement = m.allLineToElement[firstLineInView:lastLineInView]
+	m.selectedElementFirstLine = startOfSelectedElement - firstLineInView
 }
 
 func (m *model) cursorPosition() tea.Msg {
 	return separator.CursorMsg{
 		PointingRight: m.cursorPointsRight,
-		Position:      m.selectedGroupFirstLine,
+		Position:      m.selectedElementFirstLine,
 	}
 }
 
 func (m *model) View() string {
-	if len(m.groups) == 0 {
+	if len(m.elements) == 0 {
 		return m.subtitleStyle.Render(m.title) + "\n" + m.boxStyle.Render(m.msgIfEmpty)
 	}
 	return m.subtitleStyle.Render(m.title) + "\n" + m.boxStyle.Render(m.view)
