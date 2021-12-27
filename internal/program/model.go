@@ -19,7 +19,7 @@ type model struct {
 
 	leftPartEndColumn    int
 	rightPartStartColumn int
-	activeApply          bool // If false, "check" is active
+	activeApply          bool // If false, the "check" part is active
 }
 
 func newModel(g []*instructions.Group) *model {
