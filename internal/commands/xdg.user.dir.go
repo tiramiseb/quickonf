@@ -10,8 +10,8 @@ import (
 	"regexp"
 	"strings"
 
+	"github.com/tiramiseb/quickonf/internal/commands/datastores"
 	"github.com/tiramiseb/quickonf/internal/commands/helper"
-	"github.com/tiramiseb/quickonf/internal/commands/shared"
 )
 
 const xdgUserDirsSubpath = ".config/user-dirs.dirs"
@@ -84,7 +84,7 @@ var xdgUserDir = Command{
 		name := strings.ToUpper(args[1])
 		path := args[2]
 
-		usr, err := shared.Users.Get(username)
+		usr, err := datastores.Users.Get(username)
 		if err != nil {
 			return nil, err.Error(), nil, StatusError
 		}

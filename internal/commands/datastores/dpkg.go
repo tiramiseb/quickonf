@@ -1,4 +1,4 @@
-package shared
+package datastores
 
 import (
 	"bufio"
@@ -32,7 +32,6 @@ func (d *dpkgPackagesList) Installed(name string) (bool, error) {
 		if pkg.name == name {
 			return true, err
 		}
-
 	}
 	return false, err
 }

@@ -3,8 +3,8 @@ package commands
 import (
 	"fmt"
 
+	"github.com/tiramiseb/quickonf/internal/commands/datastores"
 	"github.com/tiramiseb/quickonf/internal/commands/helper"
-	"github.com/tiramiseb/quickonf/internal/commands/shared"
 )
 
 func init() {
@@ -19,7 +19,7 @@ var apt = Command{
 	"Install the \"ipcalc\" tool\n  apt.install ipcalc",
 	func(args []string) (result []string, msg string, apply *Apply, status Status) {
 		pkg := args[0]
-		ok, err := shared.DpkgPackages.Installed(pkg)
+		ok, err := datastores.DpkgPackages.Installed(pkg)
 		if err != nil {
 			return nil, err.Error(), nil, StatusError
 		}
@@ -32,8 +32,8 @@ var apt = Command{
 			fmt.Sprintf("Will install %s", pkg),
 			func(out Output) bool {
 				out.Infof("Waiting for apt to be available to install %s", pkg)
-				shared.DpkgMutex.Lock()
-				defer shared.DpkgMutex.Unlock()
+				datastores.DpkgMutex.Lock()
+				defer datastores.DpkgMutex.Unlock()
 				wait, err := helper.Exec([]string{"DEBIAN_FRONTEND=noninteractive"}, nil, "apt-get", "--yes", "--quiet", "install", pkg)
 				if err != nil {
 					out.Errorf("Could not install %s: %s", pkg, err)
@@ -50,5 +50,5 @@ var apt = Command{
 		}
 		return nil, fmt.Sprintf("Need to install %s", pkg), apply, StatusInfo
 	},
-	shared.DpkgPackages.Reset,
+	datastores.DpkgPackages.Reset,
 }

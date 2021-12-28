@@ -8,7 +8,7 @@ import (
 	"path/filepath"
 	"strconv"
 
-	"github.com/tiramiseb/quickonf/internal/commands/shared"
+	"github.com/tiramiseb/quickonf/internal/commands/datastores"
 )
 
 func init() {
@@ -28,7 +28,7 @@ var fileUserDirectory = Command{
 		username := args[0]
 		path := args[1]
 
-		usr, err := shared.Users.Get(username)
+		usr, err := datastores.Users.Get(username)
 		if err != nil {
 			return nil, err.Error(), nil, StatusError
 		}
