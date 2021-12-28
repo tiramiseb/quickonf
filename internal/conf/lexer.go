@@ -114,6 +114,7 @@ func (l *lexer) indentation() (lexerContext, error) {
 		case '\n':
 			return contextStartOfLine, nil
 		case '#':
+			l.tokens = append(l.tokens, &token{l.curLine, l.curCol, tokenEOL, ""})
 			return contextComment, nil
 		case '"':
 			buf := make([]byte, binary.MaxVarintLen64)
@@ -178,6 +179,7 @@ func (l *lexer) groupName() (lexerContext, error) {
 				l.curLine, 1, tokenGroupName,
 				strings.TrimSpace(string(l.currentWord)),
 			})
+			l.tokens = append(l.tokens, &token{l.curLine, l.curCol, tokenEOL, ""})
 			return contextComment, nil
 		case '\\':
 			b, err := l.next()
@@ -207,6 +209,7 @@ func (l *lexer) defaut() (lexerContext, error) {
 			return contextSpace, nil
 		case '#':
 			l.tokens = append(l.tokens, identifyToken(l.curWordLine, l.curWordCol, string(l.currentWord)))
+			l.tokens = append(l.tokens, &token{l.curLine, l.curCol, tokenEOL, ""})
 			return contextComment, nil
 		case '"':
 			return contextQuotes, nil
@@ -263,6 +266,7 @@ func (l *lexer) space() (lexerContext, error) {
 			l.tokens = append(l.tokens, &token{l.curLine, l.curCol, tokenEOL, ""})
 			return contextStartOfLine, nil
 		case '#':
+			l.tokens = append(l.tokens, &token{l.curLine, l.curCol, tokenEOL, ""})
 			return contextComment, nil
 		case '"':
 			l.curWordLine = l.curLine
