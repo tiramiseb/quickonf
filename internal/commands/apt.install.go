@@ -34,12 +34,12 @@ var apt = Command{
 				out.Infof("Waiting for apt to be available to install %s", pkg)
 				datastores.DpkgMutex.Lock()
 				defer datastores.DpkgMutex.Unlock()
+				out.Infof("Installing %s", pkg)
 				wait, err := helper.Exec([]string{"DEBIAN_FRONTEND=noninteractive"}, nil, "apt-get", "--yes", "--quiet", "install", pkg)
 				if err != nil {
 					out.Errorf("Could not install %s: %s", pkg, err)
 					return false
 				}
-				out.Infof("Installing %s", pkg)
 				if err := wait(); err != nil {
 					out.Errorf("Could not install %s: %s", pkg, err)
 					return false

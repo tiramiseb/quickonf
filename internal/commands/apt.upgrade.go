@@ -17,22 +17,22 @@ var aptUpgrade = Command{
 			"apt.upgrade",
 			"Will upgrade apt packages",
 			func(out Output) bool {
+				out.Infof("Updating packages list")
 				wait, err := helper.Exec([]string{"DEBIAN_FRONTEND=noninteractive"}, nil, "apt-get", "--yes", "update")
 				if err != nil {
 					out.Errorf("Could not update packages list: %s", err)
 					return false
 				}
-				out.Infof("Updating packages list")
 				if err := wait(); err != nil {
 					out.Errorf("Could not update packages list: %s", err)
 					return false
 				}
+				out.Infof("Upgrading packages")
 				wait, err = helper.Exec([]string{"DEBIAN_FRONTEND=noninteractive"}, nil, "apt-get", "--yes", "upgrade")
 				if err != nil {
 					out.Errorf("Could not upgrade packages: %s", err)
 					return false
 				}
-				out.Infof("Upgrading packages")
 				if err := wait(); err != nil {
 					out.Errorf("Could not upgrade packages: %s", err)
 					return false
