@@ -50,6 +50,7 @@ func (d *dpkgPackagesList) init() error {
 	if err != nil {
 		return err
 	}
+	defer f.Close()
 	scanner := bufio.NewScanner(f)
 	pkg := dpkgPackage{}
 	for scanner.Scan() {
@@ -67,5 +68,6 @@ func (d *dpkgPackagesList) init() error {
 			pkg.name = info[1]
 		}
 	}
+	d.packages = append(d.packages, pkg)
 	return scanner.Err()
 }
