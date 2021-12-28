@@ -114,7 +114,6 @@ func (l *lexer) indentation() (lexerContext, error) {
 		case '\n':
 			return contextStartOfLine, nil
 		case '#':
-			l.tokens = append(l.tokens, &token{l.curLine, l.curCol, tokenEOL, ""})
 			return contextComment, nil
 		case '"':
 			buf := make([]byte, binary.MaxVarintLen64)
