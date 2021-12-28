@@ -10,18 +10,18 @@ import (
 )
 
 func init() {
-	register(httpGet)
+	register(httpGetFile)
 }
 
-var httpGet = Command{
-	"http.get",
+var httpGetFile = Command{
+	"http.get.file",
 	"Download a file with a HTTP GET request",
 	[]string{
 		"URI of the file to download",
 		"Path of the destination file",
 	},
 	nil,
-	"Download example\n  http.get http://www.example.com /opt/example",
+	"Download example\n  http.get.file http://www.example.com /opt/example",
 	func(args []string) (result []string, msg string, apply *Apply, status Status) {
 		uri := args[0]
 		path := args[1]
@@ -33,7 +33,7 @@ var httpGet = Command{
 			return nil, fmt.Sprintf("Could not check if %s exists: %s", path, err), nil, StatusError
 		}
 		apply = &Apply{
-			"http.get",
+			"http.get.file",
 			fmt.Sprintf("Will download %s to %s", uri, path),
 			func(out Output) bool {
 				out.Infof("Downloading %s to %s", uri, path)
