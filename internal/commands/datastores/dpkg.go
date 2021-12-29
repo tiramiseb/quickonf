@@ -28,6 +28,8 @@ type dpkgPackagesList struct {
 func (d *dpkgPackagesList) Installed(name string) (bool, error) {
 	var err error
 	d.initOnce.Do(func() { err = d.init() })
+	DpkgMutex.Lock()
+	defer DpkgMutex.Unlock()
 	for _, pkg := range d.packages {
 		if pkg.name == name {
 			return true, err

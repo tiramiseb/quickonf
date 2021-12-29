@@ -26,6 +26,8 @@ type debconf struct {
 
 func (d *debconf) Get(pkg, name string) (param DebconfParameter, exists bool, err error) {
 	d.initOnce.Do(func() { err = d.init() })
+	DpkgMutex.Lock()
+	defer DpkgMutex.Unlock()
 paramsLoop:
 	for _, p := range d.parameters {
 		if p.Name == name {
