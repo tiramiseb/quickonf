@@ -31,7 +31,7 @@ var apt = Command{
 			"apt.install",
 			fmt.Sprintf("Will install %s", pkg),
 			func(out Output) bool {
-				out.Infof("Waiting for apt to be available to install %s", pkg)
+				out.Infof("Waiting for dpkg to be available to install %s", pkg)
 				datastores.DpkgMutex.Lock()
 				defer datastores.DpkgMutex.Unlock()
 				out.Infof("Installing %s", pkg)

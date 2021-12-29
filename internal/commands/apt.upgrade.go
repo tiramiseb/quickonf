@@ -1,6 +1,9 @@
 package commands
 
-import "github.com/tiramiseb/quickonf/internal/commands/helper"
+import (
+	"github.com/tiramiseb/quickonf/internal/commands/datastores"
+	"github.com/tiramiseb/quickonf/internal/commands/helper"
+)
 
 func init() {
 	register(aptUpgrade)
@@ -17,6 +20,9 @@ var aptUpgrade = Command{
 			"apt.upgrade",
 			"Will upgrade apt packages",
 			func(out Output) bool {
+				out.Info("Waiting for dpkg to be available to upgrade packages")
+				datastores.DpkgMutex.Lock()
+				defer datastores.DpkgMutex.Unlock()
 				out.Infof("Updating packages list")
 				wait, err := helper.Exec([]string{"DEBIAN_FRONTEND=noninteractive"}, nil, "apt-get", "--yes", "update")
 				if err != nil {

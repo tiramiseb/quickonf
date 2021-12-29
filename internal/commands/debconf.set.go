@@ -59,6 +59,9 @@ var debconfSet = Command{
 					out.Errorf("Could not close temporary file: %s", err)
 					return false
 				}
+				out.Infof("Waiting for dpkg to be available to set debconf value %s", name)
+				datastores.DpkgMutex.Lock()
+				defer datastores.DpkgMutex.Unlock()
 				wait, err := helper.Exec(nil, nil, "debconf-set-selections", tmpfile.Name())
 				if err != nil {
 					out.Errorf("Could not execute debconf-set-selections: %s", err)
