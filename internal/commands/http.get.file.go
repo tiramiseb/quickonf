@@ -15,7 +15,7 @@ func init() {
 
 var httpGetFile = Command{
 	"http.get.file",
-	"Download a file with a HTTP GET request",
+	"Download a file with a HTTP GET request (URI is downloaded when applying)",
 	[]string{
 		"URI of the file to download",
 		"Path of the destination file",
