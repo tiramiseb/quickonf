@@ -1,36 +1,11 @@
 package helper
 
 import (
-	"bufio"
-	"bytes"
 	"io"
 	"os"
 	"os/exec"
 	"os/user"
 )
-
-func ExecOutAsLines(env []string, cmd string, args ...string) ([]string, error) {
-	var buf bytes.Buffer
-	wait, err := Exec(env, &buf, cmd, args...)
-	if err != nil {
-		return nil, err
-	}
-	if err := wait(); err != nil {
-		return nil, err
-	}
-	var out []string
-	scanner := bufio.NewScanner(&buf)
-	for scanner.Scan() {
-		out = append(out, scanner.Text())
-		if err := scanner.Err(); err != nil {
-			return nil, err
-		}
-	}
-	if err := scanner.Err(); err != nil {
-		return nil, err
-	}
-	return out, nil
-}
 
 // Exec executes a command
 func Exec(env []string, output io.Writer, cmd string, args ...string) (wait func() error, err error) {
