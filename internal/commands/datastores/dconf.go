@@ -29,6 +29,7 @@ type dconf struct {
 
 func (d *dconf) Get(usr *user.User, key string) (string, error) {
 	d.mutex.Lock()
+	defer d.mutex.Unlock()
 	userData, ok := d.values[usr.Username]
 	if !ok {
 		userData = &dconfUser{
@@ -37,8 +38,13 @@ func (d *dconf) Get(usr *user.User, key string) (string, error) {
 		}
 		d.values[usr.Username] = userData
 	}
-	d.mutex.Unlock()
 	return userData.get(key)
+}
+
+func (d *dconf) Reset() {
+	d.mutex.Lock()
+	defer d.mutex.Unlock()
+	d.values = map[string]*dconfUser{}
 }
 
 func (d *dconfUser) get(key string) (string, error) {

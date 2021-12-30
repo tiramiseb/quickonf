@@ -71,5 +71,5 @@ var dconfSet = Command{
 		}
 		return nil, fmt.Sprintf("Need to set %s to %s", key, value), apply, StatusInfo
 	},
-	nil,
+	datastores.Dconf.Reset,
 }
