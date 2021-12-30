@@ -81,7 +81,11 @@ func (m *model) trigger() tea.Msg {
 
 func (m *model) run() tea.Msg {
 	if m.group.Run() {
-		m.status = group.StatusSucceeded
+		if len(m.group.Applys) > 0 {
+			m.status = group.StatusRunning
+		} else {
+			m.status = group.StatusSucceeded
+		}
 	} else {
 		m.status = group.StatusFailed
 		m.collapsed = false
