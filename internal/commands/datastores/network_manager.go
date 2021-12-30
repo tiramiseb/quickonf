@@ -69,19 +69,3 @@ func loadNetworkManagerConnection(name string) (NetworkManagerConnection, error)
 	err = cfg.MapTo(&n)
 	return n, err
 }
-
-/*
-func (n *networkManagerConnectionsList) Reset() {
-	NetworkManagerMutex.Lock()
-	defer NetworkManagerMutex.Unlock()
-	n.connections = nil
-	n.initOnce = sync.Once{}
-
-}
-
-func (n *networkManagerConnectionsList) init() error {
-	NetworkManagerMutex.Lock()
-	defer NetworkManagerMutex.Unlock()
-
-}
-*/
