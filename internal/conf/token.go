@@ -14,13 +14,14 @@ const (
 	tokenDefault
 
 	tokenEqual
+	tokenDifferent
 	tokenExpand
 	tokenIf
 	tokenPriority
 	tokenRepeat
 )
 
-var tokenOperators = []tokenType{tokenEqual}
+var tokenOperators = []tokenType{tokenEqual, tokenDifferent}
 
 type token struct {
 	// Position of the first character of the token (for debugging)
@@ -38,6 +39,8 @@ func identifyToken(line int, column int, content string) *token {
 	switch content {
 	case "=":
 		typ = tokenEqual
+	case "!=":
+		typ = tokenDifferent
 	case "expand":
 		typ = tokenExpand
 	case "if":

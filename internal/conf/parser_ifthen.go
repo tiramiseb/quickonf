@@ -24,6 +24,8 @@ func (p *parser) ifThen(toks []*token, group *instructions.Group, currentIndent 
 	switch operator.typ {
 	case tokenEqual:
 		operation = &instructions.Equal{Left: left.content, Right: right.content}
+	case tokenDifferent:
+		operation = &instructions.Different{Left: left.content, Right: right.content}
 	}
 	next := p.nextLine()
 	indent, _ := next.indentation()
