@@ -15,7 +15,7 @@ func init() {
 
 var nmImport = Command{
 	"nm.import",
-	"Import a VON configuration in NetworkManager",
+	"Import a VPN configuration in NetworkManager",
 	[]string{
 		"Type of the VPN",
 		"Path of the configuration file to import",
