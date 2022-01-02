@@ -47,11 +47,7 @@ func (s *snap) init() error {
 	s.mutex.Lock()
 	defer s.mutex.Unlock()
 	var out bytes.Buffer
-	wait, err := helper.Exec([]string{"LANG=C"}, &out, "snap", "list")
-	if err != nil {
-		return err
-	}
-	if err := wait(); err != nil {
+	if err := helper.Exec(nil, &out, "snap", "list"); err != nil {
 		return err
 	}
 	scanner := bufio.NewScanner(&out)

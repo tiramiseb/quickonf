@@ -59,11 +59,7 @@ func (d *dconfUser) init() error {
 	d.mutex.Lock()
 	defer d.mutex.Unlock()
 	var out bytes.Buffer
-	wait, err := helper.ExecAs(d.user, nil, &out, "dconf", "dump", "/")
-	if err != nil {
-		return err
-	}
-	if err := wait(); err != nil {
+	if err := helper.ExecAs(d.user, nil, &out, "dconf", "dump", "/"); err != nil {
 		return err
 	}
 	f, err := ini.Load(&out)

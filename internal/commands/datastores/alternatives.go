@@ -37,11 +37,7 @@ func (a *alternatives) init() error {
 	a.mutex.Lock()
 	defer a.mutex.Unlock()
 	var out bytes.Buffer
-	wait, err := helper.Exec(nil, &out, "update-alternatives", "--get-selections")
-	if err != nil {
-		return err
-	}
-	if err := wait(); err != nil {
+	if err := helper.Exec(nil, &out, "update-alternatives", "--get-selections"); err != nil {
 		return err
 	}
 	scanner := bufio.NewScanner(&out)

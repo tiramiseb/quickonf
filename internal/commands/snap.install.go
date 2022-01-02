@@ -73,13 +73,8 @@ var snapInstall = Command{
 			fmt.Sprintf("Will install %s", name),
 			func(out Output) bool {
 				out.Infof("Installing %s", name)
-				wait, err := helper.Exec(nil, nil, "snap", cmdArgs...)
-				if err != nil {
-					out.Errorf("Could not install %s: %s", name, err)
-					return false
-				}
-				if err := wait(); err != nil {
-					out.Errorf("Could not install %s: %s", name, err)
+				if err := helper.Exec(nil, nil, "snap", cmdArgs...); err != nil {
+					out.Errorf("Could not install %s: %s", name, helper.ExecErr(err))
 					return false
 				}
 				out.Successf("Installed %s", name)

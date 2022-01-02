@@ -53,14 +53,8 @@ var nmImport = Command{
 			fmt.Sprintf("Will import %s configuration from %s", connType, path),
 			func(out Output) bool {
 				out.Infof("Importing %s", name)
-				wait, err := helper.Exec(nil, nil, "nmcli", "connection", "import", "type", connType, "file", path)
-				if err != nil {
-					out.Errorf("Could not import %s: %s", name, err)
-					return false
-				}
-				out.Infof("Importing %s", path)
-				if err := wait(); err != nil {
-					out.Errorf("Could not import %s: %s", name, err)
+				if err := helper.Exec(nil, nil, "nmcli", "connection", "import", "type", connType, "file", path); err != nil {
+					out.Errorf("Could not import %s: %s", name, helper.ExecErr(err))
 					return false
 				}
 				out.Successf("Imported %s", name)

@@ -1,6 +1,8 @@
 package helper
 
 import (
+	"bytes"
+	"errors"
 	"io"
 	"os"
 	"os/exec"
@@ -8,24 +10,43 @@ import (
 )
 
 // Exec executes a command
-func Exec(env []string, output io.Writer, cmd string, args ...string) (wait func() error, err error) {
-	command := execCmd(env, output, cmd, args...)
-	err = command.Start()
-	return command.Wait, err
+func Exec(env []string, output io.Writer, cmd string, args ...string) error {
+	return execCmd(env, output, cmd, args...)
 }
 
-func ExecAs(usr *user.User, env []string, output io.Writer, cmd string, args ...string) (wait func() error, err error) {
+func ExecAs(usr *user.User, env []string, output io.Writer, cmd string, args ...string) error {
 	args = append([]string{"-u", usr.Username, "--", cmd}, args...)
-	command := execCmd(env, output, "runuser", args...)
-	err = command.Start()
-	return command.Wait, err
+	return execCmd(env, output, "runuser", args...)
 }
 
-func execCmd(env []string, output io.Writer, cmd string, args ...string) *exec.Cmd {
-	command := exec.Command(cmd, args...)
-	command.Env = append(os.Environ(), "LANG=C")
-	command.Env = append(command.Env, env...)
-	command.Stdout = output
-	command.Stderr = output
-	return command
+func execCmd(env []string, output io.Writer, cmd string, args ...string) error {
+	c := exec.Command(cmd, args...)
+	c.Env = append(os.Environ(), "LANG=C")
+	c.Env = append(c.Env, env...)
+	var errBuf bytes.Buffer
+	if output == nil {
+		c.Stdout = &errBuf
+		c.Stderr = &errBuf
+	} else {
+		c.Stdout = output
+		c.Stderr = output
+	}
+	err := c.Run()
+	if err != nil && output == nil {
+		if ee, ok := err.(*exec.ExitError); ok {
+			ee.Stderr = bytes.ReplaceAll(errBuf.Bytes(), []byte("\n"), []byte(" "))
+		}
+	}
+	return err
+}
+
+func ExecErr(err error) string {
+	if err == nil {
+		return ""
+	}
+	var exitErr *exec.ExitError
+	if errors.As(err, &exitErr) {
+		return string(exitErr.Stderr)
+	}
+	return err.Error()
 }

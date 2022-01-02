@@ -62,13 +62,8 @@ var debconfSet = Command{
 				out.Infof("Waiting for dpkg to be available to set debconf value %s", name)
 				datastores.DpkgMutex.Lock()
 				defer datastores.DpkgMutex.Unlock()
-				wait, err := helper.Exec(nil, nil, "debconf-set-selections", tmpfile.Name())
-				if err != nil {
-					out.Errorf("Could not execute debconf-set-selections: %s", err)
-					return false
-				}
-				if err := wait(); err != nil {
-					out.Errorf("Could not execute debconf-set-selections: %s", err)
+				if err := helper.Exec(nil, nil, "debconf-set-selections", tmpfile.Name()); err != nil {
+					out.Errorf("Could not execute debconf-set-selections: %s", helper.ExecErr(err))
 					return false
 				}
 				out.Successf("%s set to %s", name, value)

@@ -24,23 +24,13 @@ var aptUpgrade = Command{
 				datastores.DpkgMutex.Lock()
 				defer datastores.DpkgMutex.Unlock()
 				out.Infof("Updating packages list")
-				wait, err := helper.Exec([]string{"DEBIAN_FRONTEND=noninteractive"}, nil, "apt-get", "--yes", "update")
-				if err != nil {
-					out.Errorf("Could not update packages list: %s", err)
-					return false
-				}
-				if err := wait(); err != nil {
-					out.Errorf("Could not update packages list: %s", err)
+				if err := helper.Exec([]string{"DEBIAN_FRONTEND=noninteractive"}, nil, "apt-get", "--yes", "update"); err != nil {
+					out.Errorf("Could not update packages list: %s", helper.ExecErr(err))
 					return false
 				}
 				out.Infof("Upgrading packages")
-				wait, err = helper.Exec([]string{"DEBIAN_FRONTEND=noninteractive"}, nil, "apt-get", "--yes", "upgrade")
-				if err != nil {
-					out.Errorf("Could not upgrade packages: %s", err)
-					return false
-				}
-				if err := wait(); err != nil {
-					out.Errorf("Could not upgrade packages: %s", err)
+				if err := helper.Exec([]string{"DEBIAN_FRONTEND=noninteractive"}, nil, "apt-get", "--yes", "upgrade"); err != nil {
+					out.Errorf("Could not upgrade packages: %s", helper.ExecErr(err))
 					return false
 				}
 				out.Successf("Upgraded all packages")

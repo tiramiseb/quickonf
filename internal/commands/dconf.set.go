@@ -56,13 +56,8 @@ var dconfSet = Command{
 			fmt.Sprintf("Will set %s to %s", key, value),
 			func(out Output) bool {
 				out.Infof("Setting %s to %s", key, value)
-				wait, err := helper.ExecAs(user, nil, nil, "dconf", "write", key, value)
-				if err != nil {
-					out.Errorf("Could not set %s: %s", key, err)
-					return false
-				}
-				if err := wait(); err != nil {
-					out.Errorf("Could not set %s: %s", key, err)
+				if err := helper.ExecAs(user, nil, nil, "dconf", "write", key, value); err != nil {
+					out.Errorf("Could not set %s: %s", key, helper.ExecErr(err))
 					return false
 				}
 				out.Successf("Set %s to %s", key, value)

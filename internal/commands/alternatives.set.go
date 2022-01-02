@@ -36,13 +36,9 @@ var alternativesSet = Command{
 			fmt.Sprintf("Will set alternative %s to %s", name, value),
 			func(out Output) bool {
 				out.Infof("Setting alternative %s to %s", name, value)
-				wait, err := helper.Exec(nil, nil, "update-alternatives", "--set", name, value)
+				err := helper.Exec(nil, nil, "update-alternatives", "--set", name, value)
 				if err != nil {
-					out.Errorf("Could not change alternative: %s", err)
-					return false
-				}
-				if err := wait(); err != nil {
-					out.Errorf("Could not change alternative: %s", err)
+					out.Errorf("Could not change alternative: %s", helper.ExecErr(err))
 					return false
 				}
 				out.Successf("Set alternative %s to %s", name, err)

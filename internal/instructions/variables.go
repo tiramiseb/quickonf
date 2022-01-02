@@ -21,11 +21,9 @@ func init() {
 	globalVars.define("hostname", hostname)
 
 	var buf bytes.Buffer
-	wait, err := helper.Exec(nil, &buf, "lsb_release", "--codename", "--short")
-	if err != nil {
+	if err := helper.Exec(nil, &buf, "lsb_release", "--codename", "--short"); err != nil {
 		panic(err)
 	}
-	wait()
 	codename := strings.TrimSpace(buf.String())
 	globalVars.define("oscodename", codename)
 }

@@ -35,13 +35,8 @@ var apt = Command{
 				datastores.DpkgMutex.Lock()
 				defer datastores.DpkgMutex.Unlock()
 				out.Infof("Installing %s", pkg)
-				wait, err := helper.Exec([]string{"DEBIAN_FRONTEND=noninteractive"}, nil, "apt-get", "--yes", "--quiet", "install", pkg)
-				if err != nil {
-					out.Errorf("Could not install %s: %s", pkg, err)
-					return false
-				}
-				if err := wait(); err != nil {
-					out.Errorf("Could not install %s: %s", pkg, err)
+				if err := helper.Exec([]string{"DEBIAN_FRONTEND=noninteractive"}, nil, "apt-get", "--yes", "--quiet", "install", pkg); err != nil {
+					out.Errorf("Could not install %s: %s", pkg, helper.ExecErr(err))
 					return false
 				}
 				out.Successf("Installed %s", pkg)

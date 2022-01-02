@@ -55,13 +55,8 @@ var aptSource = Command{
 				datastores.DpkgMutex.Lock()
 				defer datastores.DpkgMutex.Unlock()
 				out.Infof("Updating packages list")
-				wait, err := helper.Exec([]string{"DEBIAN_FRONTEND=noninteractive"}, nil, "apt-get", "--yes", "update")
-				if err != nil {
-					out.Errorf("Could not update packages list: %s", err)
-					return false
-				}
-				if err := wait(); err != nil {
-					out.Errorf("Could not update packages list: %s", err)
+				if err := helper.Exec([]string{"DEBIAN_FRONTEND=noninteractive"}, nil, "apt-get", "--yes", "update"); err != nil {
+					out.Errorf("Could not update packages list: %s", helper.ExecErr(err))
 					return false
 				}
 				return true

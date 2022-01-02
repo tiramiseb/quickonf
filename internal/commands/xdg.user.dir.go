@@ -2,7 +2,6 @@ package commands
 
 import (
 	"bufio"
-	"bytes"
 	"fmt"
 	"os"
 	"os/user"
@@ -109,14 +108,8 @@ var xdgUserDir = Command{
 			fmt.Sprintf("Will set %s directory to %s", name, path),
 			func(out Output) bool {
 				out.Infof("Setting %s directory to %s", name, path)
-				var buf bytes.Buffer
-				wait, err := helper.ExecAs(usr, nil, &buf, "xdg-user-dirs-update", "--set", name, path)
-				if err != nil {
-					out.Errorf("Could not change XDG user dir %s: %s", name, err)
-					return false
-				}
-				if err := wait(); err != nil {
-					out.Errorf("Could not change XDG user dir %s: %s", name, buf.String())
+				if err := helper.ExecAs(usr, nil, nil, "xdg-user-dirs-update", "--set", name, path); err != nil {
+					out.Errorf("Could not change XDG user dir %s: %s", name, helper.ExecErr(err))
 					return false
 				}
 				out.Successf("XDG user dir %s for %s set to %s", name, username, path)

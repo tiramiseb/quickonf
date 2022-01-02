@@ -24,12 +24,8 @@ var systemdEnable = Command{
 		name := args[0]
 
 		var out bytes.Buffer
-		wait, err := helper.Exec(nil, &out, "systemctl", "is-enabled", name)
-		if err != nil {
-			return nil, fmt.Sprintf("Could not check if %s is enabled: %s", name, err), nil, StatusError
-		}
-		if err := wait(); err != nil && err.Error() != "exit status 1" {
-			return nil, fmt.Sprintf("Could not check if %s is enabled: %s", name, err), nil, StatusError
+		if err := helper.Exec(nil, &out, "systemctl", "is-enabled", name); err != nil {
+			return nil, fmt.Sprintf("Could not check if %s is enabled: %s (%s)", name, err, out.String()), nil, StatusError
 		}
 		outS := strings.TrimSpace(out.String())
 		if outS == "enabled" {
@@ -40,13 +36,8 @@ var systemdEnable = Command{
 				fmt.Sprintf("Will enable service %s", name),
 				func(out Output) bool {
 					out.Infof("Enabling and starting service %s", name)
-					wait, err := helper.Exec(nil, nil, "systemctl", "enable", "--now", name)
-					if err != nil {
-						out.Errorf("Could not enable %s: %s", name, err)
-						return false
-					}
-					if err := wait(); err != nil {
-						out.Errorf("Could not enable %s: %s", name, err)
+					if err := helper.Exec(nil, nil, "systemctl", "enable", "--now", name); err != nil {
+						out.Errorf("Could not enable %s: %s", name, helper.ExecErr(err))
 						return false
 					}
 					out.Successf("Enabled and started %s", name)
