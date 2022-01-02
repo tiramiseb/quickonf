@@ -13,7 +13,7 @@ func init() {
 
 var tempdir = Command{
 	"tempdir",
-	"Create a temporary directory (directory is NOT deleted after usage, you must use file.absent to remove it at the end of the group)",
+	"Create a temporary directory (directory is deleted when closing the application)",
 	nil,
 	[]string{
 		"Available temporary path",
@@ -31,6 +31,9 @@ var tempdir = Command{
 					out.Errorf("Could not create temporary directory: %s", err)
 					return false
 				}
+				registerClean(func() error {
+					return os.RemoveAll(path)
+				})
 				out.Success("Created temporary directory")
 				return true
 			},
