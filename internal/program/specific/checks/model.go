@@ -59,18 +59,21 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		groupWidth := theMsg.Width - 2 // 2 chars for box border
 		check.GroupStyles = map[group.Status]lipgloss.Style{
 			group.StatusWaiting:   style.GroupWaiting.Copy().Width(groupWidth),
+			group.StatusInfo:      style.GroupInfo.Copy().Width(groupWidth),
 			group.StatusRunning:   style.GroupRunning.Copy().Width(groupWidth),
 			group.StatusFailed:    style.GroupFail.Copy().Width(groupWidth),
 			group.StatusSucceeded: style.GroupSuccess.Copy().Width(groupWidth),
 		}
 		check.HoveredGroupStyles = map[group.Status]lipgloss.Style{
 			group.StatusWaiting:   style.HoveredGroupWaiting.Copy().Width(groupWidth),
+			group.StatusInfo:      style.HoveredGroupInfo.Copy().Width(groupWidth),
 			group.StatusRunning:   style.HoveredGroupRunning.Copy().Width(groupWidth),
 			group.StatusFailed:    style.HoveredGroupFail.Copy().Width(groupWidth),
 			group.StatusSucceeded: style.HoveredGroupSuccess.Copy().Width(groupWidth),
 		}
 		check.SelectedGroupStyles = map[group.Status]lipgloss.Style{
 			group.StatusWaiting:   style.SelectedGroupWaiting.Copy().Width(groupWidth),
+			group.StatusInfo:      style.SelectedGroupInfo.Copy().Width(groupWidth),
 			group.StatusRunning:   style.SelectedGroupRunning.Copy().Width(groupWidth),
 			group.StatusFailed:    style.SelectedGroupFail.Copy().Width(groupWidth),
 			group.StatusSucceeded: style.SelectedGroupSuccess.Copy().Width(groupWidth),

@@ -16,18 +16,21 @@ import (
 var (
 	GroupStyles = map[group.Status]lipgloss.Style{
 		group.StatusWaiting:   style.GroupWaiting,
+		group.StatusInfo:      style.GroupInfo,
 		group.StatusRunning:   style.GroupRunning,
 		group.StatusFailed:    style.GroupFail,
 		group.StatusSucceeded: style.GroupSuccess,
 	}
 	HoveredGroupStyles = map[group.Status]lipgloss.Style{
 		group.StatusWaiting:   style.HoveredGroupWaiting,
+		group.StatusInfo:      style.HoveredGroupInfo,
 		group.StatusRunning:   style.HoveredGroupRunning,
 		group.StatusFailed:    style.HoveredGroupFail,
 		group.StatusSucceeded: style.HoveredGroupSuccess,
 	}
 	SelectedGroupStyles = map[group.Status]lipgloss.Style{
 		group.StatusWaiting:   style.SelectedGroupWaiting,
+		group.StatusInfo:      style.SelectedGroupInfo,
 		group.StatusRunning:   style.SelectedGroupRunning,
 		group.StatusFailed:    style.SelectedGroupFail,
 		group.StatusSucceeded: style.SelectedGroupSuccess,
@@ -82,7 +85,7 @@ func (m *model) trigger() tea.Msg {
 func (m *model) run() tea.Msg {
 	if m.group.Run() {
 		if len(m.group.Applys) > 0 {
-			m.status = group.StatusRunning
+			m.status = group.StatusInfo
 		} else {
 			m.status = group.StatusSucceeded
 		}
