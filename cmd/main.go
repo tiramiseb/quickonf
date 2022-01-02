@@ -2,9 +2,11 @@ package main
 
 import (
 	"fmt"
+	"math/rand"
 	"os"
 	"os/user"
 	"path/filepath"
+	"time"
 
 	"github.com/tiramiseb/quickonf/internal/conf"
 	"github.com/tiramiseb/quickonf/internal/instructions"
@@ -12,6 +14,7 @@ import (
 )
 
 func main() {
+	rand.Seed(time.Now().Unix())
 	config := "quickonf.qconf"
 	if len(os.Args) > 1 {
 		config = os.Args[1]
