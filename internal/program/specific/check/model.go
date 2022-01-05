@@ -10,6 +10,7 @@ import (
 	"github.com/tiramiseb/quickonf/internal/instructions"
 	"github.com/tiramiseb/quickonf/internal/program/common/box"
 	"github.com/tiramiseb/quickonf/internal/program/common/group"
+	"github.com/tiramiseb/quickonf/internal/program/common/messages"
 	"github.com/tiramiseb/quickonf/internal/program/common/style"
 )
 
@@ -54,6 +55,8 @@ type model struct {
 	collapsed     bool
 	hovered       bool
 	selected      bool
+
+	filtered bool
 }
 
 func New(i int, g *instructions.Group) *model {
@@ -142,6 +145,10 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		}
 	case box.ElementSelectedMsg:
 		m.selected = msg.Selected
+	case messages.ToggleMsg:
+		m.collapsed = !m.collapsed
+	case messages.FilterMsg:
+		m.filtered = msg.On
 	}
 	m.updateView()
 	return m, cmd
@@ -181,6 +188,9 @@ func (m *model) updateView() {
 }
 
 func (m *model) View() string {
+	if m.filtered && m.status == group.StatusSucceeded {
+		return ""
+	}
 	if m.collapsed {
 		return m.collapsedView
 	}

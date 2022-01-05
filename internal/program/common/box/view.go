@@ -40,8 +40,12 @@ func (m *model) updateActive() {
 func (m *model) redrawContent() {
 	result := make([]string, 0, len(m.elements)*2)
 	lineToElement := make([]elementLine, 0, len(m.elements)*2)
-	for i, g := range m.elements {
-		elementView := strings.Split(g.View(), "\n")
+	for i, e := range m.elements {
+		elemView := e.View()
+		if elemView == "" {
+			continue
+		}
+		elementView := strings.Split(elemView, "\n")
 		thisLineToElement := make([]elementLine, len(elementView))
 		for j := range thisLineToElement {
 			thisLineToElement[j] = elementLine{i, j}

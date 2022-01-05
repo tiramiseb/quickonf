@@ -5,6 +5,7 @@ import (
 	"github.com/charmbracelet/lipgloss"
 
 	"github.com/tiramiseb/quickonf/internal/instructions"
+	"github.com/tiramiseb/quickonf/internal/program/common/messages"
 	"github.com/tiramiseb/quickonf/internal/program/specific/applys"
 	"github.com/tiramiseb/quickonf/internal/program/specific/checks"
 	"github.com/tiramiseb/quickonf/internal/program/specific/separator"
@@ -20,6 +21,8 @@ type model struct {
 	leftPartEndColumn    int
 	rightPartStartColumn int
 	activeApply          bool // If false, the "check" part is active
+
+	filtered bool
 }
 
 func newModel(g []*instructions.Group) *model {
@@ -58,6 +61,11 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		cmd = tea.Batch(cmds...)
 	case tea.KeyMsg:
 		switch msg.String() {
+		case "ctrl+c", "q", "Q", "esc":
+			cmd = tea.Quit
+		case "f", "F":
+			m.filtered = !m.filtered
+			cmd = messages.Filter(m.filtered)
 		case "right":
 			cmd = m.activateApplies()
 		case "left":
