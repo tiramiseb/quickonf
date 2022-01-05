@@ -71,14 +71,17 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case "left":
 			cmd = m.activateChecks()
 		default:
-			m.titlebar, cmd = m.titlebar.Update(msg)
-			if cmd == nil {
-				if m.activeApply {
-					m.applys, cmd = m.applys.Update(msg)
-				} else {
-					m.checks, cmd = m.checks.Update(msg)
-				}
+			if m.activeApply {
+				m.applys, cmd = m.applys.Update(msg)
+			} else {
+				m.checks, cmd = m.checks.Update(msg)
 			}
+		}
+	case messages.ToggleMsg:
+		if m.activeApply {
+			m.applys, cmd = m.applys.Update(msg)
+		} else {
+			m.checks, cmd = m.checks.Update(msg)
 		}
 	case tea.MouseMsg:
 		unknown := tea.MouseMsg{
