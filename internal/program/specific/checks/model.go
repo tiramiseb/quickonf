@@ -7,6 +7,7 @@ import (
 	"github.com/tiramiseb/quickonf/internal/instructions"
 	"github.com/tiramiseb/quickonf/internal/program/common/box"
 	"github.com/tiramiseb/quickonf/internal/program/common/group"
+	"github.com/tiramiseb/quickonf/internal/program/common/messages"
 	"github.com/tiramiseb/quickonf/internal/program/common/style"
 	"github.com/tiramiseb/quickonf/internal/program/specific/check"
 )
@@ -50,10 +51,7 @@ func (m *model) next() tea.Cmd {
 }
 
 func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
-	var (
-		cmd1 tea.Cmd
-		cmd2 tea.Cmd
-	)
+	var cmds []tea.Cmd
 	switch theMsg := msg.(type) {
 	case tea.WindowSizeMsg:
 		groupWidth := theMsg.Width - 2 // 2 chars for box border
@@ -81,17 +79,29 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case group.Msg:
 		switch theMsg.Type {
 		case group.CheckTrigger:
-			m.groups[theMsg.Gidx], cmd1 = m.groups[theMsg.Gidx].Update(msg)
+			var cmd tea.Cmd
+			m.groups[theMsg.Gidx], cmd = m.groups[theMsg.Gidx].Update(msg)
+			cmds = append(cmds, cmd)
 		case group.CheckDone:
-			cmds := make([]tea.Cmd, 2)
-			m.groups[theMsg.Gidx], cmds[0] = m.groups[theMsg.Gidx].Update(msg)
-			cmds[1] = m.next()
-			cmd1 = tea.Batch(cmds...)
+			var cmd tea.Cmd
+			m.groups[theMsg.Gidx], cmd = m.groups[theMsg.Gidx].Update(msg)
+			cmds = append(cmds, cmd, m.next())
+		}
+		msg = box.ForceRedrawMsg{}
+	case messages.FilterMsg:
+		for i, g := range m.groups {
+			var cmd tea.Cmd
+			m.groups[i], cmd = g.Update(msg)
+			if cmd != nil {
+				cmds = append(cmds, cmd)
+			}
 		}
 		msg = box.ForceRedrawMsg{}
 	}
-	m.box, cmd2 = m.box.Update(msg)
-	return m, tea.Batch(cmd1, cmd2)
+	var cmd tea.Cmd
+	m.box, cmd = m.box.Update(msg)
+	cmds = append(cmds, cmd)
+	return m, tea.Batch(cmds...)
 }
 
 func (m *model) View() string {
