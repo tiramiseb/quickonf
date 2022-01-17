@@ -23,7 +23,7 @@ var aptKey = Command{
 		"Key",
 	},
 	nil,
-	`NextDNS\n  key = http.get.var https://repo.nextdns.io/nextdns.gpg\n  apt.key nextdns <key>`,
+	"NextDNS\n  key = http.get.var https://repo.nextdns.io/nextdns.gpg\n  apt.key nextdns <key>",
 	func(args []string) (result []string, msg string, apply *Apply, status Status) {
 		name := args[0]
 		key := args[1]

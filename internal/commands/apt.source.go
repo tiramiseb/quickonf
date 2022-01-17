@@ -25,7 +25,7 @@ var aptSource = Command{
 		"Source(s)",
 	},
 	nil,
-	`NextDNS\n  apt.source nextdns "deb https://repo.nextdns.io/deb stable main"`,
+	"NextDNS\n  apt.source nextdns \"deb https://repo.nextdns.io/deb stable main\"",
 	func(args []string) (result []string, msg string, apply *Apply, status Status) {
 		name := args[0]
 		sources := args[1] + "\n"
