@@ -16,9 +16,9 @@ var tempdir = Command{
 	"Create a temporary directory (directory is deleted when closing the application)",
 	nil,
 	[]string{
-		"Available temporary path",
+		"Path of the created directory",
 	},
-	"Temporarily clone git repository\n  tmp = temppath\n  git.clone https://www.example.com/foobar.git <tmp>",
+	"Temporarily clone git repository\n  tmp = tempdir\n  git.clone https://www.example.com/foobar.git <tmp>",
 	func(args []string) (result []string, msg string, apply *Apply, status Status) {
 		path := filepath.Join(os.TempDir(), fmt.Sprintf("quickonf-%d", rand.Int()))
 
