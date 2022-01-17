@@ -12,7 +12,7 @@ func init() {
 
 var fileDirectoryMoveNocheck = Command{
 	"file.move.nocheck",
-	"Move a file or directory to another place (with no previous check)",
+	"Move a file or directory to another place (with no check). Necessary if the file does not exist in the check phase (for instance if it is downloaded when applying).",
 	[]string{
 		"Souce path",
 		"Destination path",
