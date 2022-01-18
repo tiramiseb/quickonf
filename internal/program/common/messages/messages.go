@@ -9,11 +9,15 @@ func Toggle() tea.Msg {
 	return ToggleMsg{}
 }
 
-// HelpMsg means the help must be displayed
-type HelpMsg struct{}
+// HelpMsg means the help must be displayed or not
+type HelpMsg struct {
+	On bool
+}
 
-func Help() tea.Msg {
-	return HelpMsg{}
+func Help(on bool) tea.Cmd {
+	return func() tea.Msg {
+		return HelpMsg{on}
+	}
 }
 
 // FilterMsg means the filter status must be toggled

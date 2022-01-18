@@ -3,7 +3,8 @@ package style
 import "github.com/charmbracelet/lipgloss"
 
 const (
-	bg     = lipgloss.Color("#222222")
+	BgHTML = "#222222"
+	bg     = lipgloss.Color(BgHTML)
 	border = lipgloss.Color("#7777ff")
 	text   = lipgloss.Color("#ffffff")
 
