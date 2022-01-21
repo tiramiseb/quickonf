@@ -21,7 +21,7 @@ var fileUserContent = Command{
 	"Create a file owned by a user (if path is relative, it is relative to the user's home directory",
 	[]string{
 		"Username",
-		"Absolute path of the file",
+		"Path of the file",
 		"Content of the file",
 	},
 	nil,
@@ -70,8 +70,8 @@ var fileUserContent = Command{
 		case content == existingContent && ownershipOk:
 			return nil, fmt.Sprintf("%s already has the requested content", path), nil, StatusSuccess
 		case content == existingContent && !ownershipOk:
-			willMessage = fmt.Sprintf("Will change ownership of %s to %s", path)
-			needMessage = fmt.Sprintf("Need to change ownership of %s to %s", path)
+			willMessage = fmt.Sprintf("Will change ownership of %s to %s", path, username)
+			needMessage = fmt.Sprintf("Need to change ownership of %s to %s", path, username)
 		default:
 			willMessage = fmt.Sprintf("Will write requested content to %s", path)
 			needMessage = fmt.Sprintf("Need to write requested content to %s", path)
