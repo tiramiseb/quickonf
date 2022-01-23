@@ -6,7 +6,6 @@ import (
 	"io/fs"
 	"os"
 	"path/filepath"
-	"strconv"
 	"syscall"
 
 	"github.com/tiramiseb/quickonf/internal/commands/datastores"
@@ -37,7 +36,7 @@ var fileUserContent = Command{
 		}
 
 		if !filepath.IsAbs(path) {
-			path = filepath.Join(usr.HomeDir, path)
+			path = filepath.Join(usr.User.HomeDir, path)
 		}
 
 		finfo, err := os.Lstat(path)
@@ -60,7 +59,7 @@ var fileUserContent = Command{
 			existingContent = string(bcontent)
 
 			if stat, ok := finfo.Sys().(*syscall.Stat_t); ok {
-				ownershipOk = usr.Uid == strconv.Itoa(int(stat.Uid))
+				ownershipOk = usr.Uid == int(stat.Uid)
 			}
 		}
 
@@ -93,17 +92,7 @@ var fileUserContent = Command{
 				}
 				if !ownershipOk {
 					out.Infof("Changing ownership of %s", path)
-					uid, err := strconv.Atoi(usr.Uid)
-					if err != nil {
-						out.Errorf("UID \"%s\" for %s is not numerical", usr.Uid, username)
-						return false
-					}
-					gid, err := strconv.Atoi(usr.Gid)
-					if err != nil {
-						out.Errorf("GID \"%s\" for %s is not numerical", usr.Gid, username)
-						return false
-					}
-					if err := os.Chown(path, uid, gid); err != nil {
+					if err := os.Chown(path, usr.Uid, usr.Group.Gid); err != nil {
 						out.Errorf("Could not change ownership of %s: %s", path, err)
 						return false
 					}
@@ -119,5 +108,5 @@ var fileUserContent = Command{
 
 		return nil, needMessage, apply, StatusInfo
 	},
-	nil,
+	datastores.Users.Reset,
 }

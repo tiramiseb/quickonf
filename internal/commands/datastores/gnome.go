@@ -2,7 +2,6 @@ package datastores
 
 import (
 	"encoding/json"
-	"os/user"
 	"strings"
 	"sync"
 )
@@ -14,7 +13,7 @@ var GnomeExtensions = gnomeExtensions{
 type userGnomeExtensions struct {
 	mutex             sync.Mutex
 	initOnce          sync.Once
-	user              *user.User
+	user              User
 	enabledExtensions []string
 }
 
@@ -24,7 +23,7 @@ type gnomeExtensions struct {
 	values   map[string]*userGnomeExtensions
 }
 
-func (g *gnomeExtensions) Enabled(usr *user.User, uuid string) (bool, error) {
+func (g *gnomeExtensions) Enabled(usr User, uuid string) (bool, error) {
 	g.mutex.Lock()
 	defer g.mutex.Unlock()
 	userData, ok := g.values[usr.Username]

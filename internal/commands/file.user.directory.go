@@ -6,7 +6,6 @@ import (
 	"io/fs"
 	"os"
 	"path/filepath"
-	"strconv"
 
 	"github.com/tiramiseb/quickonf/internal/commands/datastores"
 )
@@ -34,7 +33,7 @@ var fileUserDirectory = Command{
 		}
 
 		if !filepath.IsAbs(path) {
-			path = filepath.Join(usr.HomeDir, path)
+			path = filepath.Join(usr.User.HomeDir, path)
 		}
 
 		info, err := os.Lstat(path)
@@ -57,17 +56,7 @@ var fileUserDirectory = Command{
 					out.Errorf("Could not create directory %s: %s", path, err)
 					return false
 				}
-				uid, err := strconv.Atoi(usr.Uid)
-				if err != nil {
-					out.Errorf("Could not get UID: %s", err)
-					return false
-				}
-				gid, err := strconv.Atoi(usr.Gid)
-				if err != nil {
-					out.Errorf("Could not get GID: %s", err)
-					return false
-				}
-				if err := os.Chown(path, uid, gid); err != nil {
+				if err := os.Chown(path, usr.Uid, usr.Group.Gid); err != nil {
 					out.Errorf("Could not give ownership of %s to %s: %s", path, username, err)
 					return false
 				}
@@ -77,5 +66,5 @@ var fileUserDirectory = Command{
 		}
 		return nil, fmt.Sprintf("Need to create directory %s", path), apply, StatusInfo
 	},
-	nil,
+	datastores.Users.Reset,
 }

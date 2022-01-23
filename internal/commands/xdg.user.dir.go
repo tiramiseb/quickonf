@@ -31,10 +31,6 @@ var (
 	xdgDirRe       = regexp.MustCompile(`^XDG_(.*)_DIR="(.*)"`)
 )
 
-func resetXdgDir() {
-	xdgDirsStorage = map[string]map[string]string{}
-}
-
 func xdgDir(usr *user.User, dirname string) (string, error) {
 	dirs, ok := xdgDirsStorage[usr.Username]
 	if !ok {
@@ -89,12 +85,12 @@ var xdgUserDir = Command{
 		}
 
 		if path == "" {
-			path = usr.HomeDir + "/"
+			path = usr.User.HomeDir + "/"
 		} else if !filepath.IsAbs(path) {
-			path = filepath.Join(usr.HomeDir, path)
+			path = filepath.Join(usr.User.HomeDir, path)
 		}
 
-		dir, err := xdgDir(usr, name)
+		dir, err := xdgDir(usr.User, name)
 		if err != nil {
 			return nil, err.Error(), nil, StatusError
 		}
@@ -108,7 +104,7 @@ var xdgUserDir = Command{
 			fmt.Sprintf("Will set %s directory to %s", name, path),
 			func(out Output) bool {
 				out.Infof("Setting %s directory to %s", name, path)
-				if err := helper.ExecAs(usr, nil, nil, "xdg-user-dirs-update", "--set", name, path); err != nil {
+				if err := helper.ExecAs(usr.User, nil, nil, "xdg-user-dirs-update", "--set", name, path); err != nil {
 					out.Errorf("Could not change XDG user dir %s: %s", name, helper.ExecErr(err))
 					return false
 				}
@@ -119,5 +115,8 @@ var xdgUserDir = Command{
 
 		return nil, fmt.Sprintf("Need to set %s directory to %s", name, path), apply, StatusInfo
 	},
-	resetXdgDir,
+	func() {
+		xdgDirsStorage = map[string]map[string]string{}
+		datastores.Users.Reset()
+	},
 }

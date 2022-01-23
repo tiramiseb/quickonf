@@ -2,7 +2,6 @@ package datastores
 
 import (
 	"bytes"
-	"os/user"
 	"sync"
 
 	"github.com/tiramiseb/quickonf/internal/commands/helper"
@@ -18,7 +17,7 @@ var (
 type dconfUser struct {
 	mutex    sync.Mutex
 	initOnce sync.Once
-	user     *user.User
+	user     User
 	values   map[string]string
 }
 
@@ -27,7 +26,7 @@ type dconf struct {
 	values map[string]*dconfUser
 }
 
-func (d *dconf) Get(usr *user.User, key string) (string, error) {
+func (d *dconf) Get(usr User, key string) (string, error) {
 	d.mutex.Lock()
 	defer d.mutex.Unlock()
 	userData, ok := d.values[usr.Username]
@@ -59,7 +58,7 @@ func (d *dconfUser) init() error {
 	d.mutex.Lock()
 	defer d.mutex.Unlock()
 	var out bytes.Buffer
-	if err := helper.ExecAs(d.user, nil, &out, "dconf", "dump", "/"); err != nil {
+	if err := helper.ExecAs(d.user.User, nil, &out, "dconf", "dump", "/"); err != nil {
 		return err
 	}
 	f, err := ini.Load(&out)
