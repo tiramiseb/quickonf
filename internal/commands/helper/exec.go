@@ -14,6 +14,7 @@ func Exec(env []string, output io.Writer, cmd string, args ...string) error {
 	return execCmd(env, output, cmd, args...)
 }
 
+// ExecAs executes a command as an user
 func ExecAs(usr *user.User, env []string, output io.Writer, cmd string, args ...string) error {
 	args = append([]string{"-u", usr.Username, "--", cmd}, args...)
 	return execCmd(env, output, "runuser", args...)
