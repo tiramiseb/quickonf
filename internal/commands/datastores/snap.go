@@ -79,5 +79,5 @@ func (s *snap) init() error {
 		s.packages[line[0]] = pkg
 
 	}
-	return nil
+	return scanner.Err()
 }
