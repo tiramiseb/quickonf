@@ -32,13 +32,13 @@ var fileDirectoryMove = Command{
 		}
 		if _, err := os.Lstat(source); err != nil {
 			if errors.Is(err, fs.ErrNotExist) {
-				return nil, fmt.Sprintf("Directory %s does not exist", source), nil, StatusSuccess
+				return nil, fmt.Sprintf("Source %s does not exist", source), nil, StatusSuccess
 			}
 			return nil, err.Error(), nil, StatusError
 		}
 		_, err := os.Lstat(destination)
 		if err == nil {
-			return nil, fmt.Sprintf("Directory %s already exists", destination), nil, StatusError
+			return nil, fmt.Sprintf("Destination %s already exists", destination), nil, StatusError
 		}
 		if !errors.Is(err, fs.ErrNotExist) {
 			return nil, err.Error(), nil, StatusError
