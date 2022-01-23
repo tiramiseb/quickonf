@@ -33,10 +33,11 @@ type Group struct {
 }
 
 type users struct {
-	mutex    sync.Mutex
-	initOnce sync.Once
-	users    map[string]User
-	groups   []Group
+	usermutex  sync.Mutex
+	groupmutex sync.Mutex
+	initOnce   sync.Once
+	users      map[string]User
+	groups     []Group
 }
 
 // Base of users and groups on the system
@@ -45,8 +46,8 @@ var Users = &users{
 }
 
 func (u *users) Get(username string) (usr User, err error) {
-	u.mutex.Lock()
-	defer u.mutex.Unlock()
+	u.usermutex.Lock()
+	defer u.usermutex.Unlock()
 	usr, ok := u.users[username]
 	if !ok {
 		usr.Username = username
@@ -89,8 +90,8 @@ func (u *users) Get(username string) (usr User, err error) {
 
 func (u *users) GetGroup(name string) (group Group, ok bool, err error) {
 	u.initOnce.Do(func() { err = u.initGroups() })
-	u.mutex.Lock()
-	defer u.mutex.Unlock()
+	u.groupmutex.Lock()
+	defer u.groupmutex.Unlock()
 	for _, g := range u.groups {
 		if g.Name == name {
 			group = g
@@ -103,8 +104,8 @@ func (u *users) GetGroup(name string) (group Group, ok bool, err error) {
 
 func (u *users) GetGroupByID(gid int) (group Group, ok bool, err error) {
 	u.initOnce.Do(func() { err = u.initGroups() })
-	u.mutex.Lock()
-	defer u.mutex.Unlock()
+	u.groupmutex.Lock()
+	defer u.groupmutex.Unlock()
 	for _, g := range u.groups {
 		if g.Gid == gid {
 			group = g
@@ -116,16 +117,18 @@ func (u *users) GetGroupByID(gid int) (group Group, ok bool, err error) {
 }
 
 func (u *users) Reset() {
-	u.mutex.Lock()
-	defer u.mutex.Unlock()
+	u.usermutex.Lock()
+	u.groupmutex.Lock()
+	defer u.usermutex.Unlock()
+	defer u.groupmutex.Unlock()
 	u.users = map[string]User{}
 	u.groups = u.groups[:0]
 	u.initOnce = sync.Once{}
 }
 
 func (u *users) initGroups() error {
-	u.mutex.Lock()
-	defer u.mutex.Unlock()
+	u.groupmutex.Lock()
+	defer u.groupmutex.Unlock()
 	f, err := os.Open(groupsfile)
 	if err != nil {
 		return err
