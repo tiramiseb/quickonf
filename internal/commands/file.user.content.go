@@ -17,7 +17,7 @@ func init() {
 
 var fileUserContent = Command{
 	"file.user.content",
-	"Create a file owned by a user (if path is relative, it is relative to the user's home directory",
+	"Create a file owned by a user (if path is relative, it is relative to the user's home directory)",
 	[]string{
 		"Username",
 		"Path of the file",

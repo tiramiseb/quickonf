@@ -62,7 +62,7 @@ var gitClone = Command{
 						RecurseSubmodules: git.DefaultSubmoduleRecursionDepth,
 					})
 					if err != nil {
-						out.Errorf("Coult not clone %s: %s", uri, err)
+						out.Errorf("Could not clone %s: %s", uri, err)
 						return false
 					}
 					worktree, err := repo.Worktree()
