@@ -18,9 +18,6 @@ func (c *Command) Run(vars Variables) ([]commands.Apply, []CheckReport, bool) {
 	if len(c.Arguments) != len(c.Command.Arguments) {
 		return nil, []CheckReport{{c.Command.Name, commands.StatusError, "wrong number of arguments"}}, false
 	}
-	if len(c.Targets) > len(c.Command.Outputs) {
-		return nil, []CheckReport{{c.Command.Name, commands.StatusError, "too many targets"}}, false
-	}
 	args := make([]string, len(c.Arguments))
 	for i, src := range c.Arguments {
 		args[i] = vars.translateVariables(src)
