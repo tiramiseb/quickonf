@@ -16,26 +16,27 @@ var (
 	DpkgPackages = dpkgPackagesList{}
 )
 
-type dpkgPackage struct {
-	name string
+type DpkgPackage struct {
+	Name    string
+	Version string
 }
 
 type dpkgPackagesList struct {
 	initOnce sync.Once
-	packages []dpkgPackage
+	packages []DpkgPackage
 }
 
-func (d *dpkgPackagesList) Installed(name string) (bool, error) {
+func (d *dpkgPackagesList) Get(name string) (DpkgPackage, bool, error) {
 	var err error
 	d.initOnce.Do(func() { err = d.init() })
 	DpkgMutex.Lock()
 	defer DpkgMutex.Unlock()
 	for _, pkg := range d.packages {
-		if pkg.name == name {
-			return true, err
+		if pkg.Name == name {
+			return pkg, true, err
 		}
 	}
-	return false, err
+	return DpkgPackage{}, false, err
 }
 
 func (d *dpkgPackagesList) Reset() {
@@ -54,12 +55,12 @@ func (d *dpkgPackagesList) init() error {
 	}
 	defer f.Close()
 	scanner := bufio.NewScanner(f)
-	pkg := dpkgPackage{}
+	pkg := DpkgPackage{}
 	for scanner.Scan() {
 		line := strings.TrimSpace(scanner.Text())
 		if line == "" {
 			d.packages = append(d.packages, pkg)
-			pkg = dpkgPackage{}
+			pkg = DpkgPackage{}
 		}
 		info := strings.SplitN(line, ": ", 2)
 		if len(info) != 2 {
@@ -67,7 +68,9 @@ func (d *dpkgPackagesList) init() error {
 		}
 		switch info[0] {
 		case "Package":
-			pkg.name = info[1]
+			pkg.Name = info[1]
+		case "Version":
+			pkg.Version = info[1]
 		}
 	}
 	d.packages = append(d.packages, pkg)

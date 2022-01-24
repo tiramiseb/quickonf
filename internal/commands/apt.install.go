@@ -19,7 +19,7 @@ var apt = Command{
 	"Install the \"ipcalc\" tool\n  apt.install ipcalc",
 	func(args []string) (result []string, msg string, apply *Apply, status Status) {
 		pkg := args[0]
-		ok, err := datastores.DpkgPackages.Installed(pkg)
+		_, ok, err := datastores.DpkgPackages.Get(pkg)
 		if err != nil {
 			return nil, err.Error(), nil, StatusError
 		}
