@@ -13,7 +13,7 @@ func init() {
 
 var tempdir = Command{
 	"tempdir",
-	"Create a temporary directory (directory is deleted when closing the application)",
+	"Create a temporary directory (directory is automatically deleted when closing the application)",
 	nil,
 	[]string{
 		"Path of the created directory",
