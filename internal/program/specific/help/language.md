@@ -66,18 +66,12 @@ APT sources
 
 Instructions can be grouped below a `if` instruction, which executes then only if the condition is true.
 
-Currently, the `if` instruction only accepts three arguments:
+Supported conditions are:
 
-- a first value
-- an operator
-- a second value
-
-The operator is one of:
-
-- `=`: condition is true if both values are equal
-- `!=`: condition is true of values are different
-
-Of course, this makes sense only when using variables, set by other commands.
+- `file.absent </path/to/file>`: true if the file does not exist
+- `file.present </path/to/file>`: true if the file exists
+- `<value1> = <value2>`: true if values are equal (compared as strings)
+- `<value1> != <value2>`: true if values are different (compared as strings)
 
 Example:
 
