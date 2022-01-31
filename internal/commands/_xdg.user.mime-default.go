@@ -31,7 +31,7 @@ var xdgUserMimeDefault = Command{
 
 		usr, err := user.Lookup(username)
 		if err != nil {
-			out.Errorf("could not identify user %s: %v", username, err)
+			out.Errorf("Could not identify user %s: %v", username, err)
 			return nil, false
 		}
 
