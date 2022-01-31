@@ -100,6 +100,9 @@ findElement:
 		firstLineInView = idealFirstLineInVew
 		lastLineInView -= delta
 	}
+	if firstLineInView < 0 {
+		firstLineInView = 0
+	}
 
 	// Extract the view
 	m.view = strings.Join(m.allElementsView[firstLineInView:lastLineInView], "\n")

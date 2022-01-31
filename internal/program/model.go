@@ -39,7 +39,11 @@ func newModel(g []*instructions.Group) *model {
 
 func (m *model) Init() tea.Cmd {
 	tea.LogToFile("/tmp/tmplog", "")
-	return m.checks.Init()
+	m.filtered = true
+	return tea.Batch(
+		messages.Filter(m.filtered),
+		m.checks.Init(),
+	)
 }
 
 func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
