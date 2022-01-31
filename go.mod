@@ -31,13 +31,14 @@ require (
 	github.com/yuin/goldmark v1.3.3 // indirect
 	github.com/yuin/goldmark-emoji v1.0.1 // indirect
 	golang.org/x/crypto v0.0.0-20210421170649-83a5a9bb288b // indirect
-	golang.org/x/net v0.0.0-20210331212208-0fccb6fa2b5c // indirect
+	golang.org/x/net v0.0.0-20210505024714-0287a6fb4125 // indirect
 	gopkg.in/warnings.v0 v0.1.2 // indirect
 )
 
 require (
 	github.com/charmbracelet/glamour v0.3.0
 	github.com/containerd/console v1.0.2 // indirect
+	github.com/gabriel-vasile/mimetype v1.4.0
 	github.com/go-git/go-git/v5 v5.4.2
 	github.com/lucasb-eyer/go-colorful v1.2.0 // indirect
 	github.com/mattn/go-isatty v0.0.13 // indirect
