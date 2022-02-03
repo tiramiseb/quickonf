@@ -9,6 +9,7 @@ import (
 	"github.com/charmbracelet/lipgloss"
 
 	"github.com/tiramiseb/quickonf/internal/commands"
+	"github.com/tiramiseb/quickonf/internal/program/common/messages"
 	"github.com/tiramiseb/quickonf/internal/program/common/style"
 )
 
@@ -46,6 +47,8 @@ type model struct {
 
 	helpOnHelp string
 
+	shallRender bool
+
 	active     section
 	boxStyle   lipgloss.Style
 	viewport   viewport.Model
@@ -64,13 +67,13 @@ func New() *model {
 	r, _ := glamour.NewTermRenderer()
 	m := &model{
 		width:               8,
+		shallRender:         true,
 		viewport:            viewport.Model{Width: 8, Height: 1},
 		mdRenderer:          r,
 		commands:            commands.GetAll(),
 		contents:            map[section]string{},
 		filteredCommandsDoc: map[string]string{},
 	}
-	m.reRenderContents()
 	m.viewport.SetContent(m.contents[m.active])
 	return m
 }
@@ -99,7 +102,7 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			glamour.WithStandardStyle("dark"),
 			glamour.WithWordWrap(msg.Width-2),
 		)
-		m.reRenderContents()
+		m.shallRender = true
 	case tea.KeyMsg:
 		key := msg.String()
 		switch key {
@@ -150,6 +153,11 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case msg.X >= m.uiStart && msg.X <= m.uiEnd:
 			m.active = sectionUI
 			m.viewport.SetContent(m.contents[m.active])
+		}
+	case messages.HelpMsg:
+		if msg.On && m.shallRender {
+			m.shallRender = false
+			m.reRenderContents()
 		}
 	}
 	return m, cmd

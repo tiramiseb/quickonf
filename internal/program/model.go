@@ -96,11 +96,12 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			if m.showHelp {
 				m.help, cmd = m.help.Update(msg)
 			} else {
-				m.showHelp = !m.showHelp
+				m.showHelp = true
 				cmd1 := messages.Help(m.showHelp)
-				var cmd2 tea.Cmd
+				var cmd2, cmd3 tea.Cmd
 				m.titlebar, cmd2 = m.titlebar.Update(cmd1())
-				cmd = tea.Batch(cmd1, cmd2)
+				m.help, cmd3 = m.help.Update(cmd1())
+				cmd = tea.Batch(cmd1, cmd2, cmd3)
 			}
 		case "f", "F":
 			if m.showHelp {
