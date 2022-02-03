@@ -27,6 +27,9 @@ type model struct {
 	filtered             bool
 }
 
+// newModel creates a new root model for the application
+//
+// groups are expected to be sorted by priority
 func newModel(g []*instructions.Group) *model {
 	return &model{
 		titlebar:  titlebar.New(),

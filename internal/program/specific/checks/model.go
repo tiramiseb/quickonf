@@ -16,38 +16,56 @@ type model struct {
 	box    tea.Model
 	groups []tea.Model
 
-	nextInQueue int
+	byPriority             [][]int
+	nextPriorityGroup      int
+	currentlyRunningChecks int
 }
 
 func New(groups []*instructions.Group) *model {
 	gs := make([]tea.Model, len(groups))
+	var (
+		currentPriority int
+		byPriority      [][]int
+		thisPriority    []int
+	)
 	for i, g := range groups {
+		if g.Priority != currentPriority {
+			if thisPriority != nil {
+				byPriority = append(byPriority, thisPriority)
+			}
+			thisPriority = nil
+			currentPriority = g.Priority
+		}
+		thisPriority = append(thisPriority, i)
 		gs[i] = check.New(i, g)
 	}
+	if thisPriority != nil {
+		byPriority = append(byPriority, thisPriority)
+	}
 	return &model{
-		box:    box.New("Checks", "Nothing to check...", gs, false, true),
-		groups: gs,
+		box:        box.New("Checks", "Nothing to check...", gs, false, true),
+		groups:     gs,
+		byPriority: byPriority,
 	}
 }
 
 func (m *model) Init() tea.Cmd {
-	// Need to discriminate on priority before running in parallel
-	// nb := runtime.NumCPU()
-	// cmds := make([]tea.Cmd, nb)
-	// for i := 0; i < nb; i++ {
-	// 	cmds[i] = m.next()
-	// }
-	// return tea.Batch(cmds...)
 	return m.next()
 }
 
 func (m *model) next() tea.Cmd {
-	if m.nextInQueue >= len(m.groups) {
+	if m.nextPriorityGroup >= len(m.byPriority) {
 		return nil
 	}
-	cmd := m.groups[m.nextInQueue].Init()
-	m.nextInQueue++
-	return cmd
+	groupIDs := m.byPriority[m.nextPriorityGroup]
+	nbChecks := len(groupIDs)
+	cmds := make([]tea.Cmd, nbChecks)
+	for i, id := range groupIDs {
+		cmds[i] = m.groups[id].Init()
+	}
+	m.nextPriorityGroup++
+	m.currentlyRunningChecks = nbChecks
+	return tea.Batch(cmds...)
 }
 
 func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
@@ -83,9 +101,13 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.groups[theMsg.Gidx], cmd = m.groups[theMsg.Gidx].Update(msg)
 			cmds = append(cmds, cmd)
 		case group.CheckDone:
+			m.currentlyRunningChecks--
 			var cmd tea.Cmd
 			m.groups[theMsg.Gidx], cmd = m.groups[theMsg.Gidx].Update(msg)
-			cmds = append(cmds, cmd, m.next())
+			cmds = append(cmds, cmd)
+			if m.currentlyRunningChecks == 0 {
+				cmds = append(cmds, m.next())
+			}
 		}
 		msg = box.ForceRedrawMsg{}
 	case messages.FilterMsg:
