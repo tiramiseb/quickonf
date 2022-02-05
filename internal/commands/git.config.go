@@ -46,7 +46,7 @@ var gitConfig = Command{
 		return nil, fmt.Sprintf("Need to set %s to %s", name, value), apply, StatusInfo
 	},
 	func() {
-		datastores.Dconf.Reset()
+		datastores.GitConfig.Reset()
 		datastores.Users.Reset()
 	},
 }
