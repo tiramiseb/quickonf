@@ -58,7 +58,7 @@ var httpGetFile = Command{
 					out.Errorf("Could not write content to %s: %s", path, err)
 					return false
 				}
-				out.Infof("Downloaded %s to %s", uri, path)
+				out.Successf("Downloaded %s to %s", uri, path)
 				return true
 			},
 		}
