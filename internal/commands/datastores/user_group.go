@@ -41,9 +41,10 @@ type users struct {
 }
 
 // Base of users and groups on the system
-var Users = &users{
-	users: map[string]User{},
-}
+var (
+	FakeUserForSystem = User{Username: "|system|"}
+	Users             = &users{users: map[string]User{}}
+)
 
 func (u *users) Get(username string) (usr User, err error) {
 	u.usermutex.Lock()
