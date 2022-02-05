@@ -18,9 +18,8 @@ type userGnomeExtensions struct {
 }
 
 type gnomeExtensions struct {
-	mutex    sync.Mutex
-	initOnce sync.Once
-	values   map[string]*userGnomeExtensions
+	mutex  sync.Mutex
+	values map[string]*userGnomeExtensions
 }
 
 func (g *gnomeExtensions) Enabled(usr User, uuid string) (bool, error) {

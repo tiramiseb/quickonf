@@ -4,8 +4,9 @@ import (
 	"bytes"
 	"sync"
 
-	"github.com/tiramiseb/quickonf/internal/commands/helper"
 	"gopkg.in/ini.v1"
+
+	"github.com/tiramiseb/quickonf/internal/commands/helper"
 )
 
 var (

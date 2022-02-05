@@ -9,11 +9,9 @@ import (
 	"github.com/go-git/go-git/v5/storage/memory"
 )
 
-var (
-	GitRemotes = gitRemotes{
-		remotes: map[string]*gitRemote{},
-	}
-)
+var GitRemotes = gitRemotes{
+	remotes: map[string]*gitRemote{},
+}
 
 type gitRemote struct {
 	uri      string
