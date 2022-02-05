@@ -11,18 +11,18 @@ import (
 )
 
 func init() {
-	register(fileUserDirectory)
+	register(userFileDirectory)
 }
 
-var fileUserDirectory = Command{
-	"file.user.directory",
+var userFileDirectory = Command{
+	"user.file.directory",
 	"Create a directory belonging to the given user (if path is relative, it is relative to the user's home directory",
 	[]string{
 		"Username",
 		"Directory path",
 	},
 	nil,
-	"Create Picz photos for alice\n  file.user.directory alice Picz",
+	"Create Picz photos for alice\n  user.file.directory alice Picz",
 	func(args []string) (result []string, msg string, apply *Apply, status Status) {
 		username := args[0]
 		path := args[1]
@@ -48,7 +48,7 @@ var fileUserDirectory = Command{
 		}
 
 		apply = &Apply{
-			"file.user.directory",
+			"user.file.directory",
 			fmt.Sprintf("Will create directory %s", path),
 			func(out Output) bool {
 				out.Infof("Creating directory %s", path)

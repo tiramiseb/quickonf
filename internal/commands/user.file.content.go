@@ -12,11 +12,11 @@ import (
 )
 
 func init() {
-	register(fileUserContent)
+	register(userFileContent)
 }
 
-var fileUserContent = Command{
-	"file.user.content",
+var userFileContent = Command{
+	"user.file.content",
 	"Create a file owned by a user (if path is relative, it is relative to the user's home directory)",
 	[]string{
 		"Username",
@@ -24,7 +24,7 @@ var fileUserContent = Command{
 		"Content of the file",
 	},
 	nil,
-	"Say hello in /home/alice/hello.txt\n  file.user.content alice hello.txt \"Hello World!\"",
+	"Say hello in /home/alice/hello.txt\n  user.file.content alice hello.txt \"Hello World!\"",
 	func(args []string) (result []string, msg string, apply *Apply, status Status) {
 		username := args[0]
 		path := args[1]
@@ -77,7 +77,7 @@ var fileUserContent = Command{
 		}
 
 		apply = &Apply{
-			"file.user.content",
+			"user.file.content",
 			willMessage,
 			func(out Output) bool {
 				if existingContent != content {

@@ -61,11 +61,11 @@ func xdgDir(usr *user.User, dirname string) (string, error) {
 }
 
 func init() {
-	register(xdgUserDir)
+	register(userXdgUserdir)
 }
 
-var xdgUserDir = Command{
-	"xdg.user.dir",
+var userXdgUserdir = Command{
+	"user.xdg.userdir",
 	"Set a XDG user dir",
 	[]string{
 		"Username",
@@ -73,7 +73,7 @@ var xdgUserDir = Command{
 		"Directory path",
 	},
 	nil,
-	"Change downloads directory for john\n  file.user.directory john Downs\n  xdg.user.dir john DOWNLOAD Downs",
+	"Change downloads directory for john\n  user.file.directory john Downs\n  user.xdg.userdir john DOWNLOAD Downs",
 	func(args []string) (result []string, msg string, apply *Apply, status Status) {
 		username := args[0]
 		name := strings.ToUpper(args[1])
@@ -100,7 +100,7 @@ var xdgUserDir = Command{
 		}
 
 		apply = &Apply{
-			"xdg.user.dir",
+			"user.xdg.userdir",
 			fmt.Sprintf("Will set %s directory to %s", name, path),
 			func(out Output) bool {
 				out.Infof("Setting %s directory to %s", name, path)

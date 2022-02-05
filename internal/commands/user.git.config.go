@@ -8,11 +8,11 @@ import (
 )
 
 func init() {
-	register(gitUserConfig)
+	register(userGitConfig)
 }
 
-var gitUserConfig = Command{
-	"git.user.config",
+var userGitConfig = Command{
+	"user.git.config",
 	"Set a git configuration parameter for a user",
 	[]string{
 		"Username",
@@ -20,7 +20,7 @@ var gitUserConfig = Command{
 		"Value",
 	},
 	nil,
-	"Git parameter\n  git.config branch.autosetuprebase always", func(args []string) (result []string, msg string, apply *Apply, status Status) {
+	"Git parameter\n  user.git.config alice branch.autosetuprebase always", func(args []string) (result []string, msg string, apply *Apply, status Status) {
 		username := args[0]
 		name := args[1]
 		value := args[2]
@@ -37,7 +37,7 @@ var gitUserConfig = Command{
 		}
 
 		apply = &Apply{
-			"git.user.config",
+			"user.git.config",
 			fmt.Sprintf("Will set %s to %s", name, value),
 			func(out Output) bool {
 				out.Infof("Setting %s to %s", name, value)
@@ -52,7 +52,7 @@ var gitUserConfig = Command{
 		return nil, fmt.Sprintf("Need to set %s to %s", name, value), apply, StatusInfo
 	},
 	func() {
-		datastores.Dconf.Reset()
+		datastores.GitConfig.Reset()
 		datastores.Users.Reset()
 	},
 }

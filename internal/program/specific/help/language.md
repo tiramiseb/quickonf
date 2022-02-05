@@ -20,6 +20,8 @@ Some instructions have an impact on multiple other instructions, like conditiona
 
 The most important type of instruction is the commands. There are many available commands, and probably many more to come. A command is the instruction given to _Quickonf_ for system checking and modification. The commands may need arguments and may return output values (see _Variables_ below). See the _Commands_ section for details on how to use commands.
 
+By convention, commands modifying data only for one user are prefixed with "`user.`" and take the username as their first argument. Other commands modify system-wide values.
+
 # Variables
 
 Some commands return output values, that can be stored in variables if needed. Variables are named with alphanumerical characters. Syntax to store values is the following:
@@ -99,7 +101,7 @@ Wifi
     ssid3 psk3
 
 My XDG dirs
-  repeat xdg.user.dir alice
+  repeat user.xdg.userdir alice
     desktop DESKtop
     documents MyDocs
     download UglyStuff
@@ -114,9 +116,9 @@ Wifi
   nm.wifi ssid3 psk3
 
 My XDG dirs
-  xdg.user.dir alice desktop DESKtop
-  xdg.user.dir alice documents MyDocs
-  xdg.user.dir alice download UglyStuff
+  user.xdg.userdir alice desktop DESKtop
+  user.xdg.userdir alice documents MyDocs
+  user.xdg.userdir alice download UglyStuff
 ```
 
 # Priority

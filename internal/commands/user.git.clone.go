@@ -14,11 +14,11 @@ import (
 )
 
 func init() {
-	register(gitUserClone)
+	register(userGitClone)
 }
 
-var gitUserClone = Command{
-	"git.user.clone",
+var userGitClone = Command{
+	"user.git.clone",
 	"Clone a git repository as provided user (if the repository already exists locally, pull the last commit) and switch to the requested reference (branch, tag...)",
 	[]string{
 		"Username",
@@ -27,7 +27,7 @@ var gitUserClone = Command{
 		"Reference (branch, tag...)",
 	},
 	nil,
-	"Oh My Bash\n  git.clone alice https://github.com/ohmybash/oh-my-bash.git .oh-my-bash master",
+	"Oh My Bash\n  user.git.clone alice https://github.com/ohmybash/oh-my-bash.git .oh-my-bash master",
 	func(args []string) (result []string, msg string, apply *Apply, status Status) {
 		username := args[0]
 		uri := args[1]
@@ -61,7 +61,7 @@ var gitUserClone = Command{
 		finfo, err := os.Stat(dest)
 		if errors.Is(err, fs.ErrNotExist) {
 			apply = &Apply{
-				"git.clone",
+				"user.git.clone",
 				fmt.Sprintf("Will clone %s into %s", uri, dest),
 				func(out Output) bool {
 					out.Infof("Cloning %s into %s", uri, dest)
@@ -114,7 +114,7 @@ var gitUserClone = Command{
 		}
 
 		apply = &Apply{
-			"git.clone",
+			"user.git.clone",
 			fmt.Sprintf("Will pull updates in %s", dest),
 			func(out Output) bool {
 				out.Infof("Pulling in %s", dest)
