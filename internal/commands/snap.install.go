@@ -28,15 +28,13 @@ var snapInstall = Command{
 			return c == ',' || unicode.IsSpace(c)
 		})
 		var (
-			channel   string
+			channel   = "stable"
 			classic   bool
 			dangerous bool
 			devmode   bool
 		)
 		for _, o := range options {
 			switch o {
-			case "stable":
-				channel = "stable"
 			case "candidate":
 				channel = "candidate"
 			case "edge":
