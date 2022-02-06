@@ -10,11 +10,11 @@ import (
 )
 
 func init() {
-	register(dconfSet)
+	register(userDconfSet)
 }
 
-var dconfSet = Command{
-	"dconf.set",
+var userDconfSet = Command{
+	"user.dconf.set",
 	"Set a dconf parameter",
 	[]string{
 		"Username",
@@ -22,7 +22,7 @@ var dconfSet = Command{
 		"Value",
 	},
 	nil,
-	"Show date in GNOME\n  dconf.set /org/gnome/desktop/interface/clock-show-date true", func(args []string) (result []string, msg string, apply *Apply, status Status) {
+	"Show date in GNOME\n  user.dconf.set /org/gnome/desktop/interface/clock-show-date true", func(args []string) (result []string, msg string, apply *Apply, status Status) {
 		username := args[0]
 		key := args[1]
 		value := args[2]
@@ -52,7 +52,7 @@ var dconfSet = Command{
 		}
 
 		apply = &Apply{
-			"dconf.set",
+			"user.dconf.set",
 			fmt.Sprintf("Will set %s to %s", key, value),
 			func(out Output) bool {
 				out.Infof("Setting %s to %s", key, value)

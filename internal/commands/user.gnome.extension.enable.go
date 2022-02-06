@@ -12,14 +12,14 @@ func init() {
 }
 
 var gnomeExtensionEnable = Command{
-	"gnome.extension.enable",
+	"user.gnome.extension.enable",
 	"Enable a GNOME Shell extension",
 	[]string{
 		"Username",
 		"UUID of the extension",
 	},
 	nil,
-	"Dash to dock\n  gnome.extension.install dash-to-dock@micxgx.gmail.com\n  gnome.extension.enable alice dash-to-dock@micxgx.gmail.com",
+	"Dash to dock\n  gnome.extension.install dash-to-dock@micxgx.gmail.com\n  user.gnome.extension.enable alice dash-to-dock@micxgx.gmail.com",
 	func(args []string) (result []string, message string, apply *Apply, status Status) {
 		username := args[0]
 		uuid := args[1]
@@ -36,7 +36,7 @@ var gnomeExtensionEnable = Command{
 		}
 
 		apply = &Apply{
-			"gnome.extension.enable",
+			"user.gnome.extension.enable",
 			fmt.Sprintf("Will enable %s", uuid),
 			func(out Output) (success bool) {
 				out.Infof("Enabling %s", uuid)
