@@ -44,6 +44,8 @@ var (
 			Foreground(text)
 	InstructionInfo = baseInstruction.Copy().
 			Background(infoBg)
+	InstructionRunning = baseInstruction.Copy().
+				Background(runningBg)
 	InstructionError = baseInstruction.Copy().
 				Background(failedBg)
 	InstructionSuccess = baseInstruction.Copy().

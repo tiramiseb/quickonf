@@ -43,7 +43,7 @@ var debconfSet = Command{
 			"debconf.set",
 			fmt.Sprintf("Will %s %s to %s", verb, name, value),
 			func(out Output) bool {
-				out.Infof("Setting %s to %s", name, value)
+				out.Runningf("Preparing configuration to set %s to %s", name, value)
 				tmpfile, err := os.CreateTemp("", "quickonf-debconf")
 				if err != nil {
 					out.Errorf("Could not create temporary file: %s", err)
@@ -62,6 +62,7 @@ var debconfSet = Command{
 				out.Infof("Waiting for dpkg to be available to set debconf value %s", name)
 				datastores.DpkgMutex.Lock()
 				defer datastores.DpkgMutex.Unlock()
+				out.Runningf("Setting %s to %s", name, value)
 				if err := helper.Exec(nil, nil, "debconf-set-selections", tmpfile.Name()); err != nil {
 					out.Errorf("Could not execute debconf-set-selections: %s", helper.ExecErr(err))
 					return false

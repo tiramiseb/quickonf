@@ -51,7 +51,7 @@ var fileExtract = Command{
 			"file.extract",
 			fmt.Sprintf("Will extract %s to %s", archive, dest),
 			func(out Output) bool {
-				out.Infof("Extracting %s to %s", archive, dest)
+				out.Runningf("Extracting %s to %s", archive, dest)
 				if err := extractor(archive, dest); err != nil {
 					out.Errorf("Could not extract %s to %s: %s", archive, dest, err)
 					return false

@@ -34,7 +34,7 @@ var aptRemove = Command{
 				out.Infof("Waiting for dpkg to be available to remove %s", pkg)
 				datastores.DpkgMutex.Lock()
 				defer datastores.DpkgMutex.Unlock()
-				out.Infof("Removing %s", pkg)
+				out.Runningf("Removing %s", pkg)
 				if err := helper.Exec([]string{"DEBIAN_FRONTEND=noninteractive"}, nil, "apt-get", "--yes", "--quiet", "remove", pkg); err != nil {
 					out.Errorf("Could not remove %s: %s", pkg, helper.ExecErr(err))
 					return false

@@ -56,7 +56,7 @@ var gitClone = Command{
 				"git.clone",
 				fmt.Sprintf("Will clone %s into %s", uri, dest),
 				func(out Output) bool {
-					out.Infof("Cloning %s into %s", uri, dest)
+					out.Runningf("Cloning %s into %s", uri, dest)
 					repo, err := git.PlainClone(dest, false, &git.CloneOptions{
 						URL:               uri,
 						RecurseSubmodules: git.DefaultSubmoduleRecursionDepth,

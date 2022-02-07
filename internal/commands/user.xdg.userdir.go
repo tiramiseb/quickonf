@@ -103,7 +103,7 @@ var userXdgUserdir = Command{
 			"user.xdg.userdir",
 			fmt.Sprintf("Will set %s directory to %s", name, path),
 			func(out Output) bool {
-				out.Infof("Setting %s directory to %s", name, path)
+				out.Runningf("Setting %s directory to %s", name, path)
 				if err := helper.ExecAs(usr.User, nil, nil, "xdg-user-dirs-update", "--set", name, path); err != nil {
 					out.Errorf("Could not change XDG user dir %s: %s", name, helper.ExecErr(err))
 					return false

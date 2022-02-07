@@ -81,7 +81,7 @@ var userFileContent = Command{
 			willMessage,
 			func(out Output) bool {
 				if existingContent != content {
-					out.Infof("Writing content to %s", path)
+					out.Runningf("Writing content to %s", path)
 					if err := os.WriteFile(path, []byte(content), 0644); err != nil {
 						out.Errorf("Could not write requested content to %s: %s", path, err)
 						return false
@@ -91,7 +91,7 @@ var userFileContent = Command{
 					}
 				}
 				if !ownershipOk {
-					out.Infof("Changing ownership of %s", path)
+					out.Runningf("Changing ownership of %s", path)
 					if err := os.Chown(path, usr.Uid, usr.Group.Gid); err != nil {
 						out.Errorf("Could not change ownership of %s: %s", path, err)
 						return false

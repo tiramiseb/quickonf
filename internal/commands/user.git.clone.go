@@ -64,7 +64,7 @@ var userGitClone = Command{
 				"user.git.clone",
 				fmt.Sprintf("Will clone %s into %s", uri, dest),
 				func(out Output) bool {
-					out.Infof("Cloning %s into %s", uri, dest)
+					out.Runningf("Cloning %s into %s", uri, dest)
 					if err := helper.ExecAs(usr.User, nil, nil, "git", "clone", uri, dest); err != nil {
 						out.Errorf("Could not clone %s: %s", uri, err)
 						return false
@@ -117,12 +117,12 @@ var userGitClone = Command{
 			"user.git.clone",
 			fmt.Sprintf("Will pull updates in %s", dest),
 			func(out Output) bool {
-				out.Infof("Pulling in %s", dest)
+				out.Runningf("Pulling in %s", dest)
 				if err := helper.ExecAs(usr.User, nil, nil, "git", "-C", dest, "pull"); err != nil {
 					out.Errorf("Could not pull in %s: %s", dest, err)
 					return false
 				}
-				out.Infof("Checking out %s in %s", ref, dest)
+				out.Runningf("Checking out %s in %s", ref, dest)
 				if err := helper.ExecAs(usr.User, nil, nil, "git", "-C", dest, "checkout", ref); err != nil {
 					out.Errorf("Could not checkout %s in %s: %s", ref, dest, err)
 					return false

@@ -39,7 +39,7 @@ var gnomeExtensionEnable = Command{
 			"user.gnome.extension.enable",
 			fmt.Sprintf("Will enable %s", uuid),
 			func(out Output) (success bool) {
-				out.Infof("Enabling %s", uuid)
+				out.Runningf("Enabling %s", uuid)
 				if err := helper.Exec(nil, nil, "gnome-shell-extension-tool", "--enable-extension", uuid); err != nil {
 					out.Errorf("Could not enable %s: %s", uuid, err)
 					return false

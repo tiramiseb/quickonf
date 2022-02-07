@@ -48,6 +48,26 @@ func (c *commandOutput) Infof(format string, a ...interface{}) {
 	}
 }
 
+func (c *commandOutput) Running(message string) {
+	c.status = commands.StatusRunning
+	c.message = message
+	c.m.messages <- group.Msg{
+		Gidx:  c.m.idx,
+		Group: c.m.group,
+		Type:  group.ApplyChange,
+	}
+}
+
+func (c *commandOutput) Runningf(format string, a ...interface{}) {
+	c.status = commands.StatusRunning
+	c.message = fmt.Sprintf(format, a...)
+	c.m.messages <- group.Msg{
+		Gidx:  c.m.idx,
+		Group: c.m.group,
+		Type:  group.ApplyChange,
+	}
+}
+
 func (c *commandOutput) Success(message string) {
 	c.status = commands.StatusSuccess
 	c.message = message

@@ -34,7 +34,7 @@ var gitConfig = Command{
 			"git.config",
 			fmt.Sprintf("Will set %s to %s", name, value),
 			func(out Output) bool {
-				out.Infof("Setting %s to %s", name, value)
+				out.Runningf("Setting %s to %s", name, value)
 				if err := helper.Exec(nil, nil, "git", "config", "--system", "--add", name, value); err != nil {
 					out.Errorf("Could not set %s: %s", name, helper.ExecErr(err))
 					return false

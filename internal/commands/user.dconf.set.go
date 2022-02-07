@@ -55,7 +55,7 @@ var userDconfSet = Command{
 			"user.dconf.set",
 			fmt.Sprintf("Will set %s to %s", key, value),
 			func(out Output) bool {
-				out.Infof("Setting %s to %s", key, value)
+				out.Runningf("Setting %s to %s", key, value)
 				if err := helper.ExecAs(user.User, nil, nil, "dconf", "write", key, value); err != nil {
 					out.Errorf("Could not set %s: %s", key, helper.ExecErr(err))
 					return false

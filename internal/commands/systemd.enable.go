@@ -35,7 +35,7 @@ var systemdEnable = Command{
 				"systemd.enable",
 				fmt.Sprintf("Will enable service %s", name),
 				func(out Output) bool {
-					out.Infof("Enabling and starting service %s", name)
+					out.Runningf("Enabling and starting service %s", name)
 					if err := helper.Exec(nil, nil, "systemctl", "enable", "--now", name); err != nil {
 						out.Errorf("Could not enable %s: %s", name, helper.ExecErr(err))
 						return false

@@ -70,13 +70,13 @@ var fileSymlink = Command{
 			willMessage,
 			func(out Output) bool {
 				if mustBeRemoved {
-					out.Infof("Removing %s", link)
+					out.Runningf("Removing %s", link)
 					if err := os.RemoveAll(link); err != nil {
 						out.Errorf("Could not remove %s: %s", link, err)
 						return false
 					}
 				}
-				out.Infof("Creating link %s to %s", link, target)
+				out.Runningf("Creating link %s to %s", link, target)
 				if err := os.Symlink(target, link); err != nil {
 					out.Errorf("Could not create %s: %s", link, err)
 					return false

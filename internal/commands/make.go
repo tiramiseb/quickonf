@@ -26,7 +26,7 @@ var makefile = Command{
 			"make",
 			fmt.Sprintf("Will make %s in %s", target, path),
 			func(out Output) bool {
-				out.Infof("Making %s in %s", target, path)
+				out.Runningf("Making %s in %s", target, path)
 				if err := helper.Exec(nil, nil, "make", "-C", path, target); err != nil {
 					out.Errorf("Could not make %s in %s: %s", target, path, helper.ExecErr(err))
 					return false

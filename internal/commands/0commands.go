@@ -8,6 +8,8 @@ import (
 type Output interface {
 	Info(message string)
 	Infof(format string, a ...interface{})
+	Running(message string)
+	Runningf(format string, a ...interface{})
 	Success(message string)
 	Successf(format string, a ...interface{})
 	Error(message string)
@@ -18,6 +20,7 @@ type Status int
 
 const (
 	StatusInfo Status = iota
+	StatusRunning
 	StatusSuccess
 	StatusError
 )

@@ -36,7 +36,7 @@ var httpGetFile = Command{
 			"http.get.file",
 			fmt.Sprintf("Will download %s to %s", uri, path),
 			func(out Output) bool {
-				out.Infof("Downloading %s to %s", uri, path)
+				out.Runningf("Downloading %s to %s", uri, path)
 				f, err := os.Create(path)
 				if err != nil {
 					out.Errorf("Could not create %s: %s", path, err)

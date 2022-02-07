@@ -31,7 +31,7 @@ var dpkgInstallNocheck = Command{
 				out.Infof("Waiting for dpkg to be available to install %s", path)
 				datastores.DpkgMutex.Lock()
 				defer datastores.DpkgMutex.Unlock()
-				out.Infof("Installing %s", path)
+				out.Runningf("Installing %s", path)
 				if err := helper.Exec([]string{"DEBIAN_FRONTEND=noninteractive"}, nil, "dpkg", "--install", path); err != nil {
 					out.Errorf("Could not install %s: %s", path, helper.ExecErr(err))
 					return false

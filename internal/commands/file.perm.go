@@ -54,7 +54,7 @@ var filePerm = Command{
 			"file.perm",
 			fmt.Sprintf("Will change permissions on %s", path),
 			func(out Output) bool {
-				out.Infof("Changing permissions on %s", path)
+				out.Runningf("Changing permissions on %s", path)
 				if err := os.Chmod(path, perms); err != nil {
 					out.Errorf("Could not change permissions on %s: %s", path, err)
 					return false

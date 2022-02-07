@@ -37,6 +37,7 @@ var (
 	}
 	InstructionStyles = map[commands.Status]lipgloss.Style{
 		commands.StatusInfo:    style.InstructionInfo,
+		commands.StatusRunning: style.InstructionRunning,
 		commands.StatusError:   style.InstructionError,
 		commands.StatusSuccess: style.InstructionSuccess,
 	}

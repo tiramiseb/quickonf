@@ -77,7 +77,7 @@ var gnomeExtensionInstall = Command{
 			"gnome.extension.install",
 			fmt.Sprintf("Will install %s", uuid),
 			func(out Output) (success bool) {
-				out.Infof("Installing %s", uuid)
+				out.Runningf("Downloading %s", uuid)
 				resp, err := http.Get("https://extensions.gnome.org" + extInfo.DownloadURL)
 				if err != nil {
 					out.Errorf("Could not download %s: %s", uuid, err)
@@ -89,6 +89,7 @@ var gnomeExtensionInstall = Command{
 					out.Errorf("Could not read downloaded data for %s: %s", uuid, err)
 					return false
 				}
+				out.Runningf("Extracting %s", uuid)
 				reader, err := zip.NewReader(bytes.NewReader(body), int64(len(body)))
 				if err != nil {
 					out.Errorf("Could not extract downloaded data for %s: %s", uuid, err)

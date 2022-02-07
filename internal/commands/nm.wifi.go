@@ -56,7 +56,7 @@ var nmWifi = Command{
 				"nm.import",
 				fmt.Sprintf("Will store wifi network %s", ssid),
 				func(out Output) bool {
-					out.Infof("Storing wifi network %s", ssid)
+					out.Runningf("Storing wifi network %s", ssid)
 					if err := helper.Exec(nil, nil, "nmcli", "connection", "add", "con-name", ssid, "type", "wifi", "ssid", ssid, "--", "802-11-wireless-security.key-mgmt", "wpa-psk", "802-11-wireless-security.psk", psk); err != nil {
 						out.Errorf("Could not store wifi network %s: %s", ssid, helper.ExecErr(err))
 						return false

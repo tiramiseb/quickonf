@@ -48,7 +48,7 @@ var fileDirectoryMove = Command{
 			"file.move",
 			fmt.Sprintf("Will move %s to %s", source, destination),
 			func(out Output) bool {
-				out.Infof("Moving %s to %s", source, destination)
+				out.Runningf("Moving %s to %s", source, destination)
 				if err := os.Rename(source, destination); err != nil {
 					out.Errorf("Could not move %s to %s: %s", source, destination, err)
 					return false

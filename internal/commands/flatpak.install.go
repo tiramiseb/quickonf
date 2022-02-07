@@ -31,7 +31,7 @@ var flatpakInstall = Command{
 			"flatpak.install",
 			fmt.Sprintf("Will install %s", appID),
 			func(out Output) bool {
-				out.Infof("Installing %s", appID)
+				out.Runningf("Installing %s", appID)
 				if err := helper.Exec(nil, nil, "flatpak", "install", "--non-interactive", "--assueyes", appID); err != nil {
 					out.Errorf("Could not install %s: %s", appID, helper.ExecErr(err))
 					return false

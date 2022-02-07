@@ -41,7 +41,7 @@ var userGoEnv = Command{
 			"user.go.env",
 			fmt.Sprintf("Will set %s to %s", variable, value),
 			func(out Output) bool {
-				out.Infof("Setting %s to %s", variable, value)
+				out.Runningf("Setting %s to %s", variable, value)
 				if err := helper.ExecAs(user.User, nil, nil, "go", "env", "-w", fmt.Sprintf(`%s="%s"`, variable, value)); err != nil {
 					out.Errorf("Could not set %s: %s", variable, helper.ExecErr(err))
 					return false

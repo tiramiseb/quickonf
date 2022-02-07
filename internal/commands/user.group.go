@@ -56,14 +56,14 @@ var userGroup = Command{
 			willMessage,
 			func(out Output) bool {
 				if !exists {
-					out.Infof("Creating group %s", groupname)
+					out.Runningf("Creating group %s", groupname)
 					if err := helper.Exec(nil, nil, "groupadd", groupname); err != nil {
 						out.Errorf("Could not create group %s: %s", groupname, err)
 						return false
 					}
 					out.Infof("Created group %s", groupname)
 				}
-				out.Infof("Adding %s to group %s", username, groupname)
+				out.Runningf("Adding %s to group %s", username, groupname)
 				if err := helper.Exec(nil, nil, "usermod", "--append", "--groups", groupname); err != nil {
 					out.Errorf("Could not add %s to group %s: %s", username, groupname, err)
 					return false

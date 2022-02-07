@@ -70,7 +70,7 @@ var snapInstall = Command{
 			"snap.install",
 			fmt.Sprintf("Will install %s", name),
 			func(out Output) bool {
-				out.Infof("Installing %s", name)
+				out.Runningf("Installing %s", name)
 				if err := helper.Exec(nil, nil, "snap", cmdArgs...); err != nil {
 					out.Errorf("Could not install %s: %s", name, helper.ExecErr(err))
 					return false

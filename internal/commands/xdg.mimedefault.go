@@ -42,10 +42,10 @@ var xdgMimeDefault = Command{
 			"xdg.mimedefault",
 			fmt.Sprintf("Will set default app for %s to %s", mimetype, app),
 			func(out Output) bool {
-				out.Infof("Setting default app for %s to %s", mimetype, app)
+				out.Runningf("Setting default app for %s to %s", mimetype, app)
 				conf, err := ini.LooseLoad(xdgMimetypeFile)
 				if err != nil {
-					out.Errorf("Could not save mimetypes file: %v", err)
+					out.Errorf("Could not load mimetypes file: %v", err)
 					return false
 				}
 				conf.Section("Default Applications").Key(mimetype).SetValue(app)
