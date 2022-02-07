@@ -15,6 +15,7 @@ var Snap = snap{
 
 type SnapPackage struct {
 	Name      string
+	Version   string
 	Channel   string
 	Classic   bool
 	Devmode   bool
@@ -60,7 +61,8 @@ func (s *snap) init() error {
 			continue
 		}
 		pkg := SnapPackage{
-			Name: line[0],
+			Name:    line[0],
+			Version: line[1],
 		}
 		tracking := strings.FieldsFunc(line[3], func(r rune) bool {
 			return r == '/'
