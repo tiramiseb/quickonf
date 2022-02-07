@@ -35,5 +35,5 @@ var gitHash = Command{
 		}
 		return nil, fmt.Sprintf("Cannot find %s of %s", ref, uri), nil, StatusError
 	},
-	nil,
+	datastores.GitRemotes.Reset,
 }

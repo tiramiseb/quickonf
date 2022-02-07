@@ -134,5 +134,8 @@ var userGitClone = Command{
 
 		return nil, fmt.Sprintf("Need to pull updates in %s", dest), apply, StatusInfo
 	},
-	nil,
+	func() {
+		datastores.GitRemotes.Reset()
+		datastores.Users.Reset()
+	},
 }

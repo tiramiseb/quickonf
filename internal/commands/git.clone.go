@@ -145,5 +145,5 @@ var gitClone = Command{
 
 		return nil, fmt.Sprintf("Need to pull updates in %s", dest), apply, StatusInfo
 	},
-	nil,
+	datastores.GitRemotes.Reset,
 }

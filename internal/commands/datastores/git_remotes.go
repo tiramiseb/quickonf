@@ -41,7 +41,12 @@ func (g *gitRemote) list() ([]*plumbing.Reference, error) {
 	var err error
 	g.initOnce.Do(func() { err = g.init() })
 	return g.refs, err
+}
 
+func (g *gitRemotes) Reset() {
+	g.mutex.Lock()
+	defer g.mutex.Unlock()
+	g.remotes = map[string]*gitRemote{}
 }
 
 func (g *gitRemote) init() (err error) {
