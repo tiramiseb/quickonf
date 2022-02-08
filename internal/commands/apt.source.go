@@ -32,11 +32,8 @@ var aptSource = Command{
 
 		sourcesList := filepath.Join(aptSourcesBase, name+".list")
 		existingB, err := os.ReadFile(sourcesList)
-		if err != nil {
-			if !errors.Is(err, fs.ErrNotExist) {
-				return nil, fmt.Sprintf("Could not read existing sources file: %s", err), nil, StatusError
-			}
-			err = nil
+		if err != nil && !errors.Is(err, fs.ErrNotExist) {
+			return nil, fmt.Sprintf("Could not read existing sources file: %s", err), nil, StatusError
 		}
 		existing := string(existingB)
 		if existing == sources {

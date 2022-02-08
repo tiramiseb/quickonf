@@ -36,11 +36,8 @@ var aptKey = Command{
 
 		keyFile := filepath.Join(aptKeysBase, name+"."+ext)
 		existingB, err := os.ReadFile(keyFile)
-		if err != nil {
-			if !errors.Is(err, fs.ErrNotExist) {
-				return nil, fmt.Sprintf("Could not read existing key file: %s", err), nil, StatusError
-			}
-			err = nil
+		if err != nil && !errors.Is(err, fs.ErrNotExist) {
+			return nil, fmt.Sprintf("Could not read existing key file: %s", err), nil, StatusError
 		}
 		existing := string(existingB)
 		if existing == key {
