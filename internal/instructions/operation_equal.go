@@ -2,7 +2,6 @@ package instructions
 
 import (
 	"fmt"
-	"strings"
 )
 
 type Equal struct {
@@ -14,8 +13,7 @@ func (e *Equal) Compare(vars Variables) bool {
 	left := vars.translateVariables(e.Left)
 	right := vars.translateVariables(e.Right)
 
-	// At first, only compare strings
-	return strings.EqualFold(left, right)
+	return left == right
 }
 
 func (e *Equal) String() string {
