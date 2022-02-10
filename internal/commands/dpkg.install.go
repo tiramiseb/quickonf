@@ -1,11 +1,7 @@
 package commands
 
 import (
-	"bytes"
-	"errors"
 	"fmt"
-	"io/fs"
-	"os"
 	"path/filepath"
 
 	"github.com/tiramiseb/quickonf/internal/commands/datastores"
@@ -18,7 +14,7 @@ func init() {
 
 var dpkgInstall = Command{
 	"dpkg.install",
-	"Install a package using dpkg",
+	"Install a package using dpkg (does not check the file exists first)",
 	[]string{"Absolute path to the package file"},
 	nil,
 	"Install that awesome package\n  dpkg.install <confdir>/my-awesome-stuff.deb",
@@ -26,32 +22,6 @@ var dpkgInstall = Command{
 		path := args[0]
 		if !filepath.IsAbs(path) {
 			return nil, fmt.Sprintf("%s is not an absolute path", path), nil, StatusError
-		}
-		_, err := os.Lstat(path)
-		if err != nil {
-			if errors.Is(err, fs.ErrNotExist) {
-				return nil, fmt.Sprintf("%s does not exist", path), nil, StatusError
-			}
-			return nil, err.Error(), nil, StatusError
-		}
-
-		var out bytes.Buffer
-		if err := helper.Exec(nil, &out, "dpkg-deb", "-f", path, "Package"); err != nil {
-			return nil, fmt.Sprintf("could not check package name of %s: %s", path, helper.ExecErr(err)), nil, StatusError
-		}
-		candidatename := out.String()
-		out.Reset()
-		if err := helper.Exec(nil, &out, "dpkg-deb", "-f", path, "Version"); err != nil {
-			return nil, fmt.Sprintf("could not check version of %s: %s", path, helper.ExecErr(err)), nil, StatusError
-		}
-		candidateversion := out.String()
-
-		pkg, ok, err := datastores.DpkgPackages.Get(candidatename)
-		if err != nil {
-			return nil, err.Error(), nil, StatusError
-		}
-		if ok && pkg.Version == candidateversion {
-			return nil, fmt.Sprintf("%s is already installed in version %s", candidatename, candidateversion), nil, StatusSuccess
 		}
 
 		apply = &Apply{
