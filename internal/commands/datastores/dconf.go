@@ -9,11 +9,9 @@ import (
 	"github.com/tiramiseb/quickonf/internal/commands/helper"
 )
 
-var (
-	Dconf = dconf{
-		values: map[string]*dconfUser{},
-	}
-)
+var Dconf = dconf{
+	values: map[string]*dconfUser{},
+}
 
 type dconfUser struct {
 	mutex    sync.Mutex

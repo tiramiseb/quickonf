@@ -9,11 +9,9 @@ import (
 	"github.com/tiramiseb/quickonf/internal/commands/helper"
 )
 
-var (
-	GitConfig = gitConfigs{
-		values: map[string]*gitConfig{},
-	}
-)
+var GitConfig = gitConfigs{
+	values: map[string]*gitConfig{},
+}
 
 type gitConfig struct {
 	user     User
@@ -53,7 +51,6 @@ func (g *gitConfig) get(name string) (string, error) {
 	g.mutex.Lock()
 	defer g.mutex.Unlock()
 	return g.values[name], err
-
 }
 
 func (g *gitConfig) init() (err error) {

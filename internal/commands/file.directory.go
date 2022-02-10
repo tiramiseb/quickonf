@@ -43,7 +43,7 @@ var fileDirectory = Command{
 			fmt.Sprintf("Will create directory %s", path),
 			func(out Output) bool {
 				out.Runningf("Creating directory %s", path)
-				if err := os.MkdirAll(path, 0755); err != nil {
+				if err := os.MkdirAll(path, 0o755); err != nil {
 					out.Errorf("Could not create directory %s: %s", path, err)
 					return false
 				}

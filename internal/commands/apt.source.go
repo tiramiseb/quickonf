@@ -44,7 +44,7 @@ var aptSource = Command{
 			fmt.Sprintf("Will add apt sources %s", name),
 			func(out Output) bool {
 				out.Runningf("Adding apt sources %s", name)
-				if err := os.WriteFile(sourcesList, []byte(sources), 0644); err != nil {
+				if err := os.WriteFile(sourcesList, []byte(sources), 0o644); err != nil {
 					out.Errorf("Could not write requested content to %s: %s", sourcesList, err)
 					return false
 				}

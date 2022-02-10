@@ -8,9 +8,7 @@ import (
 
 const xdgMimetypeFile = "/etc/xdg/mimeapps.list"
 
-var (
-	XdgMimetypes = xdgMimetypes{}
-)
+var XdgMimetypes = xdgMimetypes{}
 
 type xdgMimetypes struct {
 	mutex    sync.Mutex

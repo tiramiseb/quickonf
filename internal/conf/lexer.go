@@ -37,7 +37,6 @@ func newLexer(r io.Reader) *lexer {
 	return &lexer{
 		r: bufio.NewReader(r),
 	}
-
 }
 
 // scan is the lexer, it transforms an io.Reader to a list of tokens

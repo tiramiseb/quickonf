@@ -116,7 +116,6 @@ func extractTarxz(archive, dest string) error {
 		}
 	}
 	return nil
-
 }
 
 func extractZip(archive, dest string) error {
@@ -130,13 +129,13 @@ func extractZip(archive, dest string) error {
 		fpath := filepath.Join(dest, f.Name)
 
 		if f.FileInfo().IsDir() {
-			if err := os.MkdirAll(fpath, 0755); err != nil {
+			if err := os.MkdirAll(fpath, 0o755); err != nil {
 				return err
 			}
 			continue
 		}
 
-		if err := os.MkdirAll(filepath.Dir(fpath), 0755); err != nil {
+		if err := os.MkdirAll(filepath.Dir(fpath), 0o755); err != nil {
 			return err
 		}
 
@@ -160,5 +159,4 @@ func extractZip(archive, dest string) error {
 	}
 
 	return nil
-
 }

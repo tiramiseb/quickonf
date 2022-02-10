@@ -67,7 +67,6 @@ var nmWifi = Command{
 			}
 		}
 		return nil, msg, apply, StatusInfo
-
 	},
 	datastores.NetworkManagerConnections.Reset,
 }

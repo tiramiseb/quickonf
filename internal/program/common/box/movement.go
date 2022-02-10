@@ -73,6 +73,7 @@ func (m *model) cursorUp() tea.Cmd {
 	m.elements[m.selectedElement], cmd2 = m.elements[m.selectedElement].Update(ElementSelectedMsg{true})
 	return tea.Batch(cmd1, cmd2)
 }
+
 func (m *model) cursorDown() tea.Cmd {
 	var cmd1, cmd2 tea.Cmd
 	m.elements[m.selectedElement], cmd1 = m.elements[m.selectedElement].Update(ElementSelectedMsg{false})

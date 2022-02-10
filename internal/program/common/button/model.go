@@ -41,7 +41,6 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				return m, m.action
 			}
 		}
-
 	}
 	return m, nil
 }

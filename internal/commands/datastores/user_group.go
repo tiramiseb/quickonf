@@ -100,7 +100,6 @@ func (u *users) GetGroup(name string) (group Group, ok bool, err error) {
 		}
 	}
 	return
-
 }
 
 func (u *users) GetGroupByID(gid int) (group Group, ok bool, err error) {
@@ -114,7 +113,6 @@ func (u *users) GetGroupByID(gid int) (group Group, ok bool, err error) {
 		}
 	}
 	return
-
 }
 
 func (u *users) Reset() {

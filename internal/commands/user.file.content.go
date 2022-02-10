@@ -82,7 +82,7 @@ var userFileContent = Command{
 			func(out Output) bool {
 				if existingContent != content {
 					out.Runningf("Writing content to %s", path)
-					if err := os.WriteFile(path, []byte(content), 0644); err != nil {
+					if err := os.WriteFile(path, []byte(content), 0o644); err != nil {
 						out.Errorf("Could not write requested content to %s: %s", path, err)
 						return false
 					}

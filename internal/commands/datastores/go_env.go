@@ -8,11 +8,9 @@ import (
 	"github.com/tiramiseb/quickonf/internal/commands/helper"
 )
 
-var (
-	GoEnv = goenv{
-		values: map[string]*goenvUser{},
-	}
-)
+var GoEnv = goenv{
+	values: map[string]*goenvUser{},
+}
 
 type goenvUser struct {
 	mutex    sync.Mutex

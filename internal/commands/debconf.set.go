@@ -69,7 +69,6 @@ var debconfSet = Command{
 				}
 				out.Successf("%s set to %s", name, value)
 				return true
-
 			},
 		}
 		return nil, fmt.Sprintf("Need to %s %s to %s", verb, name, value), apply, StatusInfo

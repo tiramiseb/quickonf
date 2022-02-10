@@ -9,9 +9,7 @@ import (
 
 const debconfDB = "/var/cache/debconf/config.dat"
 
-var (
-	Debconf = debconf{}
-)
+var Debconf = debconf{}
 
 type DebconfParameter struct {
 	Name   string

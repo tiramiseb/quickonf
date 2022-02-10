@@ -9,10 +9,8 @@ import (
 	"github.com/tiramiseb/quickonf/internal/commands/helper"
 )
 
-var (
-	// List of alternatives
-	Alternatives = alternatives{alternatives: map[string]string{}}
-)
+// List of alternatives
+var Alternatives = alternatives{alternatives: map[string]string{}}
 
 type alternatives struct {
 	mutex        sync.Mutex

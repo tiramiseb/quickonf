@@ -9,9 +9,7 @@ import (
 	"github.com/tiramiseb/quickonf/internal/commands/helper"
 )
 
-var (
-	Flatpak = flatpak{}
-)
+var Flatpak = flatpak{}
 
 type FlatpakPackage struct {
 	ApplicationID string

@@ -105,14 +105,14 @@ var gnomeExtensionInstall = Command{
 					}
 
 					if f.FileInfo().IsDir() {
-						if err := os.MkdirAll(fpath, 0755); err != nil {
+						if err := os.MkdirAll(fpath, 0o755); err != nil {
 							out.Errorf("Could not create %s: %s", fpath, err)
 							return false
 						}
 						continue
 					}
 
-					if err = os.MkdirAll(filepath.Dir(fpath), 0755); err != nil {
+					if err = os.MkdirAll(filepath.Dir(fpath), 0o755); err != nil {
 						out.Errorf("Could not create directory for %s: %s", fpath, err)
 						return false
 					}
@@ -142,7 +142,6 @@ var gnomeExtensionInstall = Command{
 			},
 		}
 		return nil, fmt.Sprintf("Need to install %s", uuid), apply, StatusInfo
-
 	},
 	nil,
 }

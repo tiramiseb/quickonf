@@ -48,7 +48,6 @@ var fileAbsent = Command{
 		}
 
 		return nil, fmt.Sprintf("Need to remove %s", path), apply, StatusInfo
-
 	},
 	nil,
 }

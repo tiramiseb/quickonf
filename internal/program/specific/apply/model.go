@@ -78,7 +78,6 @@ func New(grp *instructions.Group, idx, width int) *model {
 
 func (m *model) listen() tea.Msg {
 	return <-m.messages
-
 }
 
 func (m *model) Init() tea.Cmd {

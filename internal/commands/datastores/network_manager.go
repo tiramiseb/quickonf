@@ -11,11 +11,9 @@ import (
 
 const networkManagerConnectionsPath = "/etc/NetworkManager/system-connections"
 
-var (
-	NetworkManagerConnections = networkManagerConnectionsList{
-		connections: map[string]NetworkManagerConnection{},
-	}
-)
+var NetworkManagerConnections = networkManagerConnectionsList{
+	connections: map[string]NetworkManagerConnection{},
+}
 
 type NetworkManagerConnectionConnection struct {
 	UUID string `ini:"uuid"`

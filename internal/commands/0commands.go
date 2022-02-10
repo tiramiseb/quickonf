@@ -70,7 +70,6 @@ func register(cmd Command) {
 func Get(name string) (Command, bool) {
 	instr, ok := registry[name]
 	return instr, ok
-
 }
 
 // GetAll returns all registered commands, sorted alphabetically

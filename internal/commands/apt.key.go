@@ -48,7 +48,7 @@ var aptKey = Command{
 			fmt.Sprintf("Will add apt key %s", name),
 			func(out Output) bool {
 				out.Runningf("Storing the apt key %s", name)
-				if err := os.WriteFile(keyFile, []byte(key), 0644); err != nil {
+				if err := os.WriteFile(keyFile, []byte(key), 0o644); err != nil {
 					out.Errorf("Could not write requested content to %s: %s", keyFile, err)
 					return false
 				}

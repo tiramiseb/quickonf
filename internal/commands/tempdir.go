@@ -27,7 +27,7 @@ var tempdir = Command{
 			"Will create a temporary directory",
 			func(out Output) bool {
 				out.Info("Creating temporary directory")
-				if err := os.MkdirAll(path, 0644); err != nil {
+				if err := os.MkdirAll(path, 0o644); err != nil {
 					out.Errorf("Could not create temporary directory: %s", err)
 					return false
 				}
