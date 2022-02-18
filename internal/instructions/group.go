@@ -17,7 +17,6 @@ type Group struct {
 	Priority     int
 	Instructions []Instruction
 
-	Applys  []commands.Apply
 	Reports []CheckReport
 }
 
@@ -25,8 +24,7 @@ type Group struct {
 func (g *Group) Run() bool {
 	vars := NewVariablesSet()
 	for _, ins := range g.Instructions {
-		a, r, ok := ins.Run(vars)
-		g.Applys = append(g.Applys, a...)
+		r, ok := ins.Run(vars)
 		g.Reports = append(g.Reports, r...)
 		if !ok {
 			return false
@@ -35,19 +33,18 @@ func (g *Group) Run() bool {
 	return true
 }
 
-// Reset instructs to reset so tat it can re-run later
+// Reset instructs to reset so that it can re-run later
 func (g *Group) Reset() {
 	for _, ins := range g.Instructions {
 		ins.Reset()
-		g.Applys = nil
 		g.Reports = nil
 	}
 }
 
 // Apply applies modifications for this group
 func (g *Group) Apply(out GroupOutput) bool {
-	for _, apply := range g.Applys {
-		if !apply.Run(out.NewCommandOutput(apply.Name)) {
+	for _, report := range g.Reports {
+		if !report.Apply.Run(out.NewCommandOutput(report.Apply.Name)) {
 			return false
 		}
 	}

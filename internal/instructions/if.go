@@ -15,36 +15,34 @@ func (i *If) Name() string {
 	return "if"
 }
 
-func (i *If) Run(vars Variables) ([]commands.Apply, []CheckReport, bool) {
+func (i *If) Run(vars Variables) ([]CheckReport, bool) {
 	success := i.Operation.Compare(vars)
 	if !success {
-		return nil, []CheckReport{{
+		return []CheckReport{{
 			"if",
 			commands.StatusInfo,
 			fmt.Sprintf(`"%s" is false, not running contained instructions...`, i.Operation.String()),
+			nil,
 		}}, true
 	}
-	var applies []commands.Apply
 	reports := []CheckReport{
 		{
 			"if",
 			commands.StatusInfo,
 			fmt.Sprintf(`"%s" is true, running contained instructions...`, i.Operation.String()),
+			nil,
 		},
 	}
 	for _, ins := range i.Instructions {
-		thisApplies, thisReports, ok := ins.Run(vars)
-		if thisApplies != nil {
-			applies = append(applies, thisApplies...)
-		}
+		thisReports, ok := ins.Run(vars)
 		if thisReports != nil {
 			reports = append(reports, thisReports...)
 		}
 		if !ok {
-			return applies, reports, false
+			return reports, false
 		}
 	}
-	return applies, reports, true
+	return reports, true
 }
 
 func (i *If) Reset() {
