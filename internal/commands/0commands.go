@@ -19,7 +19,8 @@ type Output interface {
 type Status int
 
 const (
-	StatusInfo Status = iota
+	StatusNotRun Status = iota
+	StatusInfo
 	StatusRunning
 	StatusSuccess
 	StatusError

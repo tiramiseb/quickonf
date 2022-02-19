@@ -33,14 +33,31 @@ func (g *Group) Run() bool {
 	return true
 }
 
-// HasSuccess checks if all instructions in the group have succeeded
-func (g *Group) HasSuccess() bool {
+// Status returns status of the group (according to statuses of its instructions)
+func (g *Group) Status() commands.Status {
+	var hasInfo, hasRunning, hasSuccess bool
 	for _, r := range g.Reports {
-		if r.Status == commands.StatusError {
-			return false
+		switch r.Status {
+		case commands.StatusInfo:
+			hasInfo = true
+		case commands.StatusRunning:
+			hasRunning = true
+		case commands.StatusSuccess:
+			hasSuccess = true
+		case commands.StatusError:
+			return commands.StatusError
 		}
 	}
-	return true
+	if hasRunning {
+		return commands.StatusRunning
+	}
+	if hasInfo {
+		return commands.StatusInfo
+	}
+	if hasSuccess {
+		return commands.StatusSuccess
+	}
+	return commands.StatusNotRun
 }
 
 // HasApply checks if the group has at lease one instruction to apply

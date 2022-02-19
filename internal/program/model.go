@@ -28,7 +28,7 @@ type model struct {
 func newModel(g []*instructions.Group) *model {
 	return &model{
 		titlebar: titlebar.New(),
-		checks:   checks.New(),
+		checks:   checks.New(g),
 		details:  details.New(),
 
 		groups: g,
@@ -48,13 +48,14 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case tea.WindowSizeMsg:
 		m.titlebar = m.titlebar.Resize(msg)
 		width := msg.Width - 1
+		height := msg.Height - 3
 		left := tea.WindowSizeMsg{
 			Width:  width / 2,
-			Height: msg.Height,
+			Height: height,
 		}
 		right := tea.WindowSizeMsg{
 			Width:  width - left.Width,
-			Height: msg.Height,
+			Height: height,
 		}
 		m.checks.Resize(left)
 		m.details.Resize(right)
@@ -88,6 +89,7 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		if m.currentlyRunningChecks == 0 {
 			cmd = m.next()
 		}
+		m.checks = m.checks.RedrawGroup(msg.groupIndex)
 	}
 	return m, cmd
 }
@@ -105,10 +107,11 @@ func (m *model) view() string {
 	right := m.details.View()
 	leftWidth := lipgloss.Width(left)
 	rightWidth := lipgloss.Width(right)
-	leftTitle := subtitleStyle.Width(leftWidth).Render(m.checks.View())
-	rightTitle := subtitleStyle.Width(rightWidth).Render(m.details.View())
+	leftTitle := subtitleStyle.Width(leftWidth).Render("Checks")
+	rightTitle := subtitleStyle.Width(rightWidth).Render("Details")
 	return leftTitle + "│" + rightTitle + "\n" +
-		strings.Repeat("─", leftWidth) + "┼" + strings.Repeat("─", rightWidth)
+		strings.Repeat("─", leftWidth) + "┼" + strings.Repeat("─", rightWidth) + "\n" +
+		lipgloss.JoinHorizontal(lipgloss.Top, m.checks.View(), "O", m.details.View())
 }
 
 func (m *model) helpView() string {

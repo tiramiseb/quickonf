@@ -7,7 +7,9 @@ import (
 	"github.com/tiramiseb/quickonf/internal/instructions"
 )
 
-type checkDone struct{}
+type checkDone struct {
+	groupIndex int
+}
 
 func orderChecksByPriority(groups []*instructions.Group) [][]int {
 	var (
@@ -50,6 +52,6 @@ func (m *model) run(i int) tea.Cmd {
 	return func() tea.Msg {
 		log.Print("Running ", m.groups[i].Name)
 		m.groups[i].Run()
-		return checkDone{}
+		return checkDone{i}
 	}
 }
