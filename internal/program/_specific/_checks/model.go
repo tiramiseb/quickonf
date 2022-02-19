@@ -53,21 +53,6 @@ func (m *model) Init() tea.Cmd {
 	return m.next()
 }
 
-func (m *model) next() tea.Cmd {
-	if m.nextPriorityGroup >= len(m.byPriority) {
-		return nil
-	}
-	groupIDs := m.byPriority[m.nextPriorityGroup]
-	nbChecks := len(groupIDs)
-	cmds := make([]tea.Cmd, nbChecks)
-	for i, id := range groupIDs {
-		cmds[i] = m.groups[id].Init()
-	}
-	m.nextPriorityGroup++
-	m.currentlyRunningChecks = nbChecks
-	return tea.Batch(cmds...)
-}
-
 func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	var cmds []tea.Cmd
 	switch theMsg := msg.(type) {

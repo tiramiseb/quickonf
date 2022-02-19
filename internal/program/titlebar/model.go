@@ -43,9 +43,8 @@ type Model struct {
 
 func New() *Model {
 	return &Model{
-		// toggle:   button.New("Toggle", 0, messages.Toggle),
-		filter:   button.NewToggle("Filter", 0, messages.Filter(true), messages.Filter(false), true),
-		help:     button.NewToggle("Help", 0, messages.Help(true), messages.Help(false), false),
+		filter:   button.NewToggle("Filter", 0, messages.Filter(true), messages.Filter(false), "filter"),
+		help:     button.NewToggle("Help", 0, messages.Help(true), messages.Help(false), "help"),
 		quit:     button.NewButton("Quit", 0, tea.Quit),
 		view:     func() string { return "" },
 		helpView: func() string { return "" },
@@ -77,9 +76,4 @@ func (m *Model) Update(msg tea.Msg) (*Model, tea.Cmd) {
 		// 	m.help, cmd = m.help.Update(togglebutton.Toggle{On: msg.On})
 	}
 	return m, cmd
-}
-
-func (m *Model) HelpActive(show bool) *Model {
-	m.help = m.help.FromExternal(show)
-	return m
 }

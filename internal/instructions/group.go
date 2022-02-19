@@ -33,6 +33,16 @@ func (g *Group) Run() bool {
 	return true
 }
 
+// HasSuccess checks if all instructions in the group have succeeded
+func (g *Group) HasSuccess() bool {
+	for _, r := range g.Reports {
+		if r.Status == commands.StatusError {
+			return false
+		}
+	}
+	return true
+}
+
 // HasApply checks if the group has at lease one instruction to apply
 func (g *Group) HasApply() bool {
 	for _, r := range g.Reports {
