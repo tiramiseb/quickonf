@@ -8,11 +8,7 @@ const (
 	border = lipgloss.Color("#7777ff")
 	text   = lipgloss.Color("#ffffff")
 
-	titleBg    = lipgloss.Color("#555555")
 	subtitleBg = lipgloss.Color("#5555ff")
-
-	buttonBg = lipgloss.Color("#0000ff")
-	buttonFg = lipgloss.Color("#ffff00")
 
 	waitingBg         = lipgloss.Color("#555555")
 	hoveredWaitingBg  = lipgloss.Color("#888888")
@@ -32,11 +28,6 @@ const (
 )
 
 var (
-	Title = lipgloss.NewStyle().
-		Background(titleBg).
-		Foreground(text).
-		Bold(true)
-
 	BoxTitle = lipgloss.NewStyle().
 			Background(subtitleBg).
 			Foreground(text).
@@ -59,20 +50,4 @@ var (
 
 	ActiveBox = Box.Copy().
 			BorderForeground(text)
-
-	Button = lipgloss.NewStyle().
-		Background(buttonBg).
-		Foreground(buttonFg)
-
-	ButtonKey = Button.Copy().
-			Underline(true).
-			Bold(true)
-
-	ClickedButton = lipgloss.NewStyle().
-			Background(buttonFg).
-			Foreground(buttonBg)
-
-	ClickedButtonKey = ClickedButton.Copy().
-				Underline(true).
-				Bold(true)
 )

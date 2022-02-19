@@ -1,12 +1,9 @@
 package check
 
 import (
-	"strings"
-
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 
-	"github.com/tiramiseb/quickonf/internal/commands"
 	"github.com/tiramiseb/quickonf/internal/instructions"
 	"github.com/tiramiseb/quickonf/internal/program/common/box"
 	"github.com/tiramiseb/quickonf/internal/program/common/group"
@@ -36,37 +33,28 @@ var (
 		group.StatusFailed:    style.SelectedGroupFail,
 		group.StatusSucceeded: style.SelectedGroupSuccess,
 	}
-	InstructionStyles = map[commands.Status]lipgloss.Style{
-		commands.StatusInfo:    style.InstructionInfo,
-		commands.StatusRunning: style.InstructionRunning,
-		commands.StatusError:   style.InstructionError,
-		commands.StatusSuccess: style.InstructionSuccess,
-	}
 )
 
 type model struct {
 	group *instructions.Group
 	idx   int
 
-	width         int
-	groupName     string
-	status        group.Status
-	collapsedView string
-	fullView      string
-	collapsed     bool
-	hovered       bool
-	selected      bool
+	width     int
+	groupName string
+	status    group.Status
+	view      string
+	hovered   bool
+	selected  bool
 
 	filtered bool
 }
 
 func New(i int, g *instructions.Group) *model {
 	return &model{
-		group:     g,
-		idx:       i,
-		width:     2,
-		status:    group.StatusWaiting,
-		collapsed: true,
+		group:  g,
+		idx:    i,
+		width:  2,
+		status: group.StatusWaiting,
 	}
 }
 
@@ -88,14 +76,13 @@ func (m *model) trigger() tea.Msg {
 
 func (m *model) run() tea.Msg {
 	if m.group.Run() {
-		if len(m.group.Applys) > 0 {
+		if m.group.HasApply() {
 			m.status = group.StatusInfo
 		} else {
 			m.status = group.StatusSucceeded
 		}
 	} else {
 		m.status = group.StatusFailed
-		m.collapsed = false
 	}
 	return group.Msg{
 		Gidx:  m.idx,
@@ -112,8 +99,6 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		m.updateGroupname()
 	case tea.KeyMsg:
 		switch msg.String() {
-		case " ", "t", "T":
-			m.collapsed = !m.collapsed
 		case "enter", "x", "X":
 			if m.status != group.StatusRunning {
 				m.group.Reset()
@@ -128,9 +113,6 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				return m, nil
 			}
 			m.hovered = false
-		case tea.MouseRelease:
-			m.collapsed = !m.collapsed
-			fallthrough
 		default:
 			if !m.hovered {
 				m.hovered = true
@@ -146,8 +128,6 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		}
 	case box.ElementSelectedMsg:
 		m.selected = msg.Selected
-	case messages.ToggleMsg:
-		m.collapsed = !m.collapsed
 	case messages.FilterMsg:
 		m.filtered = msg.On
 	}
@@ -165,35 +145,12 @@ func (m *model) updateView() {
 	default:
 		groupstyle = GroupStyles[m.status]
 	}
-	m.collapsedView = groupstyle.Render("⏵ " + m.groupName)
-	lines := []string{
-		groupstyle.Render("⏷ " + m.groupName),
-	}
-	if len(m.group.Reports) > 0 {
-		for _, report := range m.group.Reports {
-			lines = append(
-				lines,
-				m.instructionLine(report),
-			)
-		}
-	} else {
-		lines = append(
-			lines,
-			m.instructionLine(instructions.CheckReport{
-				Name:   "Empty",
-				Status: commands.StatusInfo,
-			}),
-		)
-	}
-	m.fullView = strings.Join(lines, "\n")
+	m.view = groupstyle.Render(m.groupName)
 }
 
 func (m *model) View() string {
 	if m.filtered && m.status == group.StatusSucceeded {
 		return ""
 	}
-	if m.collapsed {
-		return m.collapsedView
-	}
-	return m.fullView
+	return m.view
 }

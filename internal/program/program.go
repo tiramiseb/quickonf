@@ -12,7 +12,7 @@ func Run(g []*instructions.Group) {
 	program := tea.NewProgram(
 		newModel(g),
 		tea.WithAltScreen(),
-		tea.WithMouseAllMotion(),
+		tea.WithMouseCellMotion(),
 	)
 	program.Start()
 	commands.Clean()

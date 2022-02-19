@@ -33,6 +33,16 @@ func (g *Group) Run() bool {
 	return true
 }
 
+// HasApply checks if the group has at lease one instruction to apply
+func (g *Group) HasApply() bool {
+	for _, r := range g.Reports {
+		if r.Apply != nil {
+			return true
+		}
+	}
+	return false
+}
+
 // Reset instructs to reset so that it can re-run later
 func (g *Group) Reset() {
 	for _, ins := range g.Instructions {
