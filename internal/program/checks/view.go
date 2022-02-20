@@ -1,29 +1,35 @@
 package checks
 
 import (
-	"fmt"
 	"strings"
+
+	"github.com/tiramiseb/quickonf/internal/commands"
+	"github.com/tiramiseb/quickonf/internal/program/global"
 )
 
-func (m *Model) prepareView(width int) {
-	lines := make([]string, len(m.groups))
-	for i, g := range m.groups {
-		line := fmt.Sprintf("%d: %s", g.Status(), g.Name)
-		if len(line) > width {
-			line = line[:width-1]
+func (m *Model) RedrawView() *Model {
+	filter := global.Global.Get("filter")
+	var view string
+	for _, g := range m.groups {
+		status := g.Status()
+		if filter && status == commands.StatusSuccess {
+			continue
 		}
-		lines[i] = line
+		line := " " + g.Name
+		remaining := m.width - len(line)
+		switch {
+		case remaining < 0:
+			line = line[:m.width-1]
+		case remaining > 0:
+			line += strings.Repeat(" ", remaining)
+		}
+		view += styles[status].Render(line) + "\n"
 
 	}
-	m.completeView = lines
-}
-
-func (m *Model) RedrawGroup(i int) *Model {
-	g := m.groups[i]
-	m.completeView[i] = fmt.Sprintf("%d: %s", g.Status(), g.Name)
+	m.completeView = view
 	return m
 }
 
 func (m *Model) View() string {
-	return m.style.Render(strings.Join(m.completeView, "\n"))
+	return m.completeView
 }

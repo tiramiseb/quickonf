@@ -7,20 +7,18 @@ import (
 )
 
 type Toggle struct {
-	actionOn  tea.Cmd
-	actionOff tea.Cmd
-	key       string
+	trigger tea.Cmd
+	key     string
 
 	offView string
 	onView  string
 	Width   int
 }
 
-func NewToggle(text string, hintPosition int, actionOn tea.Cmd, actionOff tea.Cmd, key string) *Toggle {
+func NewToggle(text string, hintPosition int, trigger tea.Cmd, key string) *Toggle {
 	return &Toggle{
-		actionOn:  actionOn,
-		actionOff: actionOff,
-		key:       key,
+		trigger: trigger,
+		key:     key,
 
 		offView: lipgloss.StyleRunes("["+text+"]", []int{hintPosition + 1}, inactiveHintStyle, inactiveStyle),
 		onView:  lipgloss.StyleRunes("["+text+"]", []int{hintPosition + 1}, activeHintStyle, activeStyle),
@@ -29,12 +27,8 @@ func NewToggle(text string, hintPosition int, actionOn tea.Cmd, actionOff tea.Cm
 }
 
 func (t *Toggle) Click() (*Toggle, tea.Cmd) {
-	if global.Global.Get(t.key) {
-		global.Global.Set(t.key, false)
-		return t, t.actionOff
-	}
-	global.Global.Set(t.key, true)
-	return t, t.actionOn
+	global.Global.Set(t.key, !global.Global.Get(t.key))
+	return t, t.trigger
 }
 
 func (t *Toggle) View() string {

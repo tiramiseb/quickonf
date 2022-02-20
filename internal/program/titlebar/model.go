@@ -43,8 +43,8 @@ type Model struct {
 
 func New() *Model {
 	return &Model{
-		filter:   button.NewToggle("Filter", 0, messages.Filter(true), messages.Filter(false), "filter"),
-		help:     button.NewToggle("Help", 0, messages.Help(true), messages.Help(false), "help"),
+		filter:   button.NewToggle("Filter", 0, messages.Filter, "filter"),
+		help:     button.NewToggle("Help", 0, messages.Help, "help"),
 		quit:     button.NewButton("Quit", 0, tea.Quit),
 		view:     func() string { return "" },
 		helpView: func() string { return "" },

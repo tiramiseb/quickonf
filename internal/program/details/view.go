@@ -1,10 +1,10 @@
 package details
 
 func (m *Model) prepareView() {
-	m.completeView = m.style.Render("details")
+	m.completeView = "details"
 	// TODO Draw
 }
 
 func (m *Model) View() string {
-	return m.completeView
+	return m.style.Render(m.completeView)
 }

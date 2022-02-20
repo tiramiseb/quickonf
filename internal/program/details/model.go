@@ -6,9 +6,7 @@ import (
 )
 
 type Model struct {
-	style  lipgloss.Style
-	width  int
-	height int
+	style lipgloss.Style
 
 	completeView string
 }
@@ -18,9 +16,7 @@ func New() *Model {
 }
 
 func (m *Model) Resize(size tea.WindowSizeMsg) *Model {
-	m.style = lipgloss.NewStyle().Width(m.width)
-	m.width = size.Width
-	m.height = size.Height
+	m.style = lipgloss.NewStyle().Width(size.Width).Height(size.Height)
 	m.prepareView()
 	return m
 }
