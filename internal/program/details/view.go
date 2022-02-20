@@ -1,8 +1,9 @@
 package details
 
-func (m *Model) prepareView() {
+func (m *Model) RedrawView() *Model {
 	m.completeView = "details"
 	// TODO Draw
+	return m
 }
 
 func (m *Model) View() string {

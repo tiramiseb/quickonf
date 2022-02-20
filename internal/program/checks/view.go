@@ -11,7 +11,7 @@ func (m *Model) RedrawView() *Model {
 	if m.width == 0 {
 		return m
 	}
-	filter := global.Global.Get("filter")
+	filter := global.Toggles["filter"].Get()
 	var view string
 	for _, g := range m.groups {
 		status := g.Status()

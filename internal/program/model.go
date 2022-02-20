@@ -8,7 +8,6 @@ import (
 	"github.com/tiramiseb/quickonf/internal/program/checks"
 	"github.com/tiramiseb/quickonf/internal/program/details"
 	"github.com/tiramiseb/quickonf/internal/program/global"
-	"github.com/tiramiseb/quickonf/internal/program/messages"
 	"github.com/tiramiseb/quickonf/internal/program/titlebar"
 )
 
@@ -44,7 +43,6 @@ func newModel(g []*instructions.Group) *model {
 }
 
 func (m *model) Init() tea.Cmd {
-	global.Global.Set("filter", true)
 	tea.LogToFile("/tmp/tmplog", "")
 	return m.next()
 }
@@ -62,31 +60,27 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			}
 		}
 	case tea.KeyMsg:
-		if global.Global.Get("help") {
+		if global.Toggles["help"].Get() {
 			switch msg.String() {
 			case "ctrl+c":
 				cmd = tea.Quit
 			case "esc":
-				global.Global.Set("help", false)
-				cmd = messages.Help
+				cmd = global.Toggles["help"].Disable
 			}
 		} else {
 			switch msg.String() {
 			case "ctrl+c", "esc", "q", "Q":
 				cmd = tea.Quit
 			case "f", "F":
-				global.Global.Set("filter", !global.Global.Get("filter"))
-				cmd = messages.Filter
+				cmd = global.Toggles["filter"].Toggle
 			case "d", "D":
-				global.Global.Set("details", !global.Global.Get("details"))
-				cmd = messages.Details
+				cmd = global.Toggles["details"].Toggle
 			case "h", "H":
-				global.Global.Set("help", true)
-				cmd = messages.Help
+				cmd = global.Toggles["help"].Enable
 			case "right":
-				global.Global.Set("focusOnDetails", true)
+				cmd = global.Toggles["focusOnDetails"].Enable
 			case "left":
-				global.Global.Set("focusOnDetails", false)
+				cmd = global.Toggles["focusOnDetails"].Disable
 			}
 		}
 	case checkDone:
@@ -95,14 +89,19 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			cmd = m.next()
 		}
 		m.checks = m.checks.RedrawView()
-	case messages.FilterMsg:
-		m.checks = m.checks.RedrawView()
+	case global.ToggleMsg:
+		switch msg.Name {
+		case "filter":
+			m.checks = m.checks.RedrawView()
+		case "details":
+			m.details = m.details.RedrawView()
+		}
 	}
 	return m, cmd
 }
 
 func (m *model) View() string {
-	if global.Global.Get("help") {
+	if global.Toggles["help"].Get() {
 		return m.titlebar.View() + "\n" + m.helpView()
 	} else {
 		return m.titlebar.View() + "\n" + m.view()
@@ -111,7 +110,7 @@ func (m *model) View() string {
 
 func (m *model) view() string {
 	var leftTitle, rightTitle string
-	if global.Global.Get("focusOnDetails") {
+	if global.Toggles["focusOnDetails"].Get() {
 		leftTitle = m.leftTitle
 		rightTitle = m.rightTitleWithFocus
 	} else {

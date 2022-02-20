@@ -6,7 +6,6 @@ import (
 
 	"github.com/tiramiseb/quickonf/internal/program/button"
 	"github.com/tiramiseb/quickonf/internal/program/global"
-	"github.com/tiramiseb/quickonf/internal/program/messages"
 )
 
 var style = lipgloss.NewStyle().
@@ -39,9 +38,9 @@ type Model struct {
 
 func New() *Model {
 	return &Model{
-		filter:   button.NewToggle("Filter checks", 0, messages.Filter, "filter"),
-		details:  button.NewToggle("More details", 5, messages.Details, "details"),
-		help:     button.NewToggle("Help", 0, messages.Help, "help"),
+		filter:   button.NewToggle("Filter checks", 0, "filter"),
+		details:  button.NewToggle("More details", 5, "details"),
+		help:     button.NewToggle("Help", 0, "help"),
 		quit:     button.NewButton("Quit", 0, tea.Quit),
 		view:     func() string { return "" },
 		helpView: func() string { return "" },

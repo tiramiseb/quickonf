@@ -17,6 +17,5 @@ func New() *Model {
 
 func (m *Model) Resize(size tea.WindowSizeMsg) *Model {
 	m.style = lipgloss.NewStyle().Width(size.Width).Height(size.Height)
-	m.prepareView()
-	return m
+	return m.RedrawView()
 }
