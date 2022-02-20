@@ -34,7 +34,7 @@ func newModel(g []*instructions.Group) *model {
 	return &model{
 		titlebar: titlebar.New(),
 		checks:   checks.New(g),
-		details:  details.New(),
+		details:  details.New(g),
 
 		groups: g,
 
@@ -81,21 +81,31 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				cmd = global.Toggles["focusOnDetails"].Enable
 			case "left":
 				cmd = global.Toggles["focusOnDetails"].Disable
+			default:
+				if global.Toggles["focusOnDetails"].Get() {
+					m.details, cmd = m.details.Update(msg)
+				} else {
+					m.checks, cmd = m.checks.Update(msg)
+				}
 			}
 		}
 	case checkDone:
+		m.checks, cmd = m.checks.RedrawView()
 		m.currentlyRunningChecks--
 		if m.currentlyRunningChecks == 0 {
-			cmd = m.next()
+			if cmd == nil {
+				cmd = m.next()
+			} else {
+				cmd = tea.Batch(cmd, m.next())
+			}
 		}
-		m.checks = m.checks.RedrawView()
 	case global.ToggleMsg:
 		switch msg.Name {
 		case "filter":
-			m.checks = m.checks.RedrawView()
-		case "details":
-			m.details = m.details.RedrawView()
+			m.checks, cmd = m.checks.RedrawView()
 		}
+	case global.SelectGroupMsg:
+		m.details = m.details.ChangeView(msg.Idx)
 	}
 	return m, cmd
 }
