@@ -18,17 +18,19 @@ func (m *model) resize(size tea.WindowSizeMsg) {
 		Height: height,
 	}
 
-	leftTitle := subtitleStyle.Width(left.Width).Render("Checks")
-	rightTitle := subtitleStyle.Width(right.Width).Render("Details")
+	m.leftTitle = subtitleStyle.Width(left.Width).Render("Checks")
+	m.rightTitle = subtitleStyle.Width(right.Width).Render("Details")
+	m.leftTitleWithFocus = subtitleWithFocusStyle.Width(left.Width).Render("Checks")
+	m.rightTitleWithFocus = subtitleWithFocusStyle.Width(right.Width).Render("Details")
 
-	m.subtitles = leftTitle + "│" + rightTitle + "\n" + strings.Repeat("─", left.Width) + "┼" + strings.Repeat("─", right.Width) + "\n"
+	m.subtitlesSeparator = strings.Repeat("─", left.Width) + "┼" + strings.Repeat("─", right.Width)
 
 	var separator string
 	for i := 0; i < height-1; i++ {
 		separator += "│\n"
 	}
 	separator += "│"
-	m.separator = separator
+	m.verticalSeparator = separator
 
 	m.titlebar = m.titlebar.Resize(size)
 	m.checks.Resize(left)

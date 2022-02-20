@@ -19,8 +19,12 @@ type model struct {
 
 	groups []*instructions.Group
 
-	separator string
-	subtitles string
+	leftTitle           string
+	leftTitleWithFocus  string
+	rightTitle          string
+	rightTitleWithFocus string
+	verticalSeparator   string
+	subtitlesSeparator  string
 
 	byPriority             [][]int
 	nextPriorityGroup      int
@@ -70,12 +74,19 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			switch msg.String() {
 			case "ctrl+c", "esc", "q", "Q":
 				cmd = tea.Quit
-			case "h", "H":
-				global.Global.Set("help", true)
-				cmd = messages.Help
 			case "f", "F":
 				global.Global.Set("filter", !global.Global.Get("filter"))
 				cmd = messages.Filter
+			case "d", "D":
+				global.Global.Set("details", !global.Global.Get("details"))
+				cmd = messages.Details
+			case "h", "H":
+				global.Global.Set("help", true)
+				cmd = messages.Help
+			case "right":
+				global.Global.Set("focusOnDetails", true)
+			case "left":
+				global.Global.Set("focusOnDetails", false)
 			}
 		}
 	case checkDone:
@@ -99,7 +110,15 @@ func (m *model) View() string {
 }
 
 func (m *model) view() string {
-	return m.subtitles + lipgloss.JoinHorizontal(lipgloss.Top, m.checks.View(), m.separator, m.details.View())
+	var leftTitle, rightTitle string
+	if global.Global.Get("focusOnDetails") {
+		leftTitle = m.leftTitle
+		rightTitle = m.rightTitleWithFocus
+	} else {
+		leftTitle = m.leftTitleWithFocus
+		rightTitle = m.rightTitle
+	}
+	return leftTitle + "│" + rightTitle + "\n" + m.subtitlesSeparator + "\n" + lipgloss.JoinHorizontal(lipgloss.Top, m.checks.View(), m.verticalSeparator, m.details.View())
 }
 
 func (m *model) helpView() string {

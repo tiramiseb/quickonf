@@ -2,7 +2,12 @@ package messages
 
 import tea "github.com/charmbracelet/bubbletea"
 
-// FilterMsg means the filter status must be toggled
+type DetailsMsg struct{}
+
+func Details() tea.Msg {
+	return DetailsMsg{}
+}
+
 type FilterMsg struct{}
 
 func Filter() tea.Msg {

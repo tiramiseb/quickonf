@@ -1,8 +1,6 @@
 package program
 
 import (
-	"log"
-
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/tiramiseb/quickonf/internal/instructions"
 )
@@ -50,7 +48,6 @@ func (m *model) next() tea.Cmd {
 
 func (m *model) run(i int) tea.Cmd {
 	return func() tea.Msg {
-		log.Print("Running ", m.groups[i].Name)
 		m.groups[i].Run()
 		return checkDone{i}
 	}

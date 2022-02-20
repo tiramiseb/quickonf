@@ -1,6 +1,8 @@
 package titlebar
 
-import "strings"
+import (
+	"strings"
+)
 
 func (m *Model) draw(width int) {
 	title := " Quickonf "
@@ -9,10 +11,10 @@ func (m *Model) draw(width int) {
 	m.quitEnd = -1
 	m.helpStart = -1
 	m.helpEnd = -1
+	m.detailsStart = -1
+	m.detailsEnd = -1
 	m.filterStart = -1
 	m.filterEnd = -1
-	// m.toggleStart = -1
-	// m.toggleEnd = -1
 	availableWidth := width - titleWidth
 
 	// No place even for the title, cut it
@@ -72,31 +74,25 @@ func (m *Model) draw(width int) {
 		return
 	}
 	availableWidth = availableWidth - m.filter.Width - 1
-	m.filterEnd = m.helpStart - 2
+
+	// No place for the details button, include title & filter & help & quit
+	if availableWidth <= m.details.Width {
+		m.filterEnd = m.helpStart - 2
+		m.filterStart = m.filterEnd - m.filter.Width + 1
+		m.view = func() string {
+			return leftPart(availableWidth) + m.filter.View() + space + m.help.View() + endOfTitle
+		}
+		return
+	}
+	availableWidth = availableWidth - m.details.Width - 1
+	m.detailsEnd = m.helpStart - 2
+	m.detailsStart = m.detailsEnd - m.details.Width + 1
+	m.filterEnd = m.detailsStart - 2
 	m.filterStart = m.filterEnd - m.filter.Width + 1
 
-	left := leftPart(availableWidth)
 	m.view = func() string {
-		return left + m.filter.View() + space + m.help.View() + endOfTitle
+		return leftPart(availableWidth) + m.filter.View() + space + m.details.View() + space + m.help.View() + endOfTitle
 	}
-
-	// No place for the toggle button, include title & filter & help & quit
-	// buttonWidth = lipgloss.Width(m.toggle.View())
-	// if availableWidth <= m.filter.Width {
-	// 	leftAndSpace := style.Title.Render(title + strings.Repeat(" ", availableWidth))
-	// 	m.view = func() string {
-	// 		return leftAndSpace + m.filter.View() + space + m.help.View() + space + m.quit.View() + space
-	// 	}
-	// 	return
-	// }
-	// availableWidth = availableWidth - buttonWidth - 1
-	// m.toggleEnd = m.filterStart - 2
-	// m.toggleStart = m.toggleEnd - buttonWidth + 1
-
-	// leftAndSpace := style.Title.Render(title + strings.Repeat(" ", availableWidth))
-	// m.view = func() string {
-	// 	return leftAndSpace + m.toggle.View() + space + m.filter.View() + space + m.help.View() + space + m.quit.View() + space
-	// }
 }
 
 func (m *Model) View() string {
