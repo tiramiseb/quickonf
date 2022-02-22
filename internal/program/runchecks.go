@@ -39,16 +39,16 @@ func (m *model) next() tea.Cmd {
 	nbChecks := len(groupIDs)
 	cmds := make([]tea.Cmd, nbChecks)
 	for i, id := range groupIDs {
-		cmds[i] = m.run(id)
+		cmds[i] = m.check(id)
 	}
 	m.nextPriorityGroup++
 	m.currentlyRunningChecks = nbChecks
 	return tea.Batch(cmds...)
 }
 
-func (m *model) run(i int) tea.Cmd {
+func (m *model) check(i int) tea.Cmd {
 	return func() tea.Msg {
-		m.groups[i].Run()
+		m.groups[i].Check()
 		return checkDone{i}
 	}
 }

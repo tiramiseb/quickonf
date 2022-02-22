@@ -20,8 +20,8 @@ type Group struct {
 	Reports []CheckReport
 }
 
-// Run runs the group checks and returns its success status
-func (g *Group) Run() bool {
+// Check runs the group checks and returns its success status
+func (g *Group) Check() bool {
 	vars := NewVariablesSet()
 	for _, ins := range g.Instructions {
 		r, ok := ins.Run(vars)
