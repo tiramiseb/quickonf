@@ -33,6 +33,6 @@ func (m *model) resize(size tea.WindowSizeMsg) {
 	m.verticalSeparator = separator
 
 	m.titlebar = m.titlebar.Resize(size)
-	m.checks.Resize(left)
-	m.details.Resize(right)
+	m.checks = m.checks.Resize(left)
+	m.details = m.details.Resize(right)
 }

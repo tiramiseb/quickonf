@@ -44,8 +44,9 @@ func (m *Model) Update(msg tea.Msg) (*Model, tea.Cmd) {
 	return m, cmd
 }
 
-func (m *Model) Resize(size tea.WindowSizeMsg) (*Model, tea.Cmd) {
+func (m *Model) Resize(size tea.WindowSizeMsg) *Model {
 	m.width = size.Width
 	m.height = size.Height
-	return m.RedrawView()
+	model, _ := m.RedrawView()
+	return model
 }
