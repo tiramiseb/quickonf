@@ -20,7 +20,7 @@ func (i *If) Run(vars Variables) ([]CheckReport, bool) {
 	if !success {
 		return []CheckReport{{
 			"if",
-			commands.StatusInfo,
+			commands.StatusSuccess,
 			fmt.Sprintf(`"%s" is false, not running contained instructions...`, i.Operation.String()),
 			nil,
 		}}, true
@@ -28,7 +28,7 @@ func (i *If) Run(vars Variables) ([]CheckReport, bool) {
 	reports := []CheckReport{
 		{
 			"if",
-			commands.StatusInfo,
+			commands.StatusSuccess,
 			fmt.Sprintf(`"%s" is true, running contained instructions...`, i.Operation.String()),
 			nil,
 		},
