@@ -1,8 +1,6 @@
 package checks
 
 import (
-	"strings"
-
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/tiramiseb/quickonf/internal/commands"
 	"github.com/tiramiseb/quickonf/internal/program/global"
@@ -33,15 +31,7 @@ func (m *Model) RedrawView() (*Model, tea.Cmd) {
 		if i == selectedGroup {
 			m.cursorPos = len(view)
 		}
-		line := " " + g.Name
-		remaining := m.width - len(line)
-		switch {
-		case remaining < 0:
-			line = line[:m.width-1]
-		case remaining > 0:
-			line += strings.Repeat(" ", remaining)
-		}
-		view = append(view, line)
+		view = append(view, global.MakeWidth(g.Name, m.width))
 		lineToGroup = append(lineToGroup, i)
 	}
 
@@ -79,15 +69,15 @@ func (m *Model) View() string {
 	}
 	for i := m.viewportPos; i < lastLine; i++ {
 		if i == m.cursorPos {
-			view += selectedStyles[m.groups[m.lineToGroup[i]].Status()].Render(m.completeView[i]) + "\n"
+			view += global.SelectedStyles[m.groups[m.lineToGroup[i]].Status()].Render(m.completeView[i]) + "\n"
 		} else {
-			view += styles[m.groups[m.lineToGroup[i]].Status()].Render(m.completeView[i]) + "\n"
+			view += global.Styles[m.groups[m.lineToGroup[i]].Status()].Render(m.completeView[i]) + "\n"
 		}
 	}
 	if lastLine == m.cursorPos {
-		view += selectedStyles[m.groups[m.lineToGroup[lastLine]].Status()].Render(m.completeView[lastLine])
+		view += global.SelectedStyles[m.groups[m.lineToGroup[lastLine]].Status()].Render(m.completeView[lastLine])
 	} else {
-		view += styles[m.groups[m.lineToGroup[lastLine]].Status()].Render(m.completeView[lastLine])
+		view += global.Styles[m.groups[m.lineToGroup[lastLine]].Status()].Render(m.completeView[lastLine])
 	}
 	return view
 }
