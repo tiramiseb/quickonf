@@ -5,9 +5,7 @@ import (
 	"github.com/tiramiseb/quickonf/internal/program/global"
 )
 
-type checkDone struct {
-	groupIndex int
-}
+type checkDone struct{}
 
 func checksIndexByPriority() [][]int {
 	var (
@@ -48,7 +46,7 @@ func (m *model) next() tea.Cmd {
 
 func (m *model) check(i int) tea.Cmd {
 	return func() tea.Msg {
-		global.AllGroups[i].Check()
-		return checkDone{i}
+		global.AllGroups[i].Check(m.signalTarget)
+		return checkDone{}
 	}
 }

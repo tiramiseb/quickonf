@@ -1,6 +1,7 @@
 package global
 
 import (
+	"github.com/tiramiseb/quickonf/internal/commands"
 	"github.com/tiramiseb/quickonf/internal/instructions"
 )
 
@@ -32,7 +33,7 @@ func allGroupsToDisplayedGroups(filtered bool) {
 		i := 0
 		for j, g := range AllGroups {
 			// TODO If selected group is not displayed, change selected group
-			if g.HasApply() {
+			if g.Status() != commands.StatusSuccess {
 				DisplayedGroups = append(DisplayedGroups, g)
 				if g == selectedGroupAddr {
 					SelectedGroup = i

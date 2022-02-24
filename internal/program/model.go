@@ -1,6 +1,8 @@
 package program
 
 import (
+	"log"
+
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 
@@ -25,6 +27,8 @@ type model struct {
 	byPriority             [][]int
 	nextPriorityGroup      int
 	currentlyRunningChecks int
+
+	signalTarget chan bool
 }
 
 func newModel() *model {
@@ -34,16 +38,22 @@ func newModel() *model {
 		details:  details.New(),
 
 		byPriority: checksIndexByPriority(),
+
+		signalTarget: make(chan bool),
 	}
 }
 
 func (m *model) Init() tea.Cmd {
 	tea.LogToFile("/tmp/tmplog", "")
-	return m.next()
+	return tea.Batch(
+		m.listenSignal,
+		m.next(),
+	)
 }
 
 func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	var cmd tea.Cmd
+	log.Print("GOT MSG: ", msg)
 	switch msg := msg.(type) {
 	case tea.WindowSizeMsg:
 		m.resize(msg)
@@ -76,6 +86,8 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				global.Toggles.Enable("focusOnDetails")
 			case "left":
 				global.Toggles.Disable("focusOnDetails")
+			case "enter":
+				cmd = apply(global.SelectedGroup)
 			default:
 				if global.Toggles["focusOnDetails"] {
 					m.details, cmd = m.details.Update(msg)
@@ -94,7 +106,11 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				cmd = tea.Batch(cmd, m.next())
 			}
 		}
+	case newSignal:
+		log.Print("SIGNAL OK, LISTENING AGAIN")
+		cmd = m.listenSignal
 	}
+
 	return m, cmd
 }
 

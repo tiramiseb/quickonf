@@ -17,14 +17,14 @@ type Group struct {
 	Priority     int
 	Instructions []Instruction
 
-	Reports []CheckReport
+	Reports []*CheckReport
 }
 
 // Check runs the group checks and returns its success status
-func (g *Group) Check() bool {
+func (g *Group) Check(signalTarget chan bool) bool {
 	vars := NewVariablesSet()
 	for _, ins := range g.Instructions {
-		r, ok := ins.Run(vars)
+		r, ok := ins.Run(vars, signalTarget)
 		g.Reports = append(g.Reports, r...)
 		if !ok {
 			return false
@@ -63,7 +63,7 @@ func (g *Group) Status() commands.Status {
 // HasApply checks if the group has at lease one instruction to apply
 func (g *Group) HasApply() bool {
 	for _, r := range g.Reports {
-		if r.Apply != nil {
+		if r.HasApply() {
 			return true
 		}
 	}
@@ -79,9 +79,9 @@ func (g *Group) Reset() {
 }
 
 // Apply applies modifications for this group
-func (g *Group) Apply(out GroupOutput) bool {
+func (g *Group) Apply() bool {
 	for _, report := range g.Reports {
-		if !report.Apply.Run(out.NewCommandOutput(report.Apply.Name)) {
+		if !report.Apply() {
 			return false
 		}
 	}

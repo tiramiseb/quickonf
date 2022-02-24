@@ -15,26 +15,28 @@ func (i *If) Name() string {
 	return "if"
 }
 
-func (i *If) Run(vars Variables) ([]CheckReport, bool) {
+func (i *If) Run(vars Variables, signalTarget chan bool) ([]*CheckReport, bool) {
 	success := i.Operation.Compare(vars)
 	if !success {
-		return []CheckReport{{
+		return []*CheckReport{{
 			"if",
 			commands.StatusSuccess,
 			fmt.Sprintf(`"%s" is false, not running contained instructions...`, i.Operation.String()),
 			nil,
+			signalTarget,
 		}}, true
 	}
-	reports := []CheckReport{
+	reports := []*CheckReport{
 		{
 			"if",
 			commands.StatusSuccess,
 			fmt.Sprintf(`"%s" is true, running contained instructions...`, i.Operation.String()),
 			nil,
+			signalTarget,
 		},
 	}
 	for _, ins := range i.Instructions {
-		thisReports, ok := ins.Run(vars)
+		thisReports, ok := ins.Run(vars, signalTarget)
 		if thisReports != nil {
 			reports = append(reports, thisReports...)
 		}
