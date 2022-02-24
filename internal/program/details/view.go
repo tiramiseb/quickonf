@@ -1,6 +1,8 @@
 package details
 
 import (
+	"fmt"
+
 	"github.com/tiramiseb/quickonf/internal/commands"
 	"github.com/tiramiseb/quickonf/internal/program/global"
 )
@@ -19,8 +21,9 @@ func (m *Model) View() string {
 		}
 	}
 	for _, rep := range group.Reports {
+		content := fmt.Sprintf("[%s] %s", rep.Name, rep.Message)
 		view += global.Styles[rep.Status].Render(
-			global.MakeWidth(rep.Message, m.width),
+			global.MakeWidth(content, m.width),
 		) + "\n"
 	}
 	m.viewport.SetContent(view)
