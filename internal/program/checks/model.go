@@ -2,24 +2,17 @@ package checks
 
 import (
 	tea "github.com/charmbracelet/bubbletea"
-	"github.com/tiramiseb/quickonf/internal/instructions"
 )
 
 type Model struct {
-	groups      []*instructions.Group
-	cursorPos   int
-	viewportPos int
+	selectedGroupToViewportOffset int // How much must be removed from selected group to get viewport start
 
-	width        int
-	height       int
-	lineToGroup  []int // when groups are filtered, a line index is not the same as the group index
-	completeView []string
+	width  int
+	height int
 }
 
-func New(groups []*instructions.Group) *Model {
-	return &Model{
-		groups: groups,
-	}
+func New() *Model {
+	return &Model{}
 }
 
 func (m *Model) Update(msg tea.Msg) (*Model, tea.Cmd) {
@@ -28,17 +21,17 @@ func (m *Model) Update(msg tea.Msg) (*Model, tea.Cmd) {
 	case tea.KeyMsg:
 		switch msg.String() {
 		case "up":
-			return m, m.up
+			m.up()
 		case "down":
-			return m, m.down
+			m.down()
 		case "pgup":
-			return m, m.pgup
+			m.pgup()
 		case "pgdown":
-			return m, m.pgdown
+			m.pgdown()
 		case "home":
-			return m, m.home
+			m.home()
 		case "end":
-			return m, m.end
+			m.end()
 		}
 	}
 	return m, cmd
@@ -47,6 +40,5 @@ func (m *Model) Update(msg tea.Msg) (*Model, tea.Cmd) {
 func (m *Model) Resize(size tea.WindowSizeMsg) *Model {
 	m.width = size.Width
 	m.height = size.Height
-	model, _ := m.RedrawView()
-	return model
+	return m
 }

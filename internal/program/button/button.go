@@ -21,6 +21,6 @@ func NewButton(text string, hintPosition int, action tea.Cmd) *Button {
 	}
 }
 
-func (b *Button) Click() (*Button, tea.Cmd) {
-	return b, b.action
+func (b *Button) Click() tea.Cmd {
+	return b.action
 }

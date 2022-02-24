@@ -2,20 +2,20 @@ package program
 
 import (
 	tea "github.com/charmbracelet/bubbletea"
-	"github.com/tiramiseb/quickonf/internal/instructions"
+	"github.com/tiramiseb/quickonf/internal/program/global"
 )
 
 type checkDone struct {
 	groupIndex int
 }
 
-func orderChecksByPriority(groups []*instructions.Group) [][]int {
+func checksIndexByPriority() [][]int {
 	var (
 		currentPriority int
 		byPriority      [][]int
 		thisPriority    []int
 	)
-	for i, g := range groups {
+	for i, g := range global.AllGroups {
 		if g.Priority != currentPriority {
 			if thisPriority != nil {
 				byPriority = append(byPriority, thisPriority)
@@ -48,7 +48,7 @@ func (m *model) next() tea.Cmd {
 
 func (m *model) check(i int) tea.Cmd {
 	return func() tea.Msg {
-		m.groups[i].Check()
+		global.AllGroups[i].Check()
 		return checkDone{i}
 	}
 }

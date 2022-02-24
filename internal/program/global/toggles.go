@@ -1,37 +1,36 @@
 package global
 
-import tea "github.com/charmbracelet/bubbletea"
+type toggles map[string]bool
+type togglesListeners map[string][]func(new bool)
 
-type toggle struct {
-	name  string
-	value bool
+var (
+	Toggles = toggles{
+		"details":        false,
+		"filter":         true,
+		"focusOnDetails": false,
+		"help":           false,
+	}
+	TogglesListeners = togglesListeners{}
+)
+
+// Toggle returns the new value
+func (t toggles) Toggle(key string) {
+	new := !t[key]
+	t[key] = new
+	for _, l := range TogglesListeners[key] {
+		l(new)
+	}
 }
 
-type ToggleMsg struct {
-	Name string
+func (t toggles) Enable(key string) {
+	t[key] = true
+	for _, l := range TogglesListeners[key] {
+		l(true)
+	}
 }
-
-var Toggles = map[string]*toggle{
-	"details":        {"detalis", false},
-	"filter":         {"filter", true},
-	"focusOnDetails": {"focusOnDetails", false},
-	"help":           {"help", false},
-}
-
-func (t *toggle) Toggle() tea.Msg {
-	t.value = !t.value
-	return ToggleMsg{t.name}
-}
-
-func (t *toggle) Enable() tea.Msg {
-	t.value = true
-	return ToggleMsg{t.name}
-}
-func (t *toggle) Disable() tea.Msg {
-	t.value = false
-	return ToggleMsg{t.name}
-}
-
-func (t *toggle) Get() bool {
-	return t.value
+func (t toggles) Disable(key string) {
+	t[key] = false
+	for _, l := range TogglesListeners[key] {
+		l(false)
+	}
 }

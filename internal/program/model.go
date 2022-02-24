@@ -4,7 +4,6 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 
-	"github.com/tiramiseb/quickonf/internal/instructions"
 	"github.com/tiramiseb/quickonf/internal/program/checks"
 	"github.com/tiramiseb/quickonf/internal/program/details"
 	"github.com/tiramiseb/quickonf/internal/program/global"
@@ -15,8 +14,6 @@ type model struct {
 	titlebar *titlebar.Model
 	checks   *checks.Model
 	details  *details.Model
-
-	groups []*instructions.Group
 
 	leftTitle           string
 	leftTitleWithFocus  string
@@ -30,15 +27,13 @@ type model struct {
 	currentlyRunningChecks int
 }
 
-func newModel(g []*instructions.Group) *model {
+func newModel() *model {
 	return &model{
 		titlebar: titlebar.New(),
-		checks:   checks.New(g),
-		details:  details.New(g),
+		checks:   checks.New(),
+		details:  details.New(),
 
-		groups: g,
-
-		byPriority: orderChecksByPriority(g),
+		byPriority: checksIndexByPriority(),
 	}
 }
 
@@ -60,29 +55,29 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			}
 		}
 	case tea.KeyMsg:
-		if global.Toggles["help"].Get() {
+		if global.Toggles["help"] {
 			switch msg.String() {
 			case "ctrl+c":
 				cmd = tea.Quit
 			case "esc":
-				cmd = global.Toggles["help"].Disable
+				global.Toggles.Disable("help")
 			}
 		} else {
 			switch msg.String() {
 			case "ctrl+c", "esc", "q", "Q":
 				cmd = tea.Quit
 			case "f", "F":
-				cmd = global.Toggles["filter"].Toggle
+				global.Toggles.Toggle("filter")
 			case "d", "D":
-				cmd = global.Toggles["details"].Toggle
+				global.Toggles.Toggle("details")
 			case "h", "H":
-				cmd = global.Toggles["help"].Enable
+				global.Toggles.Enable("help")
 			case "right":
-				cmd = global.Toggles["focusOnDetails"].Enable
+				global.Toggles.Enable("focusOnDetails")
 			case "left":
-				cmd = global.Toggles["focusOnDetails"].Disable
+				global.Toggles.Disable("focusOnDetails")
 			default:
-				if global.Toggles["focusOnDetails"].Get() {
+				if global.Toggles["focusOnDetails"] {
 					m.details, cmd = m.details.Update(msg)
 				} else {
 					m.checks, cmd = m.checks.Update(msg)
@@ -90,7 +85,7 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			}
 		}
 	case checkDone:
-		m.checks, cmd = m.checks.RedrawView()
+		global.GroupsMayHaveChanged()
 		m.currentlyRunningChecks--
 		if m.currentlyRunningChecks == 0 {
 			if cmd == nil {
@@ -99,19 +94,12 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				cmd = tea.Batch(cmd, m.next())
 			}
 		}
-	case global.ToggleMsg:
-		switch msg.Name {
-		case "filter":
-			m.checks, cmd = m.checks.RedrawView()
-		}
-	case global.SelectGroupMsg:
-		m.details = m.details.ChangeView(msg.Idx)
 	}
 	return m, cmd
 }
 
 func (m *model) View() string {
-	if global.Toggles["help"].Get() {
+	if global.Toggles["help"] {
 		return m.titlebar.View() + "\n" + m.helpView()
 	} else {
 		return m.titlebar.View() + "\n" + m.view()
@@ -120,7 +108,7 @@ func (m *model) View() string {
 
 func (m *model) view() string {
 	var leftTitle, rightTitle string
-	if global.Toggles["focusOnDetails"].Get() {
+	if global.Toggles["focusOnDetails"] {
 		leftTitle = m.leftTitle
 		rightTitle = m.rightTitleWithFocus
 	} else {

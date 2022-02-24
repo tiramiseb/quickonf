@@ -3,21 +3,16 @@ package details
 import (
 	"github.com/charmbracelet/bubbles/viewport"
 	tea "github.com/charmbracelet/bubbletea"
-
-	"github.com/tiramiseb/quickonf/internal/instructions"
 )
 
 type Model struct {
-	groups   []*instructions.Group
 	viewport viewport.Model
 
-	width          int
-	displayedGroup int
+	width int
 }
 
-func New(groups []*instructions.Group) *Model {
+func New() *Model {
 	return &Model{
-		groups:   groups,
 		viewport: viewport.Model{Width: 1, Height: 1},
 	}
 }

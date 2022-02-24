@@ -59,13 +59,13 @@ func (m *Model) Update(msg tea.Msg) (*Model, tea.Cmd) {
 	case tea.MouseMsg:
 		switch {
 		case msg.X >= m.filterStart && msg.X <= m.filterEnd:
-			m.filter, cmd = m.filter.Click()
+			m.filter.Click()
 		case msg.X >= m.detailsStart && msg.X <= m.detailsEnd:
-			m.details, cmd = m.details.Click()
+			m.details.Click()
 		case msg.X >= m.helpStart && msg.X <= m.helpEnd:
-			m.help, cmd = m.help.Click()
+			m.help.Click()
 		case msg.X >= m.quitStart && msg.X <= m.quitEnd:
-			m.quit, cmd = m.quit.Click()
+			cmd = m.quit.Click()
 		}
 	}
 	return m, cmd
