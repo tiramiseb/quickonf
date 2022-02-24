@@ -1,8 +1,6 @@
 package program
 
 import (
-	"log"
-
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 
@@ -53,7 +51,6 @@ func (m *model) Init() tea.Cmd {
 
 func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	var cmd tea.Cmd
-	log.Print("GOT MSG: ", msg)
 	switch msg := msg.(type) {
 	case tea.WindowSizeMsg:
 		m.resize(msg)
@@ -107,7 +104,6 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			}
 		}
 	case newSignal:
-		log.Print("SIGNAL OK, LISTENING AGAIN")
 		cmd = m.listenSignal
 	}
 
