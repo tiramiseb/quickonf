@@ -13,6 +13,9 @@ func (m *model) resize(size tea.WindowSizeMsg) {
 		Width:  width / 2,
 		Height: height,
 	}
+	if left.Width > m.largestGroupName+2 {
+		left.Width = m.largestGroupName + 2
+	}
 	right := tea.WindowSizeMsg{
 		Width:  width - left.Width,
 		Height: height,

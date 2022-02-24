@@ -22,6 +22,8 @@ type model struct {
 	verticalSeparator   string
 	subtitlesSeparator  string
 
+	largestGroupName int
+
 	byPriority             [][]int
 	nextPriorityGroup      int
 	currentlyRunningChecks int
@@ -30,10 +32,19 @@ type model struct {
 }
 
 func newModel() *model {
+	var largestName int
+	for _, g := range global.AllGroups {
+		l := len(g.Name)
+		if l > largestName {
+			largestName = l
+		}
+	}
 	return &model{
 		titlebar: titlebar.New(),
 		checks:   checks.New(),
 		details:  details.New(),
+
+		largestGroupName: largestName,
 
 		byPriority: checksIndexByPriority(),
 
