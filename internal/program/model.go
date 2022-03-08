@@ -7,6 +7,7 @@ import (
 	"github.com/tiramiseb/quickonf/internal/program/checks"
 	"github.com/tiramiseb/quickonf/internal/program/details"
 	"github.com/tiramiseb/quickonf/internal/program/global"
+	"github.com/tiramiseb/quickonf/internal/program/help"
 	"github.com/tiramiseb/quickonf/internal/program/titlebar"
 )
 
@@ -14,6 +15,7 @@ type model struct {
 	titlebar *titlebar.Model
 	checks   *checks.Model
 	details  *details.Model
+	help     *help.Model
 
 	leftTitle           string
 	leftTitleWithFocus  string
@@ -43,6 +45,7 @@ func newModel() *model {
 		titlebar: titlebar.New(),
 		checks:   checks.New(),
 		details:  details.New(),
+		help:     help.New(),
 
 		largestGroupName: largestName,
 
@@ -79,6 +82,8 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				cmd = tea.Quit
 			case "esc":
 				global.Toggles.Disable("help")
+			default:
+				m.help, cmd = m.help.Update(msg)
 			}
 		} else {
 			switch msg.String() {
@@ -114,6 +119,8 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				cmd = tea.Batch(cmd, m.next())
 			}
 		}
+	case global.ToggleHelpMsg:
+		global.Toggles.Toggle("help")
 	case newSignal:
 		cmd = m.listenSignal
 	}
@@ -123,7 +130,7 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 func (m *model) View() string {
 	if global.Toggles["help"] {
-		return m.titlebar.View() + "\n" + m.helpView()
+		return m.titlebar.View() + "\n" + m.help.View()
 	} else {
 		return m.titlebar.View() + "\n" + m.view()
 	}
@@ -139,9 +146,4 @@ func (m *model) view() string {
 		rightTitle = m.rightTitle
 	}
 	return leftTitle + "│" + rightTitle + "\n" + m.subtitlesSeparator + "\n" + lipgloss.JoinHorizontal(lipgloss.Top, m.checks.View(), m.verticalSeparator, m.details.View())
-}
-
-func (m *model) helpView() string {
-	// TODO
-	return "THERE WILL BE HELP"
 }

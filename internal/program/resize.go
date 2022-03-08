@@ -38,4 +38,8 @@ func (m *model) resize(size tea.WindowSizeMsg) {
 	m.titlebar = m.titlebar.Resize(size)
 	m.checks = m.checks.Resize(left)
 	m.details = m.details.Resize(right)
+	m.help = m.help.Resize(tea.WindowSizeMsg{
+		Width:  size.Width,
+		Height: size.Height - 1,
+	})
 }

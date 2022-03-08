@@ -31,7 +31,7 @@ func MakeWidth(str string, width int) string {
 	line := " " + str
 	remaining := width - lipgloss.Width(line)
 	if remaining < 0 {
-		return line[:width-1]
+		return line[:width]
 	}
 	return line + strings.Repeat(" ", remaining)
 }

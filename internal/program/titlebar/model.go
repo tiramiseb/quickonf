@@ -22,7 +22,7 @@ type Model struct {
 	detailsStart int
 	detailsEnd   int
 
-	help      *button.Toggle
+	help      *button.Button
 	helpStart int
 	helpEnd   int
 
@@ -30,7 +30,9 @@ type Model struct {
 	quitStart int
 	quitEnd   int
 
-	isInHelp bool
+	helpBack      *button.Button
+	helpBackStart int
+	helpBackEnd   int
 
 	view     func() string
 	helpView func() string
@@ -38,10 +40,13 @@ type Model struct {
 
 func New() *Model {
 	return &Model{
-		filter:   button.NewToggle("Filter checks", 0, "filter"),
-		details:  button.NewToggle("More details", 5, "details"),
-		help:     button.NewToggle("Help", 0, "help"),
-		quit:     button.NewButton("Quit", 0, tea.Quit),
+		filter:  button.NewToggle("Filter checks", 0, "filter"),
+		details: button.NewToggle("More details", 5, "details"),
+		help:    button.NewButton("Help", 0, global.ToggleHelp),
+		quit:    button.NewButton("Quit", 0, tea.Quit),
+
+		helpBack: button.NewButton("Back (esc)", -2, global.ToggleHelp),
+
 		view:     func() string { return "" },
 		helpView: func() string { return "" },
 	}
@@ -57,15 +62,22 @@ func (m *Model) Update(msg tea.Msg) (*Model, tea.Cmd) {
 	var cmd tea.Cmd
 	switch msg := msg.(type) {
 	case tea.MouseMsg:
-		switch {
-		case msg.X >= m.filterStart && msg.X <= m.filterEnd:
-			m.filter.Click()
-		case msg.X >= m.detailsStart && msg.X <= m.detailsEnd:
-			m.details.Click()
-		case msg.X >= m.helpStart && msg.X <= m.helpEnd:
-			m.help.Click()
-		case msg.X >= m.quitStart && msg.X <= m.quitEnd:
-			cmd = m.quit.Click()
+		if global.Toggles["help"] {
+			switch {
+			case msg.X >= m.helpBackStart && msg.X <= m.helpBackEnd:
+				cmd = m.helpBack.Click()
+			}
+		} else {
+			switch {
+			case msg.X >= m.filterStart && msg.X <= m.filterEnd:
+				m.filter.Click()
+			case msg.X >= m.detailsStart && msg.X <= m.detailsEnd:
+				m.details.Click()
+			case msg.X >= m.helpStart && msg.X <= m.helpEnd:
+				cmd = m.help.Click()
+			case msg.X >= m.quitStart && msg.X <= m.quitEnd:
+				cmd = m.quit.Click()
+			}
 		}
 	}
 	return m, cmd

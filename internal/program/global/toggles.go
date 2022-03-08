@@ -9,6 +9,8 @@ var (
 		"filter":         true,
 		"focusOnDetails": false,
 		"help":           false,
+		"helpIntro":      true,
+		"helpLanguage":   false,
 	}
 	TogglesListeners = togglesListeners{}
 )
