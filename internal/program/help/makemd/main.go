@@ -4,7 +4,6 @@ import (
 	"bytes"
 	_ "embed"
 	"os"
-	"regexp"
 
 	"github.com/charmbracelet/glamour"
 	"github.com/muesli/ansi/compressor"
@@ -20,8 +19,6 @@ var (
 
 	darkStyle  = glamour.DarkStyleConfig
 	lightStyle = glamour.LightStyleConfig
-
-	spacesRe = regexp.MustCompile("  +")
 )
 
 func init() {
