@@ -25,6 +25,8 @@ func (m *Model) View() string {
 		if firstGroupInView < 0 {
 			firstGroupInView = 0
 			m.selectedGroupToViewportOffset = global.SelectedGroup
+		} else {
+			m.selectedGroupToViewportOffset = global.SelectedGroup - firstGroupInView
 		}
 	}
 	for i := firstGroupInView; i < afterLastGroupInView-1; i++ {
