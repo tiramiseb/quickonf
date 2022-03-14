@@ -86,6 +86,23 @@ func (m *Model) Update(msg tea.Msg) (*Model, tea.Cmd) {
 		default:
 			m.viewport, cmd = m.viewport.Update(msg)
 		}
+	case tea.MouseMsg:
+		if msg.Y == 0 && msg.Type == tea.MouseRelease {
+			switch {
+			case msg.X >= m.introStart && msg.X <= m.introEnd && m.activeSection != 0:
+				m.activeSection = 0
+				m.setContent()
+			case msg.X >= m.languageStart && msg.X <= m.languageEnd && m.activeSection != 1:
+				m.activeSection = 1
+				m.setContent()
+			case msg.X >= m.commandsStart && msg.X <= m.commandsEnd && m.activeSection != 2:
+				m.activeSection = 2
+				m.setContent()
+			case msg.X >= m.uiStart && msg.X <= m.uiEnd && m.activeSection != 3:
+				m.activeSection = 3
+				m.setContent()
+			}
+		}
 	}
 	return m, cmd
 }
@@ -124,6 +141,7 @@ func (m *Model) setContent() {
 			m.viewport.Height = m.height - 2
 		}
 	}
+	m.viewport.GotoTop()
 	m.viewport.SetContent(
 		wordwrap.String(text, m.width-4),
 	)

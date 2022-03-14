@@ -25,6 +25,7 @@ type model struct {
 	subtitlesSeparator  string
 
 	largestGroupName int
+	separatorXPos    int
 
 	byPriority             [][]int
 	nextPriorityGroup      int
@@ -69,12 +70,32 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case tea.WindowSizeMsg:
 		m.resize(msg)
 	case tea.MouseMsg:
-		if msg.Type == tea.MouseRelease {
-			switch msg.Y {
-			case 0:
-				m.titlebar, cmd = m.titlebar.Update(msg)
+		switch {
+		case msg.Y == 0:
+			m.titlebar, cmd = m.titlebar.Update(msg)
+		case global.Toggles["help"]:
+			msg.Y--
+			m.help, cmd = m.help.Update(msg)
+		default:
+			msg.Y -= 3
+			if msg.X < m.separatorXPos {
+				if msg.Type == tea.MouseRelease {
+					global.Toggles.Disable("focusOnDetails")
+				}
+				if msg.Y >= 0 {
+					m.checks, cmd = m.checks.Update(msg)
+				}
+			} else if msg.X > m.separatorXPos {
+				msg.X = msg.X - m.separatorXPos - 1
+				if msg.Type == tea.MouseRelease {
+					global.Toggles.Enable("focusOnDetails")
+				}
+				if msg.Y >= 0 {
+					m.details, cmd = m.details.Update(msg)
+				}
 			}
 		}
+		// TODO clics dans checks & details
 	case tea.KeyMsg:
 		if global.Toggles["help"] {
 			switch msg.String() {

@@ -21,6 +21,15 @@ func (m *Model) Update(msg tea.Msg) (*Model, tea.Cmd) {
 	var cmd tea.Cmd
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
+		switch msg.String() {
+		case "home":
+			m.viewport.GotoTop()
+		case "end":
+			m.viewport.GotoBottom()
+		default:
+			m.viewport, cmd = m.viewport.Update(msg)
+		}
+	case tea.MouseMsg:
 		m.viewport, cmd = m.viewport.Update(msg)
 	}
 	return m, cmd

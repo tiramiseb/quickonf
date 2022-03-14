@@ -33,6 +33,15 @@ func (m *Model) Update(msg tea.Msg) (*Model, tea.Cmd) {
 		case "end":
 			m.end()
 		}
+	case tea.MouseMsg:
+		switch msg.Type {
+		case tea.MouseWheelUp:
+			m.scrollUp()
+		case tea.MouseWheelDown:
+			m.scrollDown()
+		case tea.MouseRelease:
+			m.selectLine(msg.Y)
+		}
 	}
 	return m, cmd
 }
