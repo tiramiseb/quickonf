@@ -8,7 +8,7 @@ Think Ansible, but as a single binary command tailored for local desktop usage.
 
 # How it works
 
-You write the desired state of your system in a configuration file (named `quickonf.qconf` by default) and _Quickonf_ ensures the computer is configured as you wish.
+You write the desired state of your system in a configuration file (named `quickonf.qconf` by default).
 
 Then you execute `quickonf` or `quickonf your-file.qconf`. _Quickonf_ reads this file and checks the status of the systems, then allows you to apply modifications to the system. No other argument can be provided, everything is done in an interactive interface.
 
