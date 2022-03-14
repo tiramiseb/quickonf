@@ -62,21 +62,23 @@ func (m *Model) Update(msg tea.Msg) (*Model, tea.Cmd) {
 	var cmd tea.Cmd
 	switch msg := msg.(type) {
 	case tea.MouseMsg:
-		if global.Toggles["help"] {
-			switch {
-			case msg.X >= m.helpBackStart && msg.X <= m.helpBackEnd:
-				cmd = m.helpBack.Click()
-			}
-		} else {
-			switch {
-			case msg.X >= m.filterStart && msg.X <= m.filterEnd:
-				m.filter.Click()
-			case msg.X >= m.detailsStart && msg.X <= m.detailsEnd:
-				m.details.Click()
-			case msg.X >= m.helpStart && msg.X <= m.helpEnd:
-				cmd = m.help.Click()
-			case msg.X >= m.quitStart && msg.X <= m.quitEnd:
-				cmd = m.quit.Click()
+		if msg.Type == tea.MouseRelease {
+			if global.Toggles["help"] {
+				switch {
+				case msg.X >= m.helpBackStart && msg.X <= m.helpBackEnd:
+					cmd = m.helpBack.Click()
+				}
+			} else {
+				switch {
+				case msg.X >= m.filterStart && msg.X <= m.filterEnd:
+					m.filter.Click()
+				case msg.X >= m.detailsStart && msg.X <= m.detailsEnd:
+					m.details.Click()
+				case msg.X >= m.helpStart && msg.X <= m.helpEnd:
+					cmd = m.help.Click()
+				case msg.X >= m.quitStart && msg.X <= m.quitEnd:
+					cmd = m.quit.Click()
+				}
 			}
 		}
 	}
