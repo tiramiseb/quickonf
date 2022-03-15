@@ -20,7 +20,7 @@ var gnomeExtensionEnable = Command{
 	},
 	nil,
 	"Dash to dock\n  gnome.extension.install dash-to-dock@micxgx.gmail.com\n  user.gnome.extension.enable alice dash-to-dock@micxgx.gmail.com",
-	func(args []string) (result []string, message string, apply *Apply, status Status) {
+	func(args []string) (result []string, message string, apply Apply, status Status) {
 		username := args[0]
 		uuid := args[1]
 		user, err := datastores.Users.Get(username)
@@ -35,18 +35,14 @@ var gnomeExtensionEnable = Command{
 			return nil, fmt.Sprintf("%s is already enabled", uuid), nil, StatusSuccess
 		}
 
-		apply = &Apply{
-			"user.gnome.extension.enable",
-			fmt.Sprintf("Will enable %s", uuid),
-			func(out Output) (success bool) {
-				out.Runningf("Enabling %s", uuid)
-				if err := helper.Exec(nil, nil, "gnome-shell-extension-tool", "--enable-extension", uuid); err != nil {
-					out.Errorf("Could not enable %s: %s", uuid, err)
-					return false
-				}
-				out.Successf("Enabled %s", uuid)
-				return true
-			},
+		apply = func(out Output) (success bool) {
+			out.Runningf("Enabling %s", uuid)
+			if err := helper.Exec(nil, nil, "gnome-shell-extension-tool", "--enable-extension", uuid); err != nil {
+				out.Errorf("Could not enable %s: %s", uuid, err)
+				return false
+			}
+			out.Successf("Enabled %s", uuid)
+			return true
 		}
 
 		return nil, fmt.Sprintf("Need to enable %s", uuid), nil, StatusInfo

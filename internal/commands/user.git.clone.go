@@ -28,7 +28,7 @@ var userGitClone = Command{
 	},
 	nil,
 	"Oh My Bash\n  user.git.clone alice https://github.com/ohmybash/oh-my-bash.git .oh-my-bash master",
-	func(args []string) (result []string, msg string, apply *Apply, status Status) {
+	func(args []string) (result []string, msg string, apply Apply, status Status) {
 		username := args[0]
 		uri := args[1]
 		dest := args[2]
@@ -60,23 +60,19 @@ var userGitClone = Command{
 		// Check if destination already exists
 		finfo, err := os.Stat(dest)
 		if errors.Is(err, fs.ErrNotExist) {
-			apply = &Apply{
-				"user.git.clone",
-				fmt.Sprintf("Will clone %s into %s", uri, dest),
-				func(out Output) bool {
-					out.Runningf("Cloning %s into %s", uri, dest)
-					if err := helper.ExecAs(usr.User, nil, nil, "git", "clone", uri, dest); err != nil {
-						out.Errorf("Could not clone %s: %s", uri, err)
-						return false
-					}
-					out.Infof("Checking out %s in %s", ref, dest)
-					if err := helper.ExecAs(usr.User, nil, nil, "git", "-C", dest, "checkout", ref); err != nil {
-						out.Errorf("Could not checkout %s in %s: %s", ref, dest, err)
-						return false
-					}
-					out.Successf("Cloned %s into %s", uri, dest)
-					return true
-				},
+			apply = func(out Output) bool {
+				out.Runningf("Cloning %s into %s", uri, dest)
+				if err := helper.ExecAs(usr.User, nil, nil, "git", "clone", uri, dest); err != nil {
+					out.Errorf("Could not clone %s: %s", uri, err)
+					return false
+				}
+				out.Infof("Checking out %s in %s", ref, dest)
+				if err := helper.ExecAs(usr.User, nil, nil, "git", "-C", dest, "checkout", ref); err != nil {
+					out.Errorf("Could not checkout %s in %s: %s", ref, dest, err)
+					return false
+				}
+				out.Successf("Cloned %s into %s", uri, dest)
+				return true
 			}
 			return nil, fmt.Sprintf("Need to clone %s into %s", uri, dest), apply, StatusInfo
 		}
@@ -113,23 +109,19 @@ var userGitClone = Command{
 			return nil, fmt.Sprintf("%s is not a clone of %s", dest, uri), nil, StatusError
 		}
 
-		apply = &Apply{
-			"user.git.clone",
-			fmt.Sprintf("Will pull updates in %s", dest),
-			func(out Output) bool {
-				out.Runningf("Pulling in %s", dest)
-				if err := helper.ExecAs(usr.User, nil, nil, "git", "-C", dest, "pull"); err != nil {
-					out.Errorf("Could not pull in %s: %s", dest, err)
-					return false
-				}
-				out.Runningf("Checking out %s in %s", ref, dest)
-				if err := helper.ExecAs(usr.User, nil, nil, "git", "-C", dest, "checkout", ref); err != nil {
-					out.Errorf("Could not checkout %s in %s: %s", ref, dest, err)
-					return false
-				}
-				out.Successf("Pulled in %s", dest)
-				return true
-			},
+		apply = func(out Output) bool {
+			out.Runningf("Pulling in %s", dest)
+			if err := helper.ExecAs(usr.User, nil, nil, "git", "-C", dest, "pull"); err != nil {
+				out.Errorf("Could not pull in %s: %s", dest, err)
+				return false
+			}
+			out.Runningf("Checking out %s in %s", ref, dest)
+			if err := helper.ExecAs(usr.User, nil, nil, "git", "-C", dest, "checkout", ref); err != nil {
+				out.Errorf("Could not checkout %s in %s: %s", ref, dest, err)
+				return false
+			}
+			out.Successf("Pulled in %s", dest)
+			return true
 		}
 
 		return nil, fmt.Sprintf("Need to pull updates in %s", dest), apply, StatusInfo

@@ -22,7 +22,7 @@ var regexpSubstring = Command{
 		"...",
 	},
 	"Find src\n  webpage = http.get.var http://www.example.com\n  src = regexp.substring \"<script .*src=(.*)>\" <webpage>\n  ...",
-	func(args []string) (result []string, msg string, apply *Apply, status Status) {
+	func(args []string) (result []string, msg string, apply Apply, status Status) {
 		reg := args[0]
 		source := args[1]
 

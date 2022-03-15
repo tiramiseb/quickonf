@@ -25,7 +25,7 @@ var filePerm = Command{
 	},
 	nil,
 	"Restrict private key\n  file.chown /home/alice/.ssh/id_rsa 600",
-	func(args []string) (result []string, msg string, apply *Apply, status Status) {
+	func(args []string) (result []string, msg string, apply Apply, status Status) {
 		path := args[0]
 		permsAsString := args[1]
 		if !filepath.IsAbs(path) {
@@ -50,18 +50,14 @@ var filePerm = Command{
 			return nil, fmt.Sprintf("%s already has the requested permissions", path), nil, StatusSuccess
 		}
 
-		apply = &Apply{
-			"file.perm",
-			fmt.Sprintf("Will change permissions on %s", path),
-			func(out Output) bool {
-				out.Runningf("Changing permissions on %s", path)
-				if err := os.Chmod(path, perms); err != nil {
-					out.Errorf("Could not change permissions on %s: %s", path, err)
-					return false
-				}
-				out.Successf("Changed permissions on %s", path)
-				return true
-			},
+		apply = func(out Output) bool {
+			out.Runningf("Changing permissions on %s", path)
+			if err := os.Chmod(path, perms); err != nil {
+				out.Errorf("Could not change permissions on %s: %s", path, err)
+				return false
+			}
+			out.Successf("Changed permissions on %s", path)
+			return true
 		}
 
 		return nil, fmt.Sprintf("Need to change permissions on %s", path), apply, StatusInfo

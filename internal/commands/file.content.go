@@ -21,7 +21,7 @@ var file = Command{
 	},
 	nil,
 	"Say hello\n  file.content /home/hello.txt \"Hello World!\"",
-	func(args []string) (result []string, msg string, apply *Apply, status Status) {
+	func(args []string) (result []string, msg string, apply Apply, status Status) {
 		path := args[0]
 		content := args[1]
 		if !filepath.IsAbs(path) {
@@ -47,18 +47,14 @@ var file = Command{
 			return nil, fmt.Sprintf("%s already has the requested content", path), nil, StatusSuccess
 		}
 
-		apply = &Apply{
-			"file.content",
-			fmt.Sprintf("Will write requested content to %s", path),
-			func(out Output) bool {
-				out.Runningf("Writing content to %s", path)
-				if err := os.WriteFile(path, []byte(content), 0o644); err != nil {
-					out.Errorf("Could not write requested content to %s: %s", path, err)
-					return false
-				}
-				out.Successf("Content written to %s", path)
-				return true
-			},
+		apply = func(out Output) bool {
+			out.Runningf("Writing content to %s", path)
+			if err := os.WriteFile(path, []byte(content), 0o644); err != nil {
+				out.Errorf("Could not write requested content to %s: %s", path, err)
+				return false
+			}
+			out.Successf("Content written to %s", path)
+			return true
 		}
 
 		return nil, fmt.Sprintf("Need to write requested content to %s", path), apply, StatusInfo

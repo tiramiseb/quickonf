@@ -24,7 +24,7 @@ var aptKey = Command{
 	},
 	nil,
 	"NextDNS\n  key = http.get.var https://repo.nextdns.io/nextdns.gpg\n  apt.key nextdns <key>",
-	func(args []string) (result []string, msg string, apply *Apply, status Status) {
+	func(args []string) (result []string, msg string, apply Apply, status Status) {
 		name := args[0]
 		key := args[1]
 		var ext string
@@ -43,18 +43,14 @@ var aptKey = Command{
 		if existing == key {
 			return nil, fmt.Sprintf("Key %s already known", name), nil, StatusSuccess
 		}
-		apply = &Apply{
-			"apt.key",
-			fmt.Sprintf("Will add apt key %s", name),
-			func(out Output) bool {
-				out.Runningf("Storing the apt key %s", name)
-				if err := os.WriteFile(keyFile, []byte(key), 0o644); err != nil {
-					out.Errorf("Could not write requested content to %s: %s", keyFile, err)
-					return false
-				}
-				out.Successf("Apt key %s added", key)
-				return true
-			},
+		apply = func(out Output) bool {
+			out.Runningf("Storing the apt key %s", name)
+			if err := os.WriteFile(keyFile, []byte(key), 0o644); err != nil {
+				out.Errorf("Could not write requested content to %s: %s", keyFile, err)
+				return false
+			}
+			out.Successf("Apt key %s added", key)
+			return true
 		}
 		return nil, fmt.Sprintf("Need to add apt key %s", name), apply, StatusInfo
 	},

@@ -11,7 +11,7 @@ type CheckReport struct {
 	Name         string
 	Status       commands.Status
 	Message      string
-	apply        *commands.Apply
+	apply        commands.Apply
 	signalTarget chan bool
 }
 
@@ -24,7 +24,7 @@ func (c *CheckReport) Apply() bool {
 		return true
 	}
 
-	return c.apply.Run(c)
+	return c.apply(c)
 }
 
 func (c *CheckReport) Info(message string) {

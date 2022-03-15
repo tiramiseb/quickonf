@@ -26,7 +26,7 @@ var aptSource = Command{
 	},
 	nil,
 	"NextDNS\n  apt.source nextdns \"deb https://repo.nextdns.io/deb stable main\"",
-	func(args []string) (result []string, msg string, apply *Apply, status Status) {
+	func(args []string) (result []string, msg string, apply Apply, status Status) {
 		name := args[0]
 		sources := args[1] + "\n"
 
@@ -39,25 +39,21 @@ var aptSource = Command{
 		if existing == sources {
 			return nil, fmt.Sprintf("Sources %s already defined", name), nil, StatusSuccess
 		}
-		apply = &Apply{
-			"apt.source",
-			fmt.Sprintf("Will add apt sources %s", name),
-			func(out Output) bool {
-				out.Runningf("Adding apt sources %s", name)
-				if err := os.WriteFile(sourcesList, []byte(sources), 0o644); err != nil {
-					out.Errorf("Could not write requested content to %s: %s", sourcesList, err)
-					return false
-				}
-				out.Info("Waiting for dpkg to be available to update packages list")
-				datastores.DpkgMutex.Lock()
-				defer datastores.DpkgMutex.Unlock()
-				out.Running("Updating packages list")
-				if err := helper.Exec([]string{"DEBIAN_FRONTEND=noninteractive"}, nil, "apt-get", "--yes", "update"); err != nil {
-					out.Errorf("Could not update packages list: %s", helper.ExecErr(err))
-					return false
-				}
-				return true
-			},
+		apply = func(out Output) bool {
+			out.Runningf("Adding apt sources %s", name)
+			if err := os.WriteFile(sourcesList, []byte(sources), 0o644); err != nil {
+				out.Errorf("Could not write requested content to %s: %s", sourcesList, err)
+				return false
+			}
+			out.Info("Waiting for dpkg to be available to update packages list")
+			datastores.DpkgMutex.Lock()
+			defer datastores.DpkgMutex.Unlock()
+			out.Running("Updating packages list")
+			if err := helper.Exec([]string{"DEBIAN_FRONTEND=noninteractive"}, nil, "apt-get", "--yes", "update"); err != nil {
+				out.Errorf("Could not update packages list: %s", helper.ExecErr(err))
+				return false
+			}
+			return true
 		}
 		return nil, fmt.Sprintf("Need to add apt sources %s", name), apply, StatusInfo
 	},

@@ -32,7 +32,7 @@ var fileExtract = Command{
 		"Target absolute path",
 	},
 	nil,
-	"Extract something\n  file.extract zip /foo/bar.zip /bar", func(args []string) (result []string, msg string, apply *Apply, status Status) {
+	"Extract something\n  file.extract zip /foo/bar.zip /bar", func(args []string) (result []string, msg string, apply Apply, status Status) {
 		format := args[0]
 		archive := args[1]
 		dest := args[2]
@@ -47,18 +47,14 @@ var fileExtract = Command{
 			return nil, fmt.Sprintf("%s is not an absolute path", dest), nil, StatusError
 		}
 
-		apply = &Apply{
-			"file.extract",
-			fmt.Sprintf("Will extract %s to %s", archive, dest),
-			func(out Output) bool {
-				out.Runningf("Extracting %s to %s", archive, dest)
-				if err := extractor(archive, dest); err != nil {
-					out.Errorf("Could not extract %s to %s: %s", archive, dest, err)
-					return false
-				}
-				out.Successf("Extracted %s to %s", archive, dest)
-				return true
-			},
+		apply = func(out Output) bool {
+			out.Runningf("Extracting %s to %s", archive, dest)
+			if err := extractor(archive, dest); err != nil {
+				out.Errorf("Could not extract %s to %s: %s", archive, dest, err)
+				return false
+			}
+			out.Successf("Extracted %s to %s", archive, dest)
+			return true
 		}
 		return nil, fmt.Sprintf("Need to extract %s to %s", archive, dest), apply, StatusInfo
 	},

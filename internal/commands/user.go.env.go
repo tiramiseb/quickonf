@@ -21,7 +21,7 @@ var userGoEnv = Command{
 		"Value",
 	},
 	nil,
-	"Go path\n  user.go.env alice gopath /home/alice/GO", func(args []string) (result []string, msg string, apply *Apply, status Status) {
+	"Go path\n  user.go.env alice gopath /home/alice/GO", func(args []string) (result []string, msg string, apply Apply, status Status) {
 		username := args[0]
 		variable := strings.ToUpper(args[1])
 		value := args[2]
@@ -37,18 +37,14 @@ var userGoEnv = Command{
 			return nil, fmt.Sprintf("%s is already set to %s", variable, current), nil, StatusSuccess
 		}
 
-		apply = &Apply{
-			"user.go.env",
-			fmt.Sprintf("Will set %s to %s", variable, value),
-			func(out Output) bool {
-				out.Runningf("Setting %s to %s", variable, value)
-				if err := helper.ExecAs(user.User, nil, nil, "go", "env", "-w", fmt.Sprintf(`%s="%s"`, variable, value)); err != nil {
-					out.Errorf("Could not set %s: %s", variable, helper.ExecErr(err))
-					return false
-				}
-				out.Successf("Set %s to %s", variable, value)
-				return true
-			},
+		apply = func(out Output) bool {
+			out.Runningf("Setting %s to %s", variable, value)
+			if err := helper.ExecAs(user.User, nil, nil, "go", "env", "-w", fmt.Sprintf(`%s="%s"`, variable, value)); err != nil {
+				out.Errorf("Could not set %s: %s", variable, helper.ExecErr(err))
+				return false
+			}
+			out.Successf("Set %s to %s", variable, value)
+			return true
 		}
 		return nil, fmt.Sprintf("Need to set %s to %s", variable, value), apply, StatusInfo
 	},

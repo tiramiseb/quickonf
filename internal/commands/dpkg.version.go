@@ -20,7 +20,7 @@ var dpkgVersion = Command{
 		"Version of the package",
 	},
 	"Example package version\n  version = dpkg.version gnome-shell",
-	func(args []string) (result []string, msg string, apply *Apply, status Status) {
+	func(args []string) (result []string, msg string, apply Apply, status Status) {
 		name := args[0]
 
 		pkg, ok, err := datastores.DpkgPackages.Get(name)

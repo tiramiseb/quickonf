@@ -21,7 +21,7 @@ var jsonGet = Command{
 		"Value",
 	},
 	"Get a value\n  val = json.get \"{\\\"download\\\":{\\\"url\\\":\\\"http://www.example.com/\\\"}}\" download.url",
-	func(args []string) (result []string, msg string, apply *Apply, status Status) {
+	func(args []string) (result []string, msg string, apply Apply, status Status) {
 		data := args[0]
 		path := args[1]
 		if ok := gjson.Valid(data); !ok {

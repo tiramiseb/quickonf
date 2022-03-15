@@ -26,7 +26,7 @@ var gitClone = Command{
 	},
 	nil,
 	"Temporarily clone git repository\n  tmp = temppath\n  git.clone https://www.example.com/foobar.git <tmp>",
-	func(args []string) (result []string, msg string, apply *Apply, status Status) {
+	func(args []string) (result []string, msg string, apply Apply, status Status) {
 		uri := args[0]
 		dest := args[1]
 		ref := args[2]
@@ -52,34 +52,30 @@ var gitClone = Command{
 		// Check if destination already exists
 		finfo, err := os.Stat(dest)
 		if errors.Is(err, fs.ErrNotExist) {
-			apply = &Apply{
-				"git.clone",
-				fmt.Sprintf("Will clone %s into %s", uri, dest),
-				func(out Output) bool {
-					out.Runningf("Cloning %s into %s", uri, dest)
-					repo, err := git.PlainClone(dest, false, &git.CloneOptions{
-						URL:               uri,
-						RecurseSubmodules: git.DefaultSubmoduleRecursionDepth,
-					})
-					if err != nil {
-						out.Errorf("Could not clone %s: %s", uri, err)
-						return false
-					}
-					worktree, err := repo.Worktree()
-					if err != nil {
-						out.Errorf("Could not work with %s: %s", dest, err)
-						return false
-					}
-					out.Infof("Checking out %s in %s", ref, dest)
-					if err := worktree.Checkout(&git.CheckoutOptions{
-						Hash: plumbing.NewHash(ref),
-					}); err != nil {
-						out.Errorf("Could not checkout %s in %s: %s", ref, dest, err)
-						return false
-					}
-					out.Successf("Cloned %s into %s", uri, dest)
-					return true
-				},
+			apply = func(out Output) bool {
+				out.Runningf("Cloning %s into %s", uri, dest)
+				repo, err := git.PlainClone(dest, false, &git.CloneOptions{
+					URL:               uri,
+					RecurseSubmodules: git.DefaultSubmoduleRecursionDepth,
+				})
+				if err != nil {
+					out.Errorf("Could not clone %s: %s", uri, err)
+					return false
+				}
+				worktree, err := repo.Worktree()
+				if err != nil {
+					out.Errorf("Could not work with %s: %s", dest, err)
+					return false
+				}
+				out.Infof("Checking out %s in %s", ref, dest)
+				if err := worktree.Checkout(&git.CheckoutOptions{
+					Hash: plumbing.NewHash(ref),
+				}); err != nil {
+					out.Errorf("Could not checkout %s in %s: %s", ref, dest, err)
+					return false
+				}
+				out.Successf("Cloned %s into %s", uri, dest)
+				return true
 			}
 			return nil, fmt.Sprintf("Need to clone %s into %s", uri, dest), apply, StatusInfo
 		}
@@ -122,25 +118,21 @@ var gitClone = Command{
 			return nil, fmt.Sprintf("Could not work with %s: %s", dest, err), nil, StatusError
 		}
 
-		apply = &Apply{
-			"git.clone",
-			fmt.Sprintf("Will pull updates in %s", dest),
-			func(out Output) bool {
-				out.Infof("Pulling in %s", dest)
-				if err := worktree.Pull(&git.PullOptions{}); err != nil {
-					out.Errorf("Could not pull in %s: %s", dest, err)
-					return false
-				}
-				out.Infof("Checking out %s in %s", ref, dest)
-				if err := worktree.Checkout(&git.CheckoutOptions{
-					Hash: plumbing.NewHash(ref),
-				}); err != nil {
-					out.Errorf("Could not checkout %s in %s: %s", ref, dest, err)
-					return false
-				}
-				out.Successf("Pulled in %s", dest)
-				return true
-			},
+		apply = func(out Output) bool {
+			out.Infof("Pulling in %s", dest)
+			if err := worktree.Pull(&git.PullOptions{}); err != nil {
+				out.Errorf("Could not pull in %s: %s", dest, err)
+				return false
+			}
+			out.Infof("Checking out %s in %s", ref, dest)
+			if err := worktree.Checkout(&git.CheckoutOptions{
+				Hash: plumbing.NewHash(ref),
+			}); err != nil {
+				out.Errorf("Could not checkout %s in %s: %s", ref, dest, err)
+				return false
+			}
+			out.Successf("Pulled in %s", dest)
+			return true
 		}
 
 		return nil, fmt.Sprintf("Need to pull updates in %s", dest), apply, StatusInfo

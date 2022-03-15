@@ -74,7 +74,7 @@ var userXdgUserdir = Command{
 	},
 	nil,
 	"Change downloads directory for john\n  user.file.directory john Downs\n  user.xdg.userdir john DOWNLOAD Downs",
-	func(args []string) (result []string, msg string, apply *Apply, status Status) {
+	func(args []string) (result []string, msg string, apply Apply, status Status) {
 		username := args[0]
 		name := strings.ToUpper(args[1])
 		path := args[2]
@@ -99,18 +99,14 @@ var userXdgUserdir = Command{
 			return nil, fmt.Sprintf("%s is already %s", name, dir), nil, StatusSuccess
 		}
 
-		apply = &Apply{
-			"user.xdg.userdir",
-			fmt.Sprintf("Will set %s directory to %s", name, path),
-			func(out Output) bool {
-				out.Runningf("Setting %s directory to %s", name, path)
-				if err := helper.ExecAs(usr.User, nil, nil, "xdg-user-dirs-update", "--set", name, path); err != nil {
-					out.Errorf("Could not change XDG user dir %s: %s", name, helper.ExecErr(err))
-					return false
-				}
-				out.Successf("XDG user dir %s for %s set to %s", name, username, path)
-				return true
-			},
+		apply = func(out Output) bool {
+			out.Runningf("Setting %s directory to %s", name, path)
+			if err := helper.ExecAs(usr.User, nil, nil, "xdg-user-dirs-update", "--set", name, path); err != nil {
+				out.Errorf("Could not change XDG user dir %s: %s", name, helper.ExecErr(err))
+				return false
+			}
+			out.Successf("XDG user dir %s for %s set to %s", name, username, path)
+			return true
 		}
 
 		return nil, fmt.Sprintf("Need to set %s directory to %s", name, path), apply, StatusInfo

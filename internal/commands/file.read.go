@@ -21,7 +21,7 @@ var fileRead = Command{
 		"Content of the file",
 	},
 	"APT sources\n  aptsrc = file.read <confdir>/sources.list\n  file.content /etc/apt/sources.list <aptsrc>",
-	func(args []string) (result []string, msg string, apply *Apply, status Status) {
+	func(args []string) (result []string, msg string, apply Apply, status Status) {
 		path := args[0]
 		content, err := os.ReadFile(path)
 		if err != nil {

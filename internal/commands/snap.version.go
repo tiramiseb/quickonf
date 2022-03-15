@@ -20,7 +20,7 @@ var snapVersion = Command{
 		"Version of the package",
 	},
 	"Example package version\n  version = snap.version obsidian",
-	func(args []string) (result []string, msg string, apply *Apply, status Status) {
+	func(args []string) (result []string, msg string, apply Apply, status Status) {
 		name := args[0]
 
 		pkg, ok, err := datastores.Snap.Get(name)

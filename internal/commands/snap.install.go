@@ -22,7 +22,7 @@ var snapInstall = Command{
 	},
 	nil,
 	"Install node\n  snap.install node stable",
-	func(args []string) (result []string, msg string, apply *Apply, status Status) {
+	func(args []string) (result []string, msg string, apply Apply, status Status) {
 		name := args[0]
 		options := strings.FieldsFunc(args[1], func(c rune) bool {
 			return c == ',' || unicode.IsSpace(c)
@@ -66,18 +66,14 @@ var snapInstall = Command{
 		if devmode {
 			cmdArgs = append(cmdArgs, "--devmode")
 		}
-		apply = &Apply{
-			"snap.install",
-			fmt.Sprintf("Will install %s", name),
-			func(out Output) bool {
-				out.Runningf("Installing %s", name)
-				if err := helper.Exec(nil, nil, "snap", cmdArgs...); err != nil {
-					out.Errorf("Could not install %s: %s", name, helper.ExecErr(err))
-					return false
-				}
-				out.Successf("Installed %s", name)
-				return true
-			},
+		apply = func(out Output) bool {
+			out.Runningf("Installing %s", name)
+			if err := helper.Exec(nil, nil, "snap", cmdArgs...); err != nil {
+				out.Errorf("Could not install %s: %s", name, helper.ExecErr(err))
+				return false
+			}
+			out.Successf("Installed %s", name)
+			return true
 		}
 		return nil, fmt.Sprintf("Need to install %s", name), apply, StatusInfo
 	},

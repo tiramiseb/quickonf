@@ -20,7 +20,7 @@ var fileAbsent = Command{
 	},
 	nil,
 	`Make sure there is no "Photos" directory for jack\n  file.absent /home/jack/Photos`,
-	func(args []string) (result []string, msg string, apply *Apply, status Status) {
+	func(args []string) (result []string, msg string, apply Apply, status Status) {
 		path := args[0]
 		if !filepath.IsAbs(path) {
 			return nil, fmt.Sprintf("%s is not an absolute path", path), nil, StatusError
@@ -33,18 +33,14 @@ var fileAbsent = Command{
 			return nil, err.Error(), nil, StatusError
 		}
 
-		apply = &Apply{
-			"file.absent",
-			fmt.Sprintf("Will remove %s", path),
-			func(out Output) bool {
-				out.Runningf("Removing %s", path)
-				if err := os.RemoveAll(path); err != nil {
-					out.Errorf("Could not remove %s: %s", path, err)
-					return false
-				}
-				out.Successf("Removed %s", path)
-				return true
-			},
+		apply = func(out Output) bool {
+			out.Runningf("Removing %s", path)
+			if err := os.RemoveAll(path); err != nil {
+				out.Errorf("Could not remove %s: %s", path, err)
+				return false
+			}
+			out.Successf("Removed %s", path)
+			return true
 		}
 
 		return nil, fmt.Sprintf("Need to remove %s", path), apply, StatusInfo

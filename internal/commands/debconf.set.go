@@ -22,7 +22,7 @@ var debconfSet = Command{
 	},
 	nil,
 	"Install MS fonts\n  debconf.set ttf-mscorefonts-installer msttcorefonts/accepted-mscorefonts-eula true\n  apt.install ttf-mscorefonts-installer",
-	func(args []string) (result []string, msg string, apply *Apply, status Status) {
+	func(args []string) (result []string, msg string, apply Apply, status Status) {
 		pkg := args[0]
 		name := args[1]
 		value := args[2]
@@ -39,37 +39,33 @@ var debconfSet = Command{
 		} else {
 			verb = "set"
 		}
-		apply = &Apply{
-			"debconf.set",
-			fmt.Sprintf("Will %s %s to %s", verb, name, value),
-			func(out Output) bool {
-				out.Runningf("Preparing configuration to set %s to %s", name, value)
-				tmpfile, err := os.CreateTemp("", "quickonf-debconf")
-				if err != nil {
-					out.Errorf("Could not create temporary file: %s", err)
-					return false
-				}
-				defer os.Remove(tmpfile.Name())
-				if _, err := tmpfile.WriteString(fmt.Sprintf("%s %s select %s", pkg, name, value)); err != nil {
-					tmpfile.Close()
-					out.Errorf("Could not write to temporary file: %s", err)
-					return false
-				}
-				if err := tmpfile.Close(); err != nil {
-					out.Errorf("Could not close temporary file: %s", err)
-					return false
-				}
-				out.Infof("Waiting for dpkg to be available to set debconf value %s", name)
-				datastores.DpkgMutex.Lock()
-				defer datastores.DpkgMutex.Unlock()
-				out.Runningf("Setting %s to %s", name, value)
-				if err := helper.Exec(nil, nil, "debconf-set-selections", tmpfile.Name()); err != nil {
-					out.Errorf("Could not execute debconf-set-selections: %s", helper.ExecErr(err))
-					return false
-				}
-				out.Successf("%s set to %s", name, value)
-				return true
-			},
+		apply = func(out Output) bool {
+			out.Runningf("Preparing configuration to set %s to %s", name, value)
+			tmpfile, err := os.CreateTemp("", "quickonf-debconf")
+			if err != nil {
+				out.Errorf("Could not create temporary file: %s", err)
+				return false
+			}
+			defer os.Remove(tmpfile.Name())
+			if _, err := tmpfile.WriteString(fmt.Sprintf("%s %s select %s", pkg, name, value)); err != nil {
+				tmpfile.Close()
+				out.Errorf("Could not write to temporary file: %s", err)
+				return false
+			}
+			if err := tmpfile.Close(); err != nil {
+				out.Errorf("Could not close temporary file: %s", err)
+				return false
+			}
+			out.Infof("Waiting for dpkg to be available to set debconf value %s", name)
+			datastores.DpkgMutex.Lock()
+			defer datastores.DpkgMutex.Unlock()
+			out.Runningf("Setting %s to %s", name, value)
+			if err := helper.Exec(nil, nil, "debconf-set-selections", tmpfile.Name()); err != nil {
+				out.Errorf("Could not execute debconf-set-selections: %s", helper.ExecErr(err))
+				return false
+			}
+			out.Successf("%s set to %s", name, value)
+			return true
 		}
 		return nil, fmt.Sprintf("Need to %s %s to %s", verb, name, value), apply, StatusInfo
 	},

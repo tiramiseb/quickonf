@@ -20,7 +20,7 @@ var fileDirectory = Command{
 	},
 	nil,
 	"Create web root\n  file.directory /srv/web",
-	func(args []string) (result []string, msg string, apply *Apply, status Status) {
+	func(args []string) (result []string, msg string, apply Apply, status Status) {
 		path := args[0]
 
 		if !filepath.IsAbs(path) {
@@ -38,18 +38,14 @@ var fileDirectory = Command{
 			return nil, err.Error(), nil, StatusError
 		}
 
-		apply = &Apply{
-			"file.directory",
-			fmt.Sprintf("Will create directory %s", path),
-			func(out Output) bool {
-				out.Runningf("Creating directory %s", path)
-				if err := os.MkdirAll(path, 0o755); err != nil {
-					out.Errorf("Could not create directory %s: %s", path, err)
-					return false
-				}
-				out.Successf("Created directory %s", path)
-				return true
-			},
+		apply = func(out Output) bool {
+			out.Runningf("Creating directory %s", path)
+			if err := os.MkdirAll(path, 0o755); err != nil {
+				out.Errorf("Could not create directory %s: %s", path, err)
+				return false
+			}
+			out.Successf("Created directory %s", path)
+			return true
 		}
 		return nil, fmt.Sprintf("Need to create directory %s", path), apply, StatusInfo
 	},

@@ -20,7 +20,7 @@ var userGitConfig = Command{
 		"Value",
 	},
 	nil,
-	"Git parameter\n  user.git.config alice branch.autosetuprebase always", func(args []string) (result []string, msg string, apply *Apply, status Status) {
+	"Git parameter\n  user.git.config alice branch.autosetuprebase always", func(args []string) (result []string, msg string, apply Apply, status Status) {
 		username := args[0]
 		name := args[1]
 		value := args[2]
@@ -36,18 +36,14 @@ var userGitConfig = Command{
 			return nil, fmt.Sprintf("%s is already set to %s", name, current), nil, StatusSuccess
 		}
 
-		apply = &Apply{
-			"user.git.config",
-			fmt.Sprintf("Will set %s to %s", name, value),
-			func(out Output) bool {
-				out.Runningf("Setting %s to %s", name, value)
-				if err := helper.ExecAs(user.User, nil, nil, "git", "config", "--global", "--add", name, value); err != nil {
-					out.Errorf("Could not set %s: %s", name, helper.ExecErr(err))
-					return false
-				}
-				out.Successf("Set %s to %s", name, value)
-				return true
-			},
+		apply = func(out Output) bool {
+			out.Runningf("Setting %s to %s", name, value)
+			if err := helper.ExecAs(user.User, nil, nil, "git", "config", "--global", "--add", name, value); err != nil {
+				out.Errorf("Could not set %s: %s", name, helper.ExecErr(err))
+				return false
+			}
+			out.Successf("Set %s to %s", name, value)
+			return true
 		}
 		return nil, fmt.Sprintf("Need to set %s to %s", name, value), apply, StatusInfo
 	},

@@ -25,7 +25,7 @@ var httpPostVar = Command{
 		"Downloaded content",
 	},
 	"Download example\n  foobar = http.post.var http://www.example.com \"example data\"",
-	func(args []string) (result []string, msg string, apply *Apply, status Status) {
+	func(args []string) (result []string, msg string, apply Apply, status Status) {
 		uri := args[0]
 		payload := []byte(args[1])
 		contentType := mimetype.Detect(payload).String()

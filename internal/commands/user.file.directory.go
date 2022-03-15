@@ -23,7 +23,7 @@ var userFileDirectory = Command{
 	},
 	nil,
 	"Create Picz photos for alice\n  user.file.directory alice Picz",
-	func(args []string) (result []string, msg string, apply *Apply, status Status) {
+	func(args []string) (result []string, msg string, apply Apply, status Status) {
 		username := args[0]
 		path := args[1]
 
@@ -47,22 +47,18 @@ var userFileDirectory = Command{
 			return nil, err.Error(), nil, StatusError
 		}
 
-		apply = &Apply{
-			"user.file.directory",
-			fmt.Sprintf("Will create directory %s", path),
-			func(out Output) bool {
-				out.Runningf("Creating directory %s", path)
-				if err := os.MkdirAll(path, 0o755); err != nil {
-					out.Errorf("Could not create directory %s: %s", path, err)
-					return false
-				}
-				if err := os.Chown(path, usr.Uid, usr.Group.Gid); err != nil {
-					out.Errorf("Could not give ownership of %s to %s: %s", path, username, err)
-					return false
-				}
-				out.Successf("Created directory %s", path)
-				return true
-			},
+		apply = func(out Output) bool {
+			out.Runningf("Creating directory %s", path)
+			if err := os.MkdirAll(path, 0o755); err != nil {
+				out.Errorf("Could not create directory %s: %s", path, err)
+				return false
+			}
+			if err := os.Chown(path, usr.Uid, usr.Group.Gid); err != nil {
+				out.Errorf("Could not give ownership of %s to %s: %s", path, username, err)
+				return false
+			}
+			out.Successf("Created directory %s", path)
+			return true
 		}
 		return nil, fmt.Sprintf("Need to create directory %s", path), apply, StatusInfo
 	},

@@ -21,7 +21,7 @@ var fileSymlink = Command{
 	},
 	nil,
 	"Very dumb symlink\n  file.symlink /home/alice/temp /tmp",
-	func(args []string) (result []string, msg string, apply *Apply, status Status) {
+	func(args []string) (result []string, msg string, apply Apply, status Status) {
 		link := args[0]
 		target := args[1]
 		if !filepath.IsAbs(link) {
@@ -32,7 +32,6 @@ var fileSymlink = Command{
 		}
 
 		var (
-			willMessage   string
 			needMessage   string
 			mustBeRemoved bool
 		)
@@ -42,14 +41,11 @@ var fileSymlink = Command{
 			if !errors.Is(err, fs.ErrNotExist) {
 				return nil, err.Error(), nil, StatusError
 			}
-			willMessage = fmt.Sprintf("Will create %s", link)
 			needMessage = fmt.Sprintf("Need to create %s", link)
 		case info.Mode()&os.ModeDir != 0:
-			willMessage = fmt.Sprintf("Will remove directory %s and create link", link)
 			needMessage = fmt.Sprintf("Need to remove directory %s and create link", link)
 			mustBeRemoved = true
 		case info.Mode()&os.ModeSymlink == 0:
-			willMessage = fmt.Sprintf("Will remove file %s and create link", link)
 			needMessage = fmt.Sprintf("Need to remove file %s and create link", link)
 			mustBeRemoved = true
 		default:
@@ -60,30 +56,25 @@ var fileSymlink = Command{
 			if target == existingTarget {
 				return nil, fmt.Sprintf("%s already targets %s", link, target), nil, StatusSuccess
 			}
-			willMessage = fmt.Sprintf("Will remove link %s and recreate it with target %s", link, target)
 			needMessage = fmt.Sprintf("Need to remove link %s and recreate it with target %s", link, target)
 			mustBeRemoved = true
 		}
 
-		apply = &Apply{
-			"file.symlink",
-			willMessage,
-			func(out Output) bool {
-				if mustBeRemoved {
-					out.Runningf("Removing %s", link)
-					if err := os.RemoveAll(link); err != nil {
-						out.Errorf("Could not remove %s: %s", link, err)
-						return false
-					}
-				}
-				out.Runningf("Creating link %s to %s", link, target)
-				if err := os.Symlink(target, link); err != nil {
-					out.Errorf("Could not create %s: %s", link, err)
+		apply = func(out Output) bool {
+			if mustBeRemoved {
+				out.Runningf("Removing %s", link)
+				if err := os.RemoveAll(link); err != nil {
+					out.Errorf("Could not remove %s: %s", link, err)
 					return false
 				}
-				out.Successf("Link %s created with target %s", link, target)
-				return true
-			},
+			}
+			out.Runningf("Creating link %s to %s", link, target)
+			if err := os.Symlink(target, link); err != nil {
+				out.Errorf("Could not create %s: %s", link, err)
+				return false
+			}
+			out.Successf("Link %s created with target %s", link, target)
+			return true
 		}
 
 		return nil, needMessage, apply, StatusInfo

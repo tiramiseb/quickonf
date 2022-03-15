@@ -40,7 +40,7 @@ const (
 // message is the message to display to the user
 // apply is the function that would be executed in order to apply the command to the system. If nil, it means there is nothing to apply (the system is already in the requested state)
 // success is a boolean indicating if preparing the apply function succeeded or not
-type run func(args []string) (result []string, message string, apply *Apply, status Status)
+type run func(args []string) (result []string, message string, apply Apply, status Status)
 
 // Command is a single command definition
 type Command struct {
@@ -54,11 +54,7 @@ type Command struct {
 }
 
 // Apply is the process to apply a given instance of a command on the system
-type Apply struct {
-	Name  string
-	Intro string
-	Run   func(Output) (success bool)
-}
+type Apply func(Output) (success bool)
 
 var registry = map[string]Command{}
 

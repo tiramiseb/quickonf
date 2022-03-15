@@ -21,7 +21,7 @@ var httpGetVar = Command{
 		"Downloaded content",
 	},
 	"Download example\n  foobar = http.get.var http://www.example.com",
-	func(args []string) (result []string, msg string, apply *Apply, status Status) {
+	func(args []string) (result []string, msg string, apply Apply, status Status) {
 		uri := args[0]
 		resp, err := http.Get(uri)
 		if err != nil {

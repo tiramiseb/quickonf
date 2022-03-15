@@ -22,7 +22,7 @@ var userDconfSet = Command{
 		"Value",
 	},
 	nil,
-	"Show date in GNOME\n  user.dconf.set /org/gnome/desktop/interface/clock-show-date true", func(args []string) (result []string, msg string, apply *Apply, status Status) {
+	"Show date in GNOME\n  user.dconf.set /org/gnome/desktop/interface/clock-show-date true", func(args []string) (result []string, msg string, apply Apply, status Status) {
 		username := args[0]
 		key := args[1]
 		value := args[2]
@@ -51,18 +51,14 @@ var userDconfSet = Command{
 			}
 		}
 
-		apply = &Apply{
-			"user.dconf.set",
-			fmt.Sprintf("Will set %s to %s", key, value),
-			func(out Output) bool {
-				out.Runningf("Setting %s to %s", key, value)
-				if err := helper.ExecAs(user.User, nil, nil, "dconf", "write", key, value); err != nil {
-					out.Errorf("Could not set %s: %s", key, helper.ExecErr(err))
-					return false
-				}
-				out.Successf("Set %s to %s", key, value)
-				return true
-			},
+		apply = func(out Output) bool {
+			out.Runningf("Setting %s to %s", key, value)
+			if err := helper.ExecAs(user.User, nil, nil, "dconf", "write", key, value); err != nil {
+				out.Errorf("Could not set %s: %s", key, helper.ExecErr(err))
+				return false
+			}
+			out.Successf("Set %s to %s", key, value)
+			return true
 		}
 		return nil, fmt.Sprintf("Need to set %s to %s", key, value), apply, StatusInfo
 	},

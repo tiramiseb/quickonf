@@ -22,7 +22,7 @@ var userSystemdEnable = Command{
 	},
 	nil,
 	"Enable syncthing\n  systemd.enable alice syncthing",
-	func(args []string) (result []string, msg string, apply *Apply, status Status) {
+	func(args []string) (result []string, msg string, apply Apply, status Status) {
 		username := args[0]
 		name := args[1]
 		if _, err := datastores.Users.Get(username); err != nil {
@@ -37,18 +37,14 @@ var userSystemdEnable = Command{
 		if outS == "enabled" {
 			return nil, fmt.Sprintf("Service %s is already enabled", name), nil, StatusSuccess
 		} else if outS == "disabled" || strings.Contains(outS, "No such file or directory") {
-			apply = &Apply{
-				"user.systemd.enable",
-				fmt.Sprintf("Will enable service %s for user %s", name, username),
-				func(out Output) bool {
-					out.Runningf("Enabling and starting service %s", name)
-					if err := helper.Exec(nil, nil, "systemctl", "--machine="+username+"@.host", "--user", "enable", "--now", name); err != nil {
-						out.Errorf("Could not enable %s: %s", name, helper.ExecErr(err))
-						return false
-					}
-					out.Successf("Enabled and started %s", name)
-					return true
-				},
+			apply = func(out Output) bool {
+				out.Runningf("Enabling and starting service %s", name)
+				if err := helper.Exec(nil, nil, "systemctl", "--machine="+username+"@.host", "--user", "enable", "--now", name); err != nil {
+					out.Errorf("Could not enable %s: %s", name, helper.ExecErr(err))
+					return false
+				}
+				out.Successf("Enabled and started %s", name)
+				return true
 			}
 			return nil, fmt.Sprintf("Need to enable service %s for user %s", name, username), apply, StatusInfo
 		}

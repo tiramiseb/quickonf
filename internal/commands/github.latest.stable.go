@@ -22,7 +22,7 @@ var githubLatestStable = Command{
 		"Asset URL",
 	},
 	"Kmonad\n  release url = github.latest.stable kmonad/kmonad kmonad-*-linux",
-	func(args []string) (result []string, msg string, apply *Apply, status Status) {
+	func(args []string) (result []string, msg string, apply Apply, status Status) {
 		repository := args[0]
 		pattern := args[1]
 		data := gitHubRelease{}

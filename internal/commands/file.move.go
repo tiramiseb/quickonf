@@ -21,7 +21,7 @@ var fileDirectoryMove = Command{
 	},
 	nil,
 	"Move previous documents directory for jane\n  file.move /home/jane.old/Documents /home/jane/Documents",
-	func(args []string) (result []string, msg string, apply *Apply, status Status) {
+	func(args []string) (result []string, msg string, apply Apply, status Status) {
 		source := args[0]
 		destination := args[1]
 		if !filepath.IsAbs(source) {
@@ -44,18 +44,14 @@ var fileDirectoryMove = Command{
 			return nil, err.Error(), nil, StatusError
 		}
 
-		apply = &Apply{
-			"file.move",
-			fmt.Sprintf("Will move %s to %s", source, destination),
-			func(out Output) bool {
-				out.Runningf("Moving %s to %s", source, destination)
-				if err := os.Rename(source, destination); err != nil {
-					out.Errorf("Could not move %s to %s: %s", source, destination, err)
-					return false
-				}
-				out.Successf("Moved %s to %s", source, destination)
-				return true
-			},
+		apply = func(out Output) bool {
+			out.Runningf("Moving %s to %s", source, destination)
+			if err := os.Rename(source, destination); err != nil {
+				out.Errorf("Could not move %s to %s: %s", source, destination, err)
+				return false
+			}
+			out.Successf("Moved %s to %s", source, destination)
+			return true
 		}
 		return nil, fmt.Sprintf("Need to move %s to %s", source, destination), apply, StatusInfo
 	},

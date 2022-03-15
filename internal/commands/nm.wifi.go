@@ -20,7 +20,7 @@ var nmWifi = Command{
 	},
 	nil,
 	"My own wifi network\n  nm.wifi mynetwork n0tSecureP4ssw0rd",
-	func(args []string) (result []string, msg string, apply *Apply, status Status) {
+	func(args []string) (result []string, msg string, apply Apply, status Status) {
 		ssid := args[0]
 		psk := args[1]
 
@@ -36,34 +36,26 @@ var nmWifi = Command{
 				return nil, fmt.Sprintf("%s is already configured", ssid), nil, StatusSuccess
 			}
 			msg = fmt.Sprintf("Need to change psk for wifi network %s", ssid)
-			apply = &Apply{
-				"nm.import",
-				fmt.Sprintf("Will change psk for wifi network %s", ssid),
-				func(out Output) bool {
-					out.Infof("Changing psk for wifi network %s", ssid)
-					if err := helper.Exec(nil, nil, "nmcli", "connection", "modify", ssid, "802-11-wireless-security.psk", psk); err != nil {
-						out.Errorf("Could not change psk for wifi network %s: %s", ssid, helper.ExecErr(err))
-						return false
-					}
-					out.Infof("Changing psk for wifi network %s", ssid)
-					out.Successf("Changed psk for wifi network %s", ssid)
-					return true
-				},
+			apply = func(out Output) bool {
+				out.Infof("Changing psk for wifi network %s", ssid)
+				if err := helper.Exec(nil, nil, "nmcli", "connection", "modify", ssid, "802-11-wireless-security.psk", psk); err != nil {
+					out.Errorf("Could not change psk for wifi network %s: %s", ssid, helper.ExecErr(err))
+					return false
+				}
+				out.Infof("Changing psk for wifi network %s", ssid)
+				out.Successf("Changed psk for wifi network %s", ssid)
+				return true
 			}
 		} else {
 			msg = fmt.Sprintf("Need to store wifi network %s", ssid)
-			apply = &Apply{
-				"nm.import",
-				fmt.Sprintf("Will store wifi network %s", ssid),
-				func(out Output) bool {
-					out.Runningf("Storing wifi network %s", ssid)
-					if err := helper.Exec(nil, nil, "nmcli", "connection", "add", "con-name", ssid, "type", "wifi", "ssid", ssid, "--", "802-11-wireless-security.key-mgmt", "wpa-psk", "802-11-wireless-security.psk", psk); err != nil {
-						out.Errorf("Could not store wifi network %s: %s", ssid, helper.ExecErr(err))
-						return false
-					}
-					out.Successf("Stored wifi network %s", ssid)
-					return true
-				},
+			apply = func(out Output) bool {
+				out.Runningf("Storing wifi network %s", ssid)
+				if err := helper.Exec(nil, nil, "nmcli", "connection", "add", "con-name", ssid, "type", "wifi", "ssid", ssid, "--", "802-11-wireless-security.key-mgmt", "wpa-psk", "802-11-wireless-security.psk", psk); err != nil {
+					out.Errorf("Could not store wifi network %s: %s", ssid, helper.ExecErr(err))
+					return false
+				}
+				out.Successf("Stored wifi network %s", ssid)
+				return true
 			}
 		}
 		return nil, msg, apply, StatusInfo
