@@ -24,6 +24,8 @@ func (e *Expand) Run(vars Variables, signalTarget chan bool) ([]*CheckReport, bo
 		fmt.Sprintf("Expanded content of variable %s", e.Variable),
 		nil,
 		signalTarget,
+		"",
+		"",
 	}}, true
 }
 

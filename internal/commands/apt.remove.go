@@ -17,14 +17,14 @@ var aptRemove = Command{
 	[]string{"Name of the package to remove"},
 	nil,
 	"Remove the \"ipcalc\" tool\n  apt.remove ipcalc",
-	func(args []string) (result []string, msg string, apply Apply, status Status) {
+	func(args []string) (result []string, msg string, apply Apply, status Status, before, after string) {
 		pkg := args[0]
 		_, ok, err := datastores.DpkgPackages.Get(pkg)
 		if err != nil {
-			return nil, err.Error(), nil, StatusError
+			return nil, err.Error(), nil, StatusError, "", ""
 		}
 		if !ok {
-			return nil, fmt.Sprintf("%s is already not installed", pkg), nil, StatusSuccess
+			return nil, fmt.Sprintf("%s is already not installed", pkg), nil, StatusSuccess, "", ""
 		}
 
 		apply = func(out Output) bool {
@@ -39,7 +39,7 @@ var aptRemove = Command{
 			out.Successf("Removed %s", pkg)
 			return true
 		}
-		return nil, fmt.Sprintf("Need to remove %s", pkg), apply, StatusInfo
+		return nil, fmt.Sprintf("Need to remove %s", pkg), apply, StatusInfo, "", ""
 	},
 	datastores.DpkgPackages.Reset,
 }

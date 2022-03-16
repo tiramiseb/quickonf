@@ -11,6 +11,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"strconv"
 	"strings"
 
 	"github.com/tiramiseb/quickonf/internal/commands/helper"
@@ -28,7 +29,7 @@ var gnomeExtensionInstall = Command{
 	},
 	nil,
 	"Dash to dock\n  gnome.extension.install dash-to-dock@micxgx.gmail.com\n  gnome.extension.enable dash-to-dock@micxgx.gmail.com",
-	func(args []string) (result []string, msg string, apply Apply, status Status) {
+	func(args []string) (result []string, msg string, apply Apply, status Status, before, after string) {
 		uuid := args[0]
 		dest := filepath.Join("/usr/share/gnome-shell/extensions", uuid)
 
@@ -37,7 +38,7 @@ var gnomeExtensionInstall = Command{
 		helper.Exec(nil, &buf, "gnome-shell", "--version")
 		gnomeVerLine := strings.Fields(buf.String())
 		if len(gnomeVerLine) != 3 {
-			return nil, fmt.Sprintf(`GNOME version invalid, should be "GNOME Shell X.Y.Z": %s`, buf.String()), nil, StatusError
+			return nil, fmt.Sprintf(`GNOME version invalid, should be "GNOME Shell X.Y.Z": %s`, buf.String()), nil, StatusError, "", ""
 		}
 
 		// Latest version of the extension
@@ -47,7 +48,7 @@ var gnomeExtensionInstall = Command{
 			DownloadURL string `json:"download_url"`
 		}{}
 		if err := helper.DownloadJSON("https://extensions.gnome.org/extension-info/?uuid="+uuid+"&shell_version="+gnomeVersion, &extInfo); err != nil {
-			return nil, fmt.Sprintf("Could not get information about extension %s: %s", uuid, err), nil, StatusError
+			return nil, fmt.Sprintf("Could not get information about extension %s: %s", uuid, err), nil, StatusError, "", ""
 		}
 
 		// Current installed version
@@ -55,7 +56,7 @@ var gnomeExtensionInstall = Command{
 		localMetadataFile, err := os.Open(filepath.Join(dest, "metadata.json"))
 		if err != nil {
 			if !errors.Is(err, fs.ErrNotExist) {
-				return nil, fmt.Sprintf("Could not query local extension %s: %s", uuid, err), nil, StatusError
+				return nil, fmt.Sprintf("Could not query local extension %s: %s", uuid, err), nil, StatusError, "", ""
 			}
 		} else {
 			extMeta := struct {
@@ -64,13 +65,13 @@ var gnomeExtensionInstall = Command{
 			jsondec := json.NewDecoder(localMetadataFile)
 			if err := jsondec.Decode(&extMeta); err != nil {
 				localMetadataFile.Close()
-				return nil, fmt.Sprintf("Could not read local extension %s data: %s", uuid, err), nil, StatusError
+				return nil, fmt.Sprintf("Could not read local extension %s data: %s", uuid, err), nil, StatusError, "", ""
 			}
 			localMetadataFile.Close()
 			localVersion = extMeta.Version
 		}
 		if extInfo.Version <= localVersion {
-			return nil, fmt.Sprintf("%s already installed in version %d", uuid, localVersion), nil, StatusSuccess
+			return nil, fmt.Sprintf("%s already installed in version %d", uuid, localVersion), nil, StatusSuccess, strconv.Itoa(localVersion), strconv.Itoa(extInfo.Version)
 		}
 
 		apply = func(out Output) (success bool) {
@@ -137,7 +138,7 @@ var gnomeExtensionInstall = Command{
 			out.Successf("Installed %s", uuid)
 			return true
 		}
-		return nil, fmt.Sprintf("Need to install %s", uuid), apply, StatusInfo
+		return nil, fmt.Sprintf("Need to install %s", uuid), apply, StatusInfo, strconv.Itoa(localVersion), strconv.Itoa(extInfo.Version)
 	},
 	nil,
 }

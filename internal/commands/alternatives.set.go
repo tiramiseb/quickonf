@@ -20,16 +20,16 @@ var alternativesSet = Command{
 	},
 	nil,
 	"Use Vim\n  alternatives.set vi /usr/bin/vim.basic",
-	func(args []string) (result []string, msg string, apply Apply, status Status) {
+	func(args []string) (result []string, msg string, apply Apply, status Status, before, after string) {
 		name := args[0]
 		value := args[1]
 
 		current, err := datastores.Alternatives.Get(name)
 		if err != nil {
-			return nil, fmt.Sprintf("Could not get current value for %s: %s", name, err), nil, StatusError
+			return nil, fmt.Sprintf("Could not get current value for %s: %s", name, err), nil, StatusError, "", ""
 		}
 		if current == value {
-			return nil, fmt.Sprintf("Current value for %s is already %s", name, current), nil, StatusSuccess
+			return nil, fmt.Sprintf("Current value for %s is already %s", name, current), nil, StatusSuccess, current, current
 		}
 		apply = func(out Output) bool {
 			out.Runningf("Setting alternative %s to %s", name, value)
@@ -41,7 +41,7 @@ var alternativesSet = Command{
 			out.Successf("Set alternative %s to %s", name, err)
 			return true
 		}
-		return nil, fmt.Sprintf("Need to set alternative %s to %s", name, value), apply, StatusInfo
+		return nil, fmt.Sprintf("Need to set alternative %s to %s", name, value), apply, StatusInfo, current, value
 	},
 	datastores.Alternatives.Reset,
 }

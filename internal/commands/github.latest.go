@@ -67,18 +67,18 @@ var githubLatest = Command{
 		"Asset URL",
 	},
 	"Kmonad\n  release url = github.latest kmonad/kmonad kmonad-*-linux",
-	func(args []string) (result []string, msg string, apply Apply, status Status) {
+	func(args []string) (result []string, msg string, apply Apply, status Status, before, after string) {
 		repository := args[0]
 		pattern := args[1]
 		data := make([]gitHubRelease, 1)
 		if err := helper.DownloadJSON("https://api.github.com/repos/"+repository+"/releases?per_page=1", &data); err != nil {
-			return nil, fmt.Sprintf("Could not get information for %s: %s", repository, err), nil, StatusError
+			return nil, fmt.Sprintf("Could not get information for %s: %s", repository, err), nil, StatusError, "", ""
 		}
 		name, url, err := data[0].Extract(pattern)
 		if err != nil {
-			return nil, fmt.Sprintf("Could not extract information for %s: %s", repository, err), nil, StatusError
+			return nil, fmt.Sprintf("Could not extract information for %s: %s", repository, err), nil, StatusError, "", ""
 		}
-		return []string{name, url}, fmt.Sprintf("Got information for %s", repository), nil, StatusSuccess
+		return []string{name, url}, fmt.Sprintf("Got information for %s", repository), nil, StatusSuccess, "", fmt.Sprintf("Name: %s, URL: %s", name, url)
 	},
 	nil,
 }

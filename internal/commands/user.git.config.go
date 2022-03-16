@@ -20,20 +20,21 @@ var userGitConfig = Command{
 		"Value",
 	},
 	nil,
-	"Git parameter\n  user.git.config alice branch.autosetuprebase always", func(args []string) (result []string, msg string, apply Apply, status Status) {
+	"Git parameter\n  user.git.config alice branch.autosetuprebase always",
+	func(args []string) (result []string, msg string, apply Apply, status Status, before, after string) {
 		username := args[0]
 		name := args[1]
 		value := args[2]
 		user, err := datastores.Users.Get(username)
 		if err != nil {
-			return nil, fmt.Sprintf("Could not get user %s: %s", username, err), nil, StatusError
+			return nil, fmt.Sprintf("Could not get user %s: %s", username, err), nil, StatusError, "", ""
 		}
 		current, err := datastores.GitConfig.Get(user, name)
 		if err != nil {
-			return nil, fmt.Sprintf("Could not get current value of %s: %s", name, err), nil, StatusError
+			return nil, fmt.Sprintf("Could not get current value of %s: %s", name, err), nil, StatusError, "", ""
 		}
 		if value == current {
-			return nil, fmt.Sprintf("%s is already set to %s", name, current), nil, StatusSuccess
+			return nil, fmt.Sprintf("%s is already set to %s", name, current), nil, StatusSuccess, current, value
 		}
 
 		apply = func(out Output) bool {
@@ -45,7 +46,7 @@ var userGitConfig = Command{
 			out.Successf("Set %s to %s", name, value)
 			return true
 		}
-		return nil, fmt.Sprintf("Need to set %s to %s", name, value), apply, StatusInfo
+		return nil, fmt.Sprintf("Need to set %s to %s", name, value), apply, StatusInfo, current, value
 	},
 	func() {
 		datastores.GitConfig.Reset()

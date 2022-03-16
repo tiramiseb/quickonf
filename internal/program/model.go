@@ -95,7 +95,6 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				}
 			}
 		}
-		// TODO clics dans checks & details
 	case tea.KeyMsg:
 		if global.Toggles["help"] {
 			switch msg.String() {

@@ -19,7 +19,7 @@ var makefile = Command{
 	},
 	nil,
 	"Compile foobar\n  make /tmp/foobar compile",
-	func(args []string) (result []string, msg string, apply Apply, status Status) {
+	func(args []string) (result []string, msg string, apply Apply, status Status, before, after string) {
 		path := args[0]
 		target := args[1]
 		apply = func(out Output) bool {
@@ -31,7 +31,7 @@ var makefile = Command{
 			out.Successf("Made %s in %s", target, path)
 			return true
 		}
-		return nil, fmt.Sprintf("Need to make %s in %s", target, path), apply, StatusInfo
+		return nil, fmt.Sprintf("Need to make %s in %s", target, path), apply, StatusInfo, "", ""
 	},
 	nil,
 }

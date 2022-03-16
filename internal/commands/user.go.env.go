@@ -21,20 +21,21 @@ var userGoEnv = Command{
 		"Value",
 	},
 	nil,
-	"Go path\n  user.go.env alice gopath /home/alice/GO", func(args []string) (result []string, msg string, apply Apply, status Status) {
+	"Go path\n  user.go.env alice gopath /home/alice/GO",
+	func(args []string) (result []string, msg string, apply Apply, status Status, before, after string) {
 		username := args[0]
 		variable := strings.ToUpper(args[1])
 		value := args[2]
 		user, err := datastores.Users.Get(username)
 		if err != nil {
-			return nil, fmt.Sprintf("Could not get user %s: %s", username, err), nil, StatusError
+			return nil, fmt.Sprintf("Could not get user %s: %s", username, err), nil, StatusError, "", ""
 		}
 		current, err := datastores.GoEnv.Get(user, variable)
 		if err != nil {
-			return nil, fmt.Sprintf("Could not get current value of %s: %s", variable, err), nil, StatusError
+			return nil, fmt.Sprintf("Could not get current value of %s: %s", variable, err), nil, StatusError, "", ""
 		}
 		if value == current {
-			return nil, fmt.Sprintf("%s is already set to %s", variable, current), nil, StatusSuccess
+			return nil, fmt.Sprintf("%s is already set to %s", variable, current), nil, StatusSuccess, current, value
 		}
 
 		apply = func(out Output) bool {
@@ -46,7 +47,7 @@ var userGoEnv = Command{
 			out.Successf("Set %s to %s", variable, value)
 			return true
 		}
-		return nil, fmt.Sprintf("Need to set %s to %s", variable, value), apply, StatusInfo
+		return nil, fmt.Sprintf("Need to set %s", variable), apply, StatusInfo, current, value
 	},
 	func() {
 		datastores.GoEnv.Reset()

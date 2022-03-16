@@ -20,20 +20,20 @@ var nmWifi = Command{
 	},
 	nil,
 	"My own wifi network\n  nm.wifi mynetwork n0tSecureP4ssw0rd",
-	func(args []string) (result []string, msg string, apply Apply, status Status) {
+	func(args []string) (result []string, msg string, apply Apply, status Status, before, after string) {
 		ssid := args[0]
 		psk := args[1]
 
 		conn, ok, err := datastores.NetworkManagerConnections.Get(ssid)
 		if err != nil {
-			return nil, err.Error(), nil, StatusError
+			return nil, err.Error(), nil, StatusError, "", ""
 		}
 		if ok {
 			if conn.Type != "wifi" {
-				return nil, fmt.Sprintf("%s exists but is not a wifi connection", ssid), nil, StatusError
+				return nil, fmt.Sprintf("%s exists but is not a wifi connection", ssid), nil, StatusError, conn.String(), ""
 			}
 			if conn.PSK == psk {
-				return nil, fmt.Sprintf("%s is already configured", ssid), nil, StatusSuccess
+				return nil, fmt.Sprintf("%s is already configured", ssid), nil, StatusSuccess, conn.String(), ""
 			}
 			msg = fmt.Sprintf("Need to change psk for wifi network %s", ssid)
 			apply = func(out Output) bool {
@@ -58,7 +58,7 @@ var nmWifi = Command{
 				return true
 			}
 		}
-		return nil, msg, apply, StatusInfo
+		return nil, msg, apply, StatusInfo, "", ""
 	},
 	datastores.NetworkManagerConnections.Reset,
 }

@@ -26,18 +26,18 @@ var aptSource = Command{
 	},
 	nil,
 	"NextDNS\n  apt.source nextdns \"deb https://repo.nextdns.io/deb stable main\"",
-	func(args []string) (result []string, msg string, apply Apply, status Status) {
+	func(args []string) (result []string, msg string, apply Apply, status Status, before, after string) {
 		name := args[0]
 		sources := args[1] + "\n"
 
 		sourcesList := filepath.Join(aptSourcesBase, name+".list")
 		existingB, err := os.ReadFile(sourcesList)
 		if err != nil && !errors.Is(err, fs.ErrNotExist) {
-			return nil, fmt.Sprintf("Could not read existing sources file: %s", err), nil, StatusError
+			return nil, fmt.Sprintf("Could not read existing sources file: %s", err), nil, StatusError, "", ""
 		}
 		existing := string(existingB)
 		if existing == sources {
-			return nil, fmt.Sprintf("Sources %s already defined", name), nil, StatusSuccess
+			return nil, fmt.Sprintf("Sources %s already defined", name), nil, StatusSuccess, existing, sources
 		}
 		apply = func(out Output) bool {
 			out.Runningf("Adding apt sources %s", name)
@@ -55,7 +55,7 @@ var aptSource = Command{
 			}
 			return true
 		}
-		return nil, fmt.Sprintf("Need to add apt sources %s", name), apply, StatusInfo
+		return nil, fmt.Sprintf("Need to add apt sources %s", name), apply, StatusInfo, existing, sources
 	},
 	nil,
 }

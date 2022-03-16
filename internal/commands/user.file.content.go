@@ -25,14 +25,14 @@ var userFileContent = Command{
 	},
 	nil,
 	"Say hello in /home/alice/hello.txt\n  user.file.content alice hello.txt \"Hello World!\"",
-	func(args []string) (result []string, msg string, apply Apply, status Status) {
+	func(args []string) (result []string, msg string, apply Apply, status Status, before, after string) {
 		username := args[0]
 		path := args[1]
 		content := args[2]
 
 		usr, err := datastores.Users.Get(username)
 		if err != nil {
-			return nil, err.Error(), nil, StatusError
+			return nil, err.Error(), nil, StatusError, "", ""
 		}
 
 		if !filepath.IsAbs(path) {
@@ -46,15 +46,15 @@ var userFileContent = Command{
 		)
 		if err != nil {
 			if !errors.Is(err, fs.ErrNotExist) {
-				return nil, err.Error(), nil, StatusError
+				return nil, err.Error(), nil, StatusError, "", ""
 			}
 		} else {
 			if finfo.IsDir() {
-				return nil, fmt.Sprintf("%s is a directory", path), nil, StatusError
+				return nil, fmt.Sprintf("%s is a directory", path), nil, StatusError, "", ""
 			}
 			bcontent, err := os.ReadFile(path)
 			if err != nil {
-				return nil, err.Error(), nil, StatusError
+				return nil, err.Error(), nil, StatusError, "", ""
 			}
 			existingContent = string(bcontent)
 
@@ -66,7 +66,7 @@ var userFileContent = Command{
 		var needMessage string
 		switch {
 		case content == existingContent && ownershipOk:
-			return nil, fmt.Sprintf("%s already has the requested content", path), nil, StatusSuccess
+			return nil, fmt.Sprintf("%s already has the requested content", path), nil, StatusSuccess, existingContent, content
 		case content == existingContent && !ownershipOk:
 			needMessage = fmt.Sprintf("Need to change ownership of %s to %s", path, username)
 		default:
@@ -99,7 +99,7 @@ var userFileContent = Command{
 			return true
 		}
 
-		return nil, needMessage, apply, StatusInfo
+		return nil, needMessage, apply, StatusInfo, existingContent, content
 	},
 	datastores.Users.Reset,
 }

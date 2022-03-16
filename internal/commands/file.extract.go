@@ -32,19 +32,20 @@ var fileExtract = Command{
 		"Target absolute path",
 	},
 	nil,
-	"Extract something\n  file.extract zip /foo/bar.zip /bar", func(args []string) (result []string, msg string, apply Apply, status Status) {
+	"Extract something\n  file.extract zip /foo/bar.zip /bar",
+	func(args []string) (result []string, msg string, apply Apply, status Status, before, after string) {
 		format := args[0]
 		archive := args[1]
 		dest := args[2]
 		extractor, ok := fileExtractors[format]
 		if !ok {
-			return nil, fmt.Sprintf("Archive format %s unknown", format), nil, StatusError
+			return nil, fmt.Sprintf("Archive format %s unknown", format), nil, StatusError, "", ""
 		}
 		if !filepath.IsAbs(archive) {
-			return nil, fmt.Sprintf("%s is not an absolute path", archive), nil, StatusError
+			return nil, fmt.Sprintf("%s is not an absolute path", archive), nil, StatusError, "", ""
 		}
 		if !filepath.IsAbs(dest) {
-			return nil, fmt.Sprintf("%s is not an absolute path", dest), nil, StatusError
+			return nil, fmt.Sprintf("%s is not an absolute path", dest), nil, StatusError, "", ""
 		}
 
 		apply = func(out Output) bool {
@@ -56,7 +57,7 @@ var fileExtract = Command{
 			out.Successf("Extracted %s to %s", archive, dest)
 			return true
 		}
-		return nil, fmt.Sprintf("Need to extract %s to %s", archive, dest), apply, StatusInfo
+		return nil, fmt.Sprintf("Need to extract %s to %s", archive, dest), apply, StatusInfo, "", ""
 	},
 	func() {
 		datastores.Dconf.Reset()

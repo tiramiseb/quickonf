@@ -17,14 +17,14 @@ var flatpakInstall = Command{
 	[]string{"Application ID of the package to install"},
 	nil,
 	"Install \"anydesk\"\n  flatpak.install com.anydesk.Anydesk",
-	func(args []string) (result []string, msg string, apply Apply, status Status) {
+	func(args []string) (result []string, msg string, apply Apply, status Status, before, after string) {
 		appID := args[0]
 		_, ok, err := datastores.Flatpak.Get(appID)
 		if err != nil {
-			return nil, err.Error(), nil, StatusError
+			return nil, err.Error(), nil, StatusError, "", ""
 		}
 		if ok {
-			return nil, fmt.Sprintf("%s is already installed", appID), nil, StatusSuccess
+			return nil, fmt.Sprintf("%s is already installed", appID), nil, StatusSuccess, "", ""
 		}
 
 		apply = func(out Output) bool {
@@ -36,7 +36,7 @@ var flatpakInstall = Command{
 			out.Successf("Installed %s", appID)
 			return true
 		}
-		return nil, fmt.Sprintf("Need to install %s", appID), apply, StatusInfo
+		return nil, fmt.Sprintf("Need to install %s", appID), apply, StatusInfo, "", ""
 	},
 	datastores.Flatpak.Reset,
 }

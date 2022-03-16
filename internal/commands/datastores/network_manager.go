@@ -4,6 +4,7 @@ import (
 	"errors"
 	"io/fs"
 	"path/filepath"
+	"strings"
 	"sync"
 
 	"gopkg.in/ini.v1"
@@ -27,6 +28,21 @@ type NetworkManagerConnectionWifiSecurity struct {
 type NetworkManagerConnection struct {
 	NetworkManagerConnectionConnection   `ini:"connection"`
 	NetworkManagerConnectionWifiSecurity `ini:"wifi-security"`
+}
+
+func (n NetworkManagerConnection) String() string {
+	var str strings.Builder
+	str.WriteString("UUID: ")
+	str.WriteString(n.UUID)
+	str.WriteString("\nType: ")
+	str.WriteString(n.Type)
+	str.WriteRune('\n')
+	if n.PSK != "" {
+		str.WriteString("PSK:")
+		str.WriteString(n.PSK)
+		str.WriteString("\n")
+	}
+	return str.String()
 }
 
 type networkManagerConnectionsList struct {

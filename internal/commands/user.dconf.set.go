@@ -22,20 +22,21 @@ var userDconfSet = Command{
 		"Value",
 	},
 	nil,
-	"Show date in GNOME\n  user.dconf.set /org/gnome/desktop/interface/clock-show-date true", func(args []string) (result []string, msg string, apply Apply, status Status) {
+	"Show date in GNOME\n  user.dconf.set /org/gnome/desktop/interface/clock-show-date true",
+	func(args []string) (result []string, msg string, apply Apply, status Status, before, after string) {
 		username := args[0]
 		key := args[1]
 		value := args[2]
 		user, err := datastores.Users.Get(username)
 		if err != nil {
-			return nil, fmt.Sprintf("Could not get user %s: %s", username, err), nil, StatusError
+			return nil, fmt.Sprintf("Could not get user %s: %s", username, err), nil, StatusError, "", ""
 		}
 		current, err := datastores.Dconf.Get(user, key)
 		if err != nil {
-			return nil, fmt.Sprintf("Could not get current value of %s: %s", key, err), nil, StatusError
+			return nil, fmt.Sprintf("Could not get current value of %s: %s", key, err), nil, StatusError, "", ""
 		}
 		if value == current {
-			return nil, fmt.Sprintf("%s is already set to %s", key, current), nil, StatusSuccess
+			return nil, fmt.Sprintf("%s is already set to %s", key, current), nil, StatusSuccess, current, value
 		}
 
 		// Convert value to something understandable by dconf
@@ -60,7 +61,7 @@ var userDconfSet = Command{
 			out.Successf("Set %s to %s", key, value)
 			return true
 		}
-		return nil, fmt.Sprintf("Need to set %s to %s", key, value), apply, StatusInfo
+		return nil, fmt.Sprintf("Need to set %s to %s", key, value), apply, StatusInfo, current, value
 	},
 	func() {
 		datastores.Dconf.Reset()

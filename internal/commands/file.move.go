@@ -21,27 +21,27 @@ var fileDirectoryMove = Command{
 	},
 	nil,
 	"Move previous documents directory for jane\n  file.move /home/jane.old/Documents /home/jane/Documents",
-	func(args []string) (result []string, msg string, apply Apply, status Status) {
+	func(args []string) (result []string, msg string, apply Apply, status Status, before, after string) {
 		source := args[0]
 		destination := args[1]
 		if !filepath.IsAbs(source) {
-			return nil, fmt.Sprintf("%s is not an absolute path", source), nil, StatusError
+			return nil, fmt.Sprintf("%s is not an absolute path", source), nil, StatusError, "", ""
 		}
 		if !filepath.IsAbs(destination) {
-			return nil, fmt.Sprintf("%s is not an absolute path", destination), nil, StatusError
+			return nil, fmt.Sprintf("%s is not an absolute path", destination), nil, StatusError, "", ""
 		}
 		if _, err := os.Lstat(source); err != nil {
 			if errors.Is(err, fs.ErrNotExist) {
-				return nil, fmt.Sprintf("Source %s does not exist", source), nil, StatusSuccess
+				return nil, fmt.Sprintf("Source %s does not exist", source), nil, StatusSuccess, "", ""
 			}
-			return nil, err.Error(), nil, StatusError
+			return nil, err.Error(), nil, StatusError, "", ""
 		}
 		_, err := os.Lstat(destination)
 		if err == nil {
-			return nil, fmt.Sprintf("Destination %s already exists", destination), nil, StatusError
+			return nil, fmt.Sprintf("Destination %s already exists", destination), nil, StatusError, "", ""
 		}
 		if !errors.Is(err, fs.ErrNotExist) {
-			return nil, err.Error(), nil, StatusError
+			return nil, err.Error(), nil, StatusError, "", ""
 		}
 
 		apply = func(out Output) bool {
@@ -53,7 +53,7 @@ var fileDirectoryMove = Command{
 			out.Successf("Moved %s to %s", source, destination)
 			return true
 		}
-		return nil, fmt.Sprintf("Need to move %s to %s", source, destination), apply, StatusInfo
+		return nil, fmt.Sprintf("Need to move %s to %s", source, destination), apply, StatusInfo, "", ""
 	},
 	nil,
 }

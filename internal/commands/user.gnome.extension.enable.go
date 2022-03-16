@@ -20,19 +20,19 @@ var gnomeExtensionEnable = Command{
 	},
 	nil,
 	"Dash to dock\n  gnome.extension.install dash-to-dock@micxgx.gmail.com\n  user.gnome.extension.enable alice dash-to-dock@micxgx.gmail.com",
-	func(args []string) (result []string, message string, apply Apply, status Status) {
+	func(args []string) (result []string, message string, apply Apply, status Status, before, after string) {
 		username := args[0]
 		uuid := args[1]
 		user, err := datastores.Users.Get(username)
 		if err != nil {
-			return nil, fmt.Sprintf("Could not get user %s: %s", username, err), nil, StatusError
+			return nil, fmt.Sprintf("Could not get user %s: %s", username, err), nil, StatusError, "", ""
 		}
 		ok, err := datastores.GnomeExtensions.Enabled(user, uuid)
 		if err != nil {
-			return nil, fmt.Sprintf("Could not check if %s is enabled: %s", uuid, err), nil, StatusError
+			return nil, fmt.Sprintf("Could not check if %s is enabled: %s", uuid, err), nil, StatusError, "", ""
 		}
 		if ok {
-			return nil, fmt.Sprintf("%s is already enabled", uuid), nil, StatusSuccess
+			return nil, fmt.Sprintf("%s is already enabled", uuid), nil, StatusSuccess, "", ""
 		}
 
 		apply = func(out Output) (success bool) {
@@ -45,7 +45,7 @@ var gnomeExtensionEnable = Command{
 			return true
 		}
 
-		return nil, fmt.Sprintf("Need to enable %s", uuid), nil, StatusInfo
+		return nil, fmt.Sprintf("Need to enable %s", uuid), nil, StatusInfo, "", ""
 	},
 	datastores.GnomeExtensions.Reset,
 }

@@ -13,6 +13,8 @@ type CheckReport struct {
 	Message      string
 	apply        commands.Apply
 	signalTarget chan bool
+	Before       string
+	After        string
 }
 
 func (c *CheckReport) HasApply() bool {

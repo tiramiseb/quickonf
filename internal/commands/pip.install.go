@@ -17,14 +17,14 @@ var pipInstall = Command{
 	[]string{"Name of the package to install"},
 	nil,
 	"Pip Passlib\n  pip.install passlib",
-	func(args []string) (result []string, msg string, apply Apply, status Status) {
+	func(args []string) (result []string, msg string, apply Apply, status Status, before, after string) {
 		pkg := args[0]
-		_, ok, err := datastores.PipPackages.Get(pkg)
+		pkgObj, ok, err := datastores.PipPackages.Get(pkg)
 		if err != nil {
-			return nil, err.Error(), nil, StatusError
+			return nil, err.Error(), nil, StatusError, "", ""
 		}
 		if ok {
-			return nil, fmt.Sprintf("%s is already installed", pkg), nil, StatusSuccess
+			return nil, fmt.Sprintf("%s is already installed", pkg), nil, StatusSuccess, "Version " + pkgObj.Version, ""
 		}
 
 		apply = func(out Output) bool {
@@ -36,7 +36,7 @@ var pipInstall = Command{
 			out.Successf("Installed %s", pkg)
 			return true
 		}
-		return nil, fmt.Sprintf("Need to install %s", pkg), apply, StatusInfo
+		return nil, fmt.Sprintf("Need to install %s", pkg), apply, StatusInfo, "", ""
 	},
 	datastores.PipPackages.Reset,
 }

@@ -19,15 +19,16 @@ var gitConfig = Command{
 		"Value",
 	},
 	nil,
-	"Git parameter\n  git.config branch.autosetuprebase always", func(args []string) (result []string, msg string, apply Apply, status Status) {
+	"Git parameter\n  git.config branch.autosetuprebase always",
+	func(args []string) (result []string, msg string, apply Apply, status Status, before, after string) {
 		name := args[0]
 		value := args[1]
 		current, err := datastores.GitConfig.Get(datastores.FakeUserForSystem, name)
 		if err != nil {
-			return nil, fmt.Sprintf("Could not get current value of %s: %s", name, err), nil, StatusError
+			return nil, fmt.Sprintf("Could not get current value of %s: %s", name, err), nil, StatusError, "", ""
 		}
 		if value == current {
-			return nil, fmt.Sprintf("%s is already set to %s", name, current), nil, StatusSuccess
+			return nil, fmt.Sprintf("%s is already set to %s", name, current), nil, StatusSuccess, value, value
 		}
 
 		apply = func(out Output) bool {
@@ -39,7 +40,7 @@ var gitConfig = Command{
 			out.Successf("Set %s to %s", name, value)
 			return true
 		}
-		return nil, fmt.Sprintf("Need to set %s to %s", name, value), apply, StatusInfo
+		return nil, fmt.Sprintf("Need to set %s to %s", name, value), apply, StatusInfo, current, value
 	},
 	func() {
 		datastores.GitConfig.Reset()

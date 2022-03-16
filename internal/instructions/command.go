@@ -16,20 +16,20 @@ func (c *Command) Name() string {
 
 func (c *Command) Run(vars Variables, signalTarget chan bool) ([]*CheckReport, bool) {
 	if len(c.Arguments) != len(c.Command.Arguments) {
-		return []*CheckReport{{c.Command.Name, commands.StatusError, "wrong number of arguments", nil, signalTarget}}, false
+		return []*CheckReport{{c.Command.Name, commands.StatusError, "wrong number of arguments", nil, signalTarget, "", ""}}, false
 	}
 	args := make([]string, len(c.Arguments))
 	for i, src := range c.Arguments {
 		args[i] = vars.translateVariables(src)
 	}
-	result, out, apply, status := c.Command.Run(args)
+	result, out, apply, status, before, after := c.Command.Run(args)
 	for i, tgt := range c.Targets {
 		if len(result) <= i {
 			break
 		}
 		vars.define(tgt, result[i])
 	}
-	return []*CheckReport{{c.Command.Name, status, out, apply, signalTarget}}, status != commands.StatusError
+	return []*CheckReport{{c.Command.Name, status, out, apply, signalTarget, before, after}}, status != commands.StatusError
 }
 
 func (c *Command) Reset() {

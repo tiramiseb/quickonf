@@ -19,7 +19,7 @@ var tempdir = Command{
 		"Path of the created directory",
 	},
 	"Temporarily clone git repository\n  tmp = tempdir\n  git.clone https://www.example.com/foobar.git <tmp>",
-	func(args []string) (result []string, msg string, apply Apply, status Status) {
+	func(args []string) (result []string, msg string, apply Apply, status Status, before, after string) {
 		path := filepath.Join(os.TempDir(), fmt.Sprintf("quickonf-%d", rand.Int()))
 
 		apply = func(out Output) bool {
@@ -34,7 +34,7 @@ var tempdir = Command{
 			out.Success("Created temporary directory")
 			return true
 		}
-		return []string{path}, "Need to create a temporary directory", apply, StatusInfo
+		return []string{path}, "Need to create a temporary directory", apply, StatusInfo, "", path
 	},
 	nil,
 }

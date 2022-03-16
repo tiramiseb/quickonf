@@ -23,13 +23,13 @@ var userFileDirectory = Command{
 	},
 	nil,
 	"Create Picz photos for alice\n  user.file.directory alice Picz",
-	func(args []string) (result []string, msg string, apply Apply, status Status) {
+	func(args []string) (result []string, msg string, apply Apply, status Status, before, after string) {
 		username := args[0]
 		path := args[1]
 
 		usr, err := datastores.Users.Get(username)
 		if err != nil {
-			return nil, err.Error(), nil, StatusError
+			return nil, err.Error(), nil, StatusError, "", ""
 		}
 
 		if !filepath.IsAbs(path) {
@@ -39,12 +39,12 @@ var userFileDirectory = Command{
 		info, err := os.Lstat(path)
 		if err == nil {
 			if info.IsDir() {
-				return nil, fmt.Sprintf("Directory %s already exists", path), nil, StatusSuccess
+				return nil, fmt.Sprintf("Directory %s already exists", path), nil, StatusSuccess, "", ""
 			}
-			return nil, fmt.Sprintf("%s already exists but is not a directory", path), nil, StatusError
+			return nil, fmt.Sprintf("%s already exists but is not a directory", path), nil, StatusError, "", ""
 		}
 		if !errors.Is(err, fs.ErrNotExist) {
-			return nil, err.Error(), nil, StatusError
+			return nil, err.Error(), nil, StatusError, "", ""
 		}
 
 		apply = func(out Output) bool {
@@ -60,7 +60,7 @@ var userFileDirectory = Command{
 			out.Successf("Created directory %s", path)
 			return true
 		}
-		return nil, fmt.Sprintf("Need to create directory %s", path), apply, StatusInfo
+		return nil, fmt.Sprintf("Need to create directory %s", path), apply, StatusInfo, "", ""
 	},
 	datastores.Users.Reset,
 }

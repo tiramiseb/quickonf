@@ -25,14 +25,14 @@ var filePerm = Command{
 	},
 	nil,
 	"Restrict private key\n  file.chown /home/alice/.ssh/id_rsa 600",
-	func(args []string) (result []string, msg string, apply Apply, status Status) {
+	func(args []string) (result []string, msg string, apply Apply, status Status, before, after string) {
 		path := args[0]
 		permsAsString := args[1]
 		if !filepath.IsAbs(path) {
-			return nil, fmt.Sprintf("%s is not an absolute path", path), nil, StatusError
+			return nil, fmt.Sprintf("%s is not an absolute path", path), nil, StatusError, "", ""
 		}
 		if !filePermRe.MatchString(permsAsString) {
-			return nil, fmt.Sprintf("%s is not a correct permission (000-777)", permsAsString), nil, StatusError
+			return nil, fmt.Sprintf("%s is not a correct permission (000-777)", permsAsString), nil, StatusError, "", ""
 		}
 		permsAsInt, _ := strconv.ParseInt(permsAsString, 8, 64) // Not checking the error because it cannot fail, because mode has been checked by the regex
 		perms := fs.FileMode(permsAsInt)
@@ -41,13 +41,15 @@ var filePerm = Command{
 		var currentPerms fs.FileMode
 		if err != nil {
 			if !errors.Is(err, fs.ErrNotExist) {
-				return nil, err.Error(), nil, StatusError
+				return nil, err.Error(), nil, StatusError, "", ""
 			}
 		} else {
 			currentPerms = finfo.Mode().Perm()
 		}
+		before = currentPerms.String()
+		after = perms.String()
 		if perms == currentPerms {
-			return nil, fmt.Sprintf("%s already has the requested permissions", path), nil, StatusSuccess
+			return nil, fmt.Sprintf("%s already has the requested permissions", path), nil, StatusSuccess, before, after
 		}
 
 		apply = func(out Output) bool {
@@ -60,7 +62,7 @@ var filePerm = Command{
 			return true
 		}
 
-		return nil, fmt.Sprintf("Need to change permissions on %s", path), apply, StatusInfo
+		return nil, fmt.Sprintf("Need to change permissions on %s", path), apply, StatusInfo, before, after
 	},
 	nil,
 }

@@ -39,8 +39,10 @@ const (
 // result is the command output values
 // message is the message to display to the user
 // apply is the function that would be executed in order to apply the command to the system. If nil, it means there is nothing to apply (the system is already in the requested state)
-// success is a boolean indicating if preparing the apply function succeeded or not
-type run func(args []string) (result []string, message string, apply Apply, status Status)
+// status is the status after checking
+// before is the value before modification (only if apply is not nil)
+// after is the value after modification (only if apply is not nil)
+type run func(args []string) (result []string, message string, apply Apply, status Status, before, after string)
 
 // Command is a single command definition
 type Command struct {

@@ -18,7 +18,7 @@ var stackInstall = Command{
 	},
 	nil,
 	"Install foobar\n  stack.install /tmp/foobar",
-	func(args []string) (result []string, msg string, apply Apply, status Status) {
+	func(args []string) (result []string, msg string, apply Apply, status Status, before, after string) {
 		path := args[0]
 		apply = func(out Output) bool {
 			out.Runningf("Installing from %s", path)
@@ -29,7 +29,7 @@ var stackInstall = Command{
 			out.Successf("Installed from %s", path)
 			return true
 		}
-		return nil, fmt.Sprintf("Need to install from %s", path), apply, StatusInfo
+		return nil, fmt.Sprintf("Need to install from %s", path), apply, StatusInfo, "", ""
 	},
 	nil,
 }

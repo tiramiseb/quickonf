@@ -22,15 +22,15 @@ var httpGetFile = Command{
 	},
 	nil,
 	"Download example\n  http.get.file http://www.example.com /opt/example",
-	func(args []string) (result []string, msg string, apply Apply, status Status) {
+	func(args []string) (result []string, msg string, apply Apply, status Status, before, after string) {
 		uri := args[0]
 		path := args[1]
 		_, err := os.Stat(path)
 		if err == nil {
-			return nil, fmt.Sprintf("%s already exists", path), nil, StatusSuccess
+			return nil, fmt.Sprintf("%s already exists", path), nil, StatusSuccess, "", ""
 		}
 		if !errors.Is(err, fs.ErrNotExist) {
-			return nil, fmt.Sprintf("Could not check if %s exists: %s", path, err), nil, StatusError
+			return nil, fmt.Sprintf("Could not check if %s exists: %s", path, err), nil, StatusError, "", ""
 		}
 		apply = func(out Output) bool {
 			out.Runningf("Downloading %s to %s", uri, path)
@@ -58,7 +58,7 @@ var httpGetFile = Command{
 			out.Successf("Downloaded %s to %s", uri, path)
 			return true
 		}
-		return nil, fmt.Sprintf("Need to download %s to %s", uri, path), apply, StatusInfo
+		return nil, fmt.Sprintf("Need to download %s to %s", uri, path), apply, StatusInfo, "", ""
 	},
 	nil,
 }

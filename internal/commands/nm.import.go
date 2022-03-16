@@ -22,7 +22,7 @@ var nmImport = Command{
 	},
 	nil,
 	"Import my VPN configuration\n  nm.import openvpn /opt/openvpn.conf",
-	func(args []string) (result []string, msg string, apply Apply, status Status) {
+	func(args []string) (result []string, msg string, apply Apply, status Status, before, after string) {
 		connType := args[0]
 		path := args[1]
 
@@ -30,7 +30,7 @@ var nmImport = Command{
 		var name string
 		switch len(nameParts) {
 		case 0:
-			return nil, fmt.Sprintf("no file name in %s", path), nil, StatusError
+			return nil, fmt.Sprintf("no file name in %s", path), nil, StatusError, "", ""
 		case 1, 2:
 			name = nameParts[0]
 		default:
@@ -39,13 +39,13 @@ var nmImport = Command{
 
 		conn, ok, err := datastores.NetworkManagerConnections.Get(name)
 		if err != nil {
-			return nil, err.Error(), nil, StatusError
+			return nil, err.Error(), nil, StatusError, "", ""
 		}
 		if ok {
 			if conn.Type == "vpn" {
-				return nil, fmt.Sprintf("%s is already configured", name), nil, StatusSuccess
+				return nil, fmt.Sprintf("%s is already configured", name), nil, StatusSuccess, conn.String(), ""
 			}
-			return nil, fmt.Sprintf("%s exists but is not of the right type", name), nil, StatusError
+			return nil, fmt.Sprintf("%s exists but is not of the right type", name), nil, StatusError, conn.String(), ""
 		}
 
 		apply = func(out Output) bool {
@@ -57,7 +57,7 @@ var nmImport = Command{
 			out.Successf("Imported %s", name)
 			return true
 		}
-		return nil, fmt.Sprintf("Need to import %s configuration from %s", connType, path), apply, StatusInfo
+		return nil, fmt.Sprintf("Need to import %s configuration from %s", connType, path), apply, StatusInfo, "", ""
 	},
 	datastores.NetworkManagerConnections.Reset,
 }

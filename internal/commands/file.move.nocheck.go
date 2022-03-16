@@ -19,14 +19,14 @@ var fileDirectoryMoveNocheck = Command{
 	},
 	nil,
 	"Move previous documents directory for jane\n  file.move.nocheck /home/jane.old/Documents /home/jane/Documents",
-	func(args []string) (result []string, msg string, apply Apply, status Status) {
+	func(args []string) (result []string, msg string, apply Apply, status Status, before, after string) {
 		source := args[0]
 		destination := args[1]
 		if !filepath.IsAbs(source) {
-			return nil, fmt.Sprintf("%s is not an absolute path", source), nil, StatusError
+			return nil, fmt.Sprintf("%s is not an absolute path", source), nil, StatusError, "", ""
 		}
 		if !filepath.IsAbs(destination) {
-			return nil, fmt.Sprintf("%s is not an absolute path", destination), nil, StatusError
+			return nil, fmt.Sprintf("%s is not an absolute path", destination), nil, StatusError, "", ""
 		}
 
 		apply = func(out Output) bool {
@@ -38,7 +38,7 @@ var fileDirectoryMoveNocheck = Command{
 			out.Successf("Moved %s to %s", source, destination)
 			return true
 		}
-		return nil, fmt.Sprintf("Need to move %s to %s", source, destination), apply, StatusInfo
+		return nil, fmt.Sprintf("Need to move %s to %s", source, destination), apply, StatusInfo, "", ""
 	},
 	nil,
 }

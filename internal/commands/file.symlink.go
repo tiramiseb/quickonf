@@ -21,14 +21,14 @@ var fileSymlink = Command{
 	},
 	nil,
 	"Very dumb symlink\n  file.symlink /home/alice/temp /tmp",
-	func(args []string) (result []string, msg string, apply Apply, status Status) {
+	func(args []string) (result []string, msg string, apply Apply, status Status, before, after string) {
 		link := args[0]
 		target := args[1]
 		if !filepath.IsAbs(link) {
-			return nil, fmt.Sprintf("%s is not an absolute path", link), nil, StatusError
+			return nil, fmt.Sprintf("%s is not an absolute path", link), nil, StatusError, "", ""
 		}
 		if !filepath.IsAbs(target) {
-			return nil, fmt.Sprintf("%s is not an absolute path", target), nil, StatusError
+			return nil, fmt.Sprintf("%s is not an absolute path", target), nil, StatusError, "", ""
 		}
 
 		var (
@@ -39,7 +39,7 @@ var fileSymlink = Command{
 		switch {
 		case err != nil:
 			if !errors.Is(err, fs.ErrNotExist) {
-				return nil, err.Error(), nil, StatusError
+				return nil, err.Error(), nil, StatusError, "", ""
 			}
 			needMessage = fmt.Sprintf("Need to create %s", link)
 		case info.Mode()&os.ModeDir != 0:
@@ -51,10 +51,10 @@ var fileSymlink = Command{
 		default:
 			existingTarget, err := filepath.EvalSymlinks(link)
 			if err != nil {
-				return nil, err.Error(), nil, StatusError
+				return nil, err.Error(), nil, StatusError, "", ""
 			}
 			if target == existingTarget {
-				return nil, fmt.Sprintf("%s already targets %s", link, target), nil, StatusSuccess
+				return nil, fmt.Sprintf("%s already targets %s", link, target), nil, StatusSuccess, "", ""
 			}
 			needMessage = fmt.Sprintf("Need to remove link %s and recreate it with target %s", link, target)
 			mustBeRemoved = true
@@ -77,7 +77,7 @@ var fileSymlink = Command{
 			return true
 		}
 
-		return nil, needMessage, apply, StatusInfo
+		return nil, needMessage, apply, StatusInfo, "", ""
 	},
 	nil,
 }

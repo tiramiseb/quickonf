@@ -23,7 +23,7 @@ var xdgMimeDefault = Command{
 	},
 	nil,
 	"Use Chromium\n  xdg.mimedefault text/html chromium_chromium",
-	func(args []string) (result []string, msg string, apply Apply, status Status) {
+	func(args []string) (result []string, msg string, apply Apply, status Status, before, after string) {
 		mimetype := args[0]
 		app := args[1]
 		if !strings.HasSuffix(".desktop", app) {
@@ -32,10 +32,10 @@ var xdgMimeDefault = Command{
 
 		current, err := datastores.XdgMimetypes.Get(mimetype)
 		if err != nil {
-			return nil, err.Error(), nil, StatusError
+			return nil, err.Error(), nil, StatusError, "", ""
 		}
 		if current == app {
-			return nil, fmt.Sprintf("Default app for %s is already %s", mimetype, app), nil, StatusSuccess
+			return nil, fmt.Sprintf("Default app for %s is already %s", mimetype, app), nil, StatusSuccess, current, app
 		}
 
 		apply = func(out Output) bool {
@@ -53,7 +53,7 @@ var xdgMimeDefault = Command{
 			out.Successf("Default app for %s set to %s", mimetype, app)
 			return true
 		}
-		return nil, fmt.Sprintf("Need to set default app for %s to %s", mimetype, app), apply, StatusInfo
+		return nil, fmt.Sprintf("Need to set default app for %s to %s", mimetype, app), apply, StatusInfo, current, app
 	},
 	datastores.XdgMimetypes.Reset,
 }

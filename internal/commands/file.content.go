@@ -21,30 +21,30 @@ var file = Command{
 	},
 	nil,
 	"Say hello\n  file.content /home/hello.txt \"Hello World!\"",
-	func(args []string) (result []string, msg string, apply Apply, status Status) {
+	func(args []string) (result []string, msg string, apply Apply, status Status, before, after string) {
 		path := args[0]
 		content := args[1]
 		if !filepath.IsAbs(path) {
-			return nil, fmt.Sprintf("%s is not an absolute path", path), nil, StatusError
+			return nil, fmt.Sprintf("%s is not an absolute path", path), nil, StatusError, "", ""
 		}
 		finfo, err := os.Lstat(path)
 		var existingContent string
 		if err != nil {
 			if !errors.Is(err, fs.ErrNotExist) {
-				return nil, err.Error(), nil, StatusError
+				return nil, err.Error(), nil, StatusError, "", ""
 			}
 		} else {
 			if finfo.IsDir() {
-				return nil, fmt.Sprintf("%s is a directory", path), nil, StatusError
+				return nil, fmt.Sprintf("%s is a directory", path), nil, StatusError, "", ""
 			}
 			bcontent, err := os.ReadFile(path)
 			if err != nil {
-				return nil, err.Error(), nil, StatusError
+				return nil, err.Error(), nil, StatusError, "", ""
 			}
 			existingContent = string(bcontent)
 		}
 		if content == existingContent {
-			return nil, fmt.Sprintf("%s already has the requested content", path), nil, StatusSuccess
+			return nil, fmt.Sprintf("%s already has the requested content", path), nil, StatusSuccess, existingContent, content
 		}
 
 		apply = func(out Output) bool {
@@ -57,7 +57,7 @@ var file = Command{
 			return true
 		}
 
-		return nil, fmt.Sprintf("Need to write requested content to %s", path), apply, StatusInfo
+		return nil, fmt.Sprintf("Need to write requested content to %s", path), apply, StatusInfo, existingContent, content
 	},
 	nil,
 }

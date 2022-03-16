@@ -22,7 +22,7 @@ var snapInstall = Command{
 	},
 	nil,
 	"Install node\n  snap.install node stable",
-	func(args []string) (result []string, msg string, apply Apply, status Status) {
+	func(args []string) (result []string, msg string, apply Apply, status Status, before, after string) {
 		name := args[0]
 		options := strings.FieldsFunc(args[1], func(c rune) bool {
 			return c == ',' || unicode.IsSpace(c)
@@ -51,10 +51,10 @@ var snapInstall = Command{
 		}
 		pkg, ok, err := datastores.Snap.Get(name)
 		if err != nil {
-			return nil, fmt.Sprintf("Could not check if %s is installed: %s", name, err), nil, StatusError
+			return nil, fmt.Sprintf("Could not check if %s is installed: %s", name, err), nil, StatusError, "", ""
 		}
 		if ok && pkg.Channel == channel && pkg.Classic == classic && pkg.Dangerous == dangerous && pkg.Devmode == devmode {
-			return nil, fmt.Sprintf("%s is already installed", name), nil, StatusSuccess
+			return nil, fmt.Sprintf("%s is already installed", name), nil, StatusSuccess, "Version " + pkg.Version, ""
 		}
 		cmdArgs := []string{"install", name, "--" + channel}
 		if classic {
@@ -75,7 +75,7 @@ var snapInstall = Command{
 			out.Successf("Installed %s", name)
 			return true
 		}
-		return nil, fmt.Sprintf("Need to install %s", name), apply, StatusInfo
+		return nil, fmt.Sprintf("Need to install %s", name), apply, StatusInfo, "", ""
 	},
 	nil,
 }

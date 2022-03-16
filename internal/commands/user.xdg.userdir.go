@@ -74,14 +74,14 @@ var userXdgUserdir = Command{
 	},
 	nil,
 	"Change downloads directory for john\n  user.file.directory john Downs\n  user.xdg.userdir john DOWNLOAD Downs",
-	func(args []string) (result []string, msg string, apply Apply, status Status) {
+	func(args []string) (result []string, msg string, apply Apply, status Status, before, after string) {
 		username := args[0]
 		name := strings.ToUpper(args[1])
 		path := args[2]
 
 		usr, err := datastores.Users.Get(username)
 		if err != nil {
-			return nil, err.Error(), nil, StatusError
+			return nil, err.Error(), nil, StatusError, "", ""
 		}
 
 		if path == "" {
@@ -92,11 +92,11 @@ var userXdgUserdir = Command{
 
 		dir, err := xdgDir(usr.User, name)
 		if err != nil {
-			return nil, err.Error(), nil, StatusError
+			return nil, err.Error(), nil, StatusError, "", ""
 		}
 
 		if dir == path {
-			return nil, fmt.Sprintf("%s is already %s", name, dir), nil, StatusSuccess
+			return nil, fmt.Sprintf("%s is already %s", name, dir), nil, StatusSuccess, dir, path
 		}
 
 		apply = func(out Output) bool {
@@ -109,7 +109,7 @@ var userXdgUserdir = Command{
 			return true
 		}
 
-		return nil, fmt.Sprintf("Need to set %s directory to %s", name, path), apply, StatusInfo
+		return nil, fmt.Sprintf("Need to set %s directory to %s", name, path), apply, StatusInfo, dir, path
 	},
 	func() {
 		xdgDirsStorage = map[string]map[string]string{}

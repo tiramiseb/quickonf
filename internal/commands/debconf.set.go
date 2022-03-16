@@ -22,18 +22,18 @@ var debconfSet = Command{
 	},
 	nil,
 	"Install MS fonts\n  debconf.set ttf-mscorefonts-installer msttcorefonts/accepted-mscorefonts-eula true\n  apt.install ttf-mscorefonts-installer",
-	func(args []string) (result []string, msg string, apply Apply, status Status) {
+	func(args []string) (result []string, msg string, apply Apply, status Status, before, after string) {
 		pkg := args[0]
 		name := args[1]
 		value := args[2]
 		param, ok, err := datastores.Debconf.Get(pkg, name)
 		if err != nil {
-			return nil, err.Error(), nil, StatusError
+			return nil, err.Error(), nil, StatusError, "", ""
 		}
 		var verb string
 		if ok {
 			if param.Value == value {
-				return nil, fmt.Sprintf("%s already has value %s", name, value), nil, StatusSuccess
+				return nil, fmt.Sprintf("%s already has value %s", name, value), nil, StatusSuccess, value, value
 			}
 			verb = "change"
 		} else {
@@ -67,7 +67,7 @@ var debconfSet = Command{
 			out.Successf("%s set to %s", name, value)
 			return true
 		}
-		return nil, fmt.Sprintf("Need to %s %s to %s", verb, name, value), apply, StatusInfo
+		return nil, fmt.Sprintf("Need to %s %s to %s", verb, name, value), apply, StatusInfo, param.Value, value
 	},
 	datastores.Debconf.Reset,
 }

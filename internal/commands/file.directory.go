@@ -20,22 +20,22 @@ var fileDirectory = Command{
 	},
 	nil,
 	"Create web root\n  file.directory /srv/web",
-	func(args []string) (result []string, msg string, apply Apply, status Status) {
+	func(args []string) (result []string, msg string, apply Apply, status Status, before, after string) {
 		path := args[0]
 
 		if !filepath.IsAbs(path) {
-			return nil, fmt.Sprintf("%s is not an absolute path", path), nil, StatusError
+			return nil, fmt.Sprintf("%s is not an absolute path", path), nil, StatusError, "", ""
 		}
 
 		info, err := os.Lstat(path)
 		if err == nil {
 			if info.IsDir() {
-				return nil, fmt.Sprintf("Directory %s already exists", path), nil, StatusSuccess
+				return nil, fmt.Sprintf("Directory %s already exists", path), nil, StatusSuccess, "", ""
 			}
-			return nil, fmt.Sprintf("%s already exists but is not a directory", path), nil, StatusError
+			return nil, fmt.Sprintf("%s already exists but is not a directory", path), nil, StatusError, "", ""
 		}
 		if !errors.Is(err, fs.ErrNotExist) {
-			return nil, err.Error(), nil, StatusError
+			return nil, err.Error(), nil, StatusError, "", ""
 		}
 
 		apply = func(out Output) bool {
@@ -47,7 +47,7 @@ var fileDirectory = Command{
 			out.Successf("Created directory %s", path)
 			return true
 		}
-		return nil, fmt.Sprintf("Need to create directory %s", path), apply, StatusInfo
+		return nil, fmt.Sprintf("Need to create directory %s", path), apply, StatusInfo, "", ""
 	},
 	nil,
 }

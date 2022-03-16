@@ -28,7 +28,7 @@ var userGitClone = Command{
 	},
 	nil,
 	"Oh My Bash\n  user.git.clone alice https://github.com/ohmybash/oh-my-bash.git .oh-my-bash master",
-	func(args []string) (result []string, msg string, apply Apply, status Status) {
+	func(args []string) (result []string, msg string, apply Apply, status Status, before, after string) {
 		username := args[0]
 		uri := args[1]
 		dest := args[2]
@@ -36,7 +36,7 @@ var userGitClone = Command{
 
 		usr, err := datastores.Users.Get(username)
 		if err != nil {
-			return nil, err.Error(), nil, StatusError
+			return nil, err.Error(), nil, StatusError, "", ""
 		}
 
 		if !filepath.IsAbs(dest) {
@@ -45,7 +45,7 @@ var userGitClone = Command{
 
 		lst, err := datastores.GitRemotes.List(uri)
 		if err != nil {
-			return nil, fmt.Sprintf("Could not list remote references for %s: %s", uri, err), nil, StatusError
+			return nil, fmt.Sprintf("Could not list remote references for %s: %s", uri, err), nil, StatusError, "", ""
 		}
 		var reference *plumbing.Reference
 		for _, l := range lst {
@@ -54,7 +54,7 @@ var userGitClone = Command{
 			}
 		}
 		if reference == nil {
-			return nil, fmt.Sprintf(`Reference "%s" does not exist in %s`, ref, uri), nil, StatusError
+			return nil, fmt.Sprintf(`Reference "%s" does not exist in %s`, ref, uri), nil, StatusError, "", ""
 		}
 
 		// Check if destination already exists
@@ -74,27 +74,27 @@ var userGitClone = Command{
 				out.Successf("Cloned %s into %s", uri, dest)
 				return true
 			}
-			return nil, fmt.Sprintf("Need to clone %s into %s", uri, dest), apply, StatusInfo
+			return nil, fmt.Sprintf("Need to clone %s into %s", uri, dest), apply, StatusInfo, "", ""
 		}
 		if err != nil {
-			return nil, fmt.Sprintf("Could not check stats of %s: %s", dest, err), nil, StatusError
+			return nil, fmt.Sprintf("Could not check stats of %s: %s", dest, err), nil, StatusError, "", ""
 		}
 
 		// Destination is not a directory, thus not a repository!
 		if !finfo.IsDir() {
-			return nil, fmt.Sprintf("%s is not a directory", dest), nil, StatusError
+			return nil, fmt.Sprintf("%s is not a directory", dest), nil, StatusError, "", ""
 		}
 
 		// Is destination a repository?
 		repo, err := git.PlainOpen(dest)
 		if err != nil {
-			return nil, fmt.Sprintf("%s is not a repository: %s", dest, err), nil, StatusError
+			return nil, fmt.Sprintf("%s is not a repository: %s", dest, err), nil, StatusError, "", ""
 		}
 
 		// Is the destination repository the one we want?
 		remotes, err := repo.Remotes()
 		if err != nil {
-			return nil, fmt.Sprintf("Could not list remotes of %s: %s", dest, err), nil, StatusError
+			return nil, fmt.Sprintf("Could not list remotes of %s: %s", dest, err), nil, StatusError, "", ""
 		}
 		var isTheCorrectRepository bool
 		for _, r := range remotes {
@@ -106,7 +106,7 @@ var userGitClone = Command{
 		}
 
 		if !isTheCorrectRepository {
-			return nil, fmt.Sprintf("%s is not a clone of %s", dest, uri), nil, StatusError
+			return nil, fmt.Sprintf("%s is not a clone of %s", dest, uri), nil, StatusError, "", ""
 		}
 
 		apply = func(out Output) bool {
@@ -124,7 +124,7 @@ var userGitClone = Command{
 			return true
 		}
 
-		return nil, fmt.Sprintf("Need to pull updates in %s", dest), apply, StatusInfo
+		return nil, fmt.Sprintf("Need to pull updates in %s", dest), apply, StatusInfo, "", ""
 	},
 	func() {
 		datastores.GitRemotes.Reset()

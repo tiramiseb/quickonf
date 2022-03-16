@@ -17,14 +17,14 @@ var apt = Command{
 	[]string{"Name of the package to install"},
 	nil,
 	"Install the \"ipcalc\" tool\n  apt.install ipcalc",
-	func(args []string) (result []string, msg string, apply Apply, status Status) {
+	func(args []string) (result []string, msg string, apply Apply, status Status, before, after string) {
 		pkg := args[0]
 		_, ok, err := datastores.DpkgPackages.Get(pkg)
 		if err != nil {
-			return nil, err.Error(), nil, StatusError
+			return nil, err.Error(), nil, StatusError, "", ""
 		}
 		if ok {
-			return nil, fmt.Sprintf("%s is already installed", pkg), nil, StatusSuccess
+			return nil, fmt.Sprintf("%s is already installed", pkg), nil, StatusSuccess, "", ""
 		}
 
 		apply = func(out Output) bool {
@@ -39,7 +39,7 @@ var apt = Command{
 			out.Successf("Installed %s", pkg)
 			return true
 		}
-		return nil, fmt.Sprintf("Need to install %s", pkg), apply, StatusInfo
+		return nil, fmt.Sprintf("Need to install %s", pkg), apply, StatusInfo, "", ""
 	},
 	datastores.DpkgPackages.Reset,
 }

@@ -21,15 +21,15 @@ var jsonGet = Command{
 		"Value",
 	},
 	"Get a value\n  val = json.get \"{\\\"download\\\":{\\\"url\\\":\\\"http://www.example.com/\\\"}}\" download.url",
-	func(args []string) (result []string, msg string, apply Apply, status Status) {
+	func(args []string) (result []string, msg string, apply Apply, status Status, before, after string) {
 		data := args[0]
 		path := args[1]
 		if ok := gjson.Valid(data); !ok {
-			return []string{""}, "First argument is not a JSON object", nil, StatusError
+			return []string{""}, "First argument is not a JSON object", nil, StatusError, "", ""
 		}
 		value := gjson.Get(data, path)
 		str := value.String()
-		return []string{str}, fmt.Sprintf("Read value from JSON: %s", str), nil, StatusInfo
+		return []string{str}, fmt.Sprintf("Read value from JSON"), nil, StatusInfo, "", str
 	},
 	nil,
 }

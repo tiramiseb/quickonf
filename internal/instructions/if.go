@@ -24,6 +24,8 @@ func (i *If) Run(vars Variables, signalTarget chan bool) ([]*CheckReport, bool) 
 			fmt.Sprintf(`"%s" is false, not running contained instructions...`, i.Operation.String()),
 			nil,
 			signalTarget,
+			"",
+			"",
 		}}, true
 	}
 	reports := []*CheckReport{
@@ -33,6 +35,8 @@ func (i *If) Run(vars Variables, signalTarget chan bool) ([]*CheckReport, bool) 
 			fmt.Sprintf(`"%s" is true, running contained instructions...`, i.Operation.String()),
 			nil,
 			signalTarget,
+			"",
+			"",
 		},
 	}
 	for _, ins := range i.Instructions {
