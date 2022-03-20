@@ -25,7 +25,9 @@ func (m *Model) View() string {
 	if global.Toggles["details"] {
 		for _, rep := range group.Reports {
 			view += m.reportView(rep)
-			view += m.detailsView(rep)
+			if rep.Status == commands.StatusInfo {
+				view += m.detailsView(rep)
+			}
 		}
 	} else {
 		for _, rep := range group.Reports {
