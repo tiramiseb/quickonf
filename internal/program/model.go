@@ -4,16 +4,16 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 
-	"github.com/tiramiseb/quickonf/internal/program/checks"
 	"github.com/tiramiseb/quickonf/internal/program/details"
 	"github.com/tiramiseb/quickonf/internal/program/global"
+	"github.com/tiramiseb/quickonf/internal/program/groups"
 	"github.com/tiramiseb/quickonf/internal/program/help"
 	"github.com/tiramiseb/quickonf/internal/program/titlebar"
 )
 
 type model struct {
 	titlebar *titlebar.Model
-	checks   *checks.Model
+	groups   *groups.Model
 	details  *details.Model
 	help     *help.Model
 
@@ -44,7 +44,7 @@ func newModel() *model {
 	}
 	return &model{
 		titlebar: titlebar.New(),
-		checks:   checks.New(),
+		groups:   groups.New(),
 		details:  details.New(),
 		help:     help.New(),
 
@@ -83,7 +83,7 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 					global.Toggles.Disable("focusOnDetails")
 				}
 				if msg.Y >= 0 {
-					m.checks, cmd = m.checks.Update(msg)
+					m.groups, cmd = m.groups.Update(msg)
 				}
 			} else if msg.X > m.separatorXPos {
 				msg.X = msg.X - m.separatorXPos - 1
@@ -125,7 +125,7 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				if global.Toggles["focusOnDetails"] {
 					m.details, cmd = m.details.Update(msg)
 				} else {
-					m.checks, cmd = m.checks.Update(msg)
+					m.groups, cmd = m.groups.Update(msg)
 				}
 			}
 		}
@@ -165,5 +165,5 @@ func (m *model) view() string {
 		leftTitle = m.leftTitleWithFocus
 		rightTitle = m.rightTitle
 	}
-	return leftTitle + "│" + rightTitle + "\n" + m.subtitlesSeparator + "\n" + lipgloss.JoinHorizontal(lipgloss.Top, m.checks.View(), m.verticalSeparator, m.details.View())
+	return leftTitle + "│" + rightTitle + "\n" + m.subtitlesSeparator + "\n" + lipgloss.JoinHorizontal(lipgloss.Top, m.groups.View(), m.verticalSeparator, m.details.View())
 }

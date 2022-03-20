@@ -1,4 +1,4 @@
-package checks
+package groups
 
 import (
 	"github.com/tiramiseb/quickonf/internal/program/global"

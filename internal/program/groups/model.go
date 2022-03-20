@@ -1,4 +1,4 @@
-package checks
+package groups
 
 import (
 	tea "github.com/charmbracelet/bubbletea"

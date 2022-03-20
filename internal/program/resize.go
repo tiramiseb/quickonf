@@ -22,9 +22,9 @@ func (m *model) resize(size tea.WindowSizeMsg) {
 		Height: height,
 	}
 
-	m.leftTitle = subtitleStyle.Width(left.Width).Render("Checks")
+	m.leftTitle = subtitleStyle.Width(left.Width).Render("Groups")
 	m.rightTitle = subtitleStyle.Width(right.Width).Render("Details")
-	m.leftTitleWithFocus = subtitleWithFocusStyle.Width(left.Width).Render("Checks")
+	m.leftTitleWithFocus = subtitleWithFocusStyle.Width(left.Width).Render("Groups")
 	m.rightTitleWithFocus = subtitleWithFocusStyle.Width(right.Width).Render("Details")
 
 	m.subtitlesSeparator = strings.Repeat("─", left.Width) + "┼" + strings.Repeat("─", right.Width)
@@ -37,7 +37,7 @@ func (m *model) resize(size tea.WindowSizeMsg) {
 	m.verticalSeparator = separator
 
 	m.titlebar = m.titlebar.Resize(size)
-	m.checks = m.checks.Resize(left)
+	m.groups = m.groups.Resize(left)
 	m.details = m.details.Resize(right)
 	m.help = m.help.Resize(tea.WindowSizeMsg{
 		Width:  size.Width,
