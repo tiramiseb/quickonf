@@ -53,6 +53,7 @@ var aptSource = Command{
 				out.Errorf("Could not update packages list: %s", helper.ExecErr(err))
 				return false
 			}
+			out.Success("Updated packages list")
 			return true
 		}
 		return nil, fmt.Sprintf("Need to add apt sources %s", name), apply, StatusInfo, existing, sources
