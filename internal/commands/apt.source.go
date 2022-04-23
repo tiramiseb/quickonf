@@ -56,7 +56,10 @@ var aptSource = Command{
 			out.Success("Updated packages list")
 			return true
 		}
-		return nil, fmt.Sprintf("Need to add apt sources %s", name), apply, StatusInfo, existing, sources
+		if len(existingB) == 0 {
+			return nil, fmt.Sprintf("Need to add apt sources %s", name), apply, StatusInfo, "", sources
+		}
+		return nil, fmt.Sprintf("Need to change apt sources %s", name), apply, StatusInfo, existing, sources
 	},
 	nil,
 }

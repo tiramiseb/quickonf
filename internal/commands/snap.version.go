@@ -30,7 +30,7 @@ var snapVersion = Command{
 		if !ok {
 			return []string{""}, fmt.Sprintf("Package %s is not installed", name), nil, StatusSuccess, "", ""
 		}
-		return []string{pkg.Version}, fmt.Sprintf("Package %s is installed in version %s", name, pkg.Version), nil, StatusSuccess, "Version " + pkg.Version, ""
+		return []string{pkg.Version}, fmt.Sprintf("Package %s is installed in version %s", name, pkg.Version), nil, StatusSuccess, "", ""
 	},
 	nil,
 }

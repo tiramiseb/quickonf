@@ -36,6 +36,8 @@ var nmWifi = Command{
 				return nil, fmt.Sprintf("%s is already configured", ssid), nil, StatusSuccess, conn.String(), ""
 			}
 			msg = fmt.Sprintf("Need to change psk for wifi network %s", ssid)
+			before = conn.String()
+			after = psk
 			apply = func(out Output) bool {
 				out.Infof("Changing psk for wifi network %s", ssid)
 				if err := helper.Exec(nil, nil, "nmcli", "connection", "modify", ssid, "802-11-wireless-security.psk", psk); err != nil {
@@ -58,7 +60,7 @@ var nmWifi = Command{
 				return true
 			}
 		}
-		return nil, msg, apply, StatusInfo, "", ""
+		return nil, msg, apply, StatusInfo, before, after
 	},
 	datastores.NetworkManagerConnections.Reset,
 }
