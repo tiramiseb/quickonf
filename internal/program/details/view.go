@@ -45,9 +45,9 @@ func (m *Model) reportView(rep *instructions.CheckReport) string {
 
 func (m *Model) detailsView(rep *instructions.CheckReport) string {
 	switch {
-	case rep.Before == "" && rep.Before == "":
+	case rep.Before == "" && rep.After == "":
 		return ""
-	case rep.Before != "" && rep.After != "":
+	case rep.Before != "" && rep.After != "" && rep.Before != rep.After:
 		leftWidth := (m.width - 1) / 2
 		rightWidth := m.width - leftWidth - 1
 		left := lipgloss.NewStyle().Width(leftWidth).Render(rep.Before)
@@ -61,10 +61,10 @@ func (m *Model) detailsView(rep *instructions.CheckReport) string {
 			separator += "│\n"
 		}
 		separator += "│"
-		return lipgloss.JoinHorizontal(lipgloss.Top, left, separator, right)
+		return lipgloss.JoinHorizontal(lipgloss.Top, left, separator, right) + "\n"
 	case rep.Before == "":
-		return lipgloss.NewStyle().Width(m.width).Render(rep.After)
+		return lipgloss.NewStyle().Width(m.width).Render(rep.After) + "\n"
 	default:
-		return lipgloss.NewStyle().Width(m.width).Render(rep.Before)
+		return lipgloss.NewStyle().Width(m.width).Render(rep.Before) + "\n"
 	}
 }
