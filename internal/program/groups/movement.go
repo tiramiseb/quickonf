@@ -58,6 +58,11 @@ func (m *Model) end() {
 }
 
 func (m *Model) selectLine(lineIdx int) {
+	firstGroupInView := global.SelectedGroup - m.selectedGroupToViewportOffset
+	clickedGroup := firstGroupInView + lineIdx
+	if clickedGroup >= len(global.DisplayedGroups) {
+		return
+	}
 	global.SelectedGroup = global.SelectedGroup - m.selectedGroupToViewportOffset + lineIdx
 	m.selectedGroupToViewportOffset = lineIdx
 }
