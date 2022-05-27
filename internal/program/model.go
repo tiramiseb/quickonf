@@ -72,27 +72,31 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case tea.MouseMsg:
 		switch {
 		case msg.Y == 0:
+			// Click on titlebar
 			m.titlebar, cmd = m.titlebar.Update(msg)
 		case global.Toggles["help"]:
+			// Help is displayed, forward to help
 			msg.Y--
 			m.help, cmd = m.help.Update(msg)
-		default:
+		case msg.X < m.separatorXPos:
+			// Click on group
 			msg.Y -= 3
-			if msg.X < m.separatorXPos {
-				if msg.Type == tea.MouseRelease {
-					global.Toggles.Disable("focusOnDetails")
-				}
-				if msg.Y >= 0 {
-					m.groups, cmd = m.groups.Update(msg)
-				}
-			} else if msg.X > m.separatorXPos {
-				msg.X = msg.X - m.separatorXPos - 1
-				if msg.Type == tea.MouseRelease {
-					global.Toggles.Enable("focusOnDetails")
-				}
-				if msg.Y >= 0 {
-					m.details, cmd = m.details.Update(msg)
-				}
+			m.groups, cmd = m.groups.Update(msg)
+			if msg.Type == tea.MouseRelease {
+				cmd = tea.Batch(
+					disable("focusOnDetails"),
+					cmd,
+				)
+			}
+		case msg.X > m.separatorXPos:
+			// Clock on detail
+			msg.Y -= 3
+			m.details, cmd = m.details.Update(msg)
+			if msg.Type == tea.MouseRelease {
+				cmd = tea.Batch(
+					enable("focusOnDetails"),
+					cmd,
+				)
 			}
 		}
 	case tea.KeyMsg:
@@ -101,7 +105,7 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			case "ctrl+c":
 				cmd = tea.Quit
 			case "esc":
-				global.Toggles.Disable("help")
+				cmd = disable("help")
 			default:
 				m.help, cmd = m.help.Update(msg)
 			}
@@ -110,15 +114,17 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			case "ctrl+c", "esc", "q", "Q":
 				cmd = tea.Quit
 			case "f", "F":
-				global.Toggles.Toggle("filter")
+				cmd = toggle("filter")
 			case "d", "D":
-				global.Toggles.Toggle("details")
+				cmd = toggle("details")
 			case "h", "H":
-				global.Toggles.Enable("help")
+				cmd = enable("help")
 			case "right":
-				global.Toggles.Enable("focusOnDetails")
+				cmd = enable("focusOnDetails")
 			case "left":
-				global.Toggles.Disable("focusOnDetails")
+				cmd = disable("focusOnDetails")
+			// case "r", "R":
+			//
 			case "enter":
 				cmd = apply(global.SelectedGroup)
 			default:
@@ -140,7 +146,7 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			}
 		}
 	case global.ToggleHelpMsg:
-		global.Toggles.Toggle("help")
+		cmd = toggle("help")
 	case newSignal:
 		cmd = m.listenSignal
 	}

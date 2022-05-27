@@ -71,9 +71,9 @@ func (m *Model) Update(msg tea.Msg) (*Model, tea.Cmd) {
 			} else {
 				switch {
 				case msg.X >= m.filterStart && msg.X <= m.filterEnd:
-					m.filter.Click()
+					cmd = m.filter.Click()
 				case msg.X >= m.detailsStart && msg.X <= m.detailsEnd:
-					m.details.Click()
+					cmd = m.details.Click()
 				case msg.X >= m.helpStart && msg.X <= m.helpEnd:
 					cmd = m.help.Click()
 				case msg.X >= m.quitStart && msg.X <= m.quitEnd:

@@ -30,7 +30,9 @@ func (m *Model) Update(msg tea.Msg) (*Model, tea.Cmd) {
 			m.viewport, cmd = m.viewport.Update(msg)
 		}
 	case tea.MouseMsg:
-		m.viewport, cmd = m.viewport.Update(msg)
+		if msg.Y >= 0 {
+			m.viewport, cmd = m.viewport.Update(msg)
+		}
 	}
 	return m, cmd
 }

@@ -40,7 +40,9 @@ func (m *Model) Update(msg tea.Msg) (*Model, tea.Cmd) {
 		case tea.MouseWheelDown:
 			m.scrollDown()
 		case tea.MouseRelease:
-			m.selectLine(msg.Y)
+			if msg.Y >= 0 {
+				m.selectLine(msg.Y)
+			}
 		}
 	}
 	return m, cmd

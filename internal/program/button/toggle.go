@@ -1,6 +1,7 @@
 package button
 
 import (
+	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 	"github.com/tiramiseb/quickonf/internal/program/global"
 )
@@ -23,8 +24,11 @@ func NewToggle(text string, hintPosition int, key string) *Toggle {
 	}
 }
 
-func (t *Toggle) Click() {
-	global.Toggles.Toggle(t.key)
+func (t *Toggle) Click() tea.Cmd {
+	return func() tea.Msg {
+		global.Toggles.Toggle(t.key)
+		return nil
+	}
 }
 
 func (t *Toggle) View() string {
