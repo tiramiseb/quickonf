@@ -18,6 +18,8 @@ type Group struct {
 	Instructions []Instruction
 
 	Reports []*CheckReport
+
+	alreadyApplied bool
 }
 
 // Check runs the group checks and returns its success status
@@ -80,13 +82,16 @@ func (g *Group) Reset() {
 }
 
 // Apply applies modifications for this group
-func (g *Group) Apply() bool {
+func (g *Group) Apply() {
+	if g.alreadyApplied {
+		return
+	}
+	g.alreadyApplied = true
 	for _, report := range g.Reports {
 		if !report.Apply() {
-			return false
+			return
 		}
 	}
-	return true
 }
 
 func SortGroups(groups []*Group) {
