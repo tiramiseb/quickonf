@@ -24,7 +24,7 @@ type Group struct {
 func (g *Group) Check(signalTarget chan bool) bool {
 	vars := NewVariablesSet()
 	for _, ins := range g.Instructions {
-		r, ok := ins.Run(vars, signalTarget)
+		r, ok := ins.RunCheck(vars, signalTarget)
 		g.Reports = append(g.Reports, r...)
 		if !ok {
 			return false
@@ -37,7 +37,8 @@ func (g *Group) Check(signalTarget chan bool) bool {
 func (g *Group) Status() commands.Status {
 	var hasInfo, hasRunning, hasSuccess bool
 	for _, r := range g.Reports {
-		switch r.Status {
+		status, _ := r.GetStatusAndMessage()
+		switch status {
 		case commands.StatusInfo:
 			hasInfo = true
 		case commands.StatusRunning:

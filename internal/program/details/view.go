@@ -22,27 +22,24 @@ func (m *Model) View() string {
 			) + "\n"
 		}
 	}
-	if global.Toggles["details"] {
-		for _, rep := range group.Reports {
-			view += m.reportView(rep)
-			if rep.Status == commands.StatusInfo {
-				view += m.detailsView(rep)
-			}
-		}
-	} else {
-		for _, rep := range group.Reports {
-			view += m.reportView(rep)
-		}
+	showDetails := global.Toggles["details"]
+	for _, rep := range group.Reports {
+		view += m.reportView(rep, showDetails)
 	}
 	m.viewport.SetContent(view)
 	return m.viewport.View()
 }
 
-func (m *Model) reportView(rep *instructions.CheckReport) string {
-	content := fmt.Sprintf("[%s] %s", rep.Name, rep.Message)
-	return global.Styles[rep.Status].Render(
+func (m *Model) reportView(rep *instructions.CheckReport, details bool) string {
+	status, message := rep.GetStatusAndMessage()
+	content := fmt.Sprintf("[%s] %s", rep.Name, message)
+	result := global.Styles[status].Render(
 		global.MakeWidth(content, m.width),
 	) + "\n"
+	if status == commands.StatusInfo && details {
+		result += m.detailsView(rep)
+	}
+	return result
 }
 
 func (m *Model) detailsView(rep *instructions.CheckReport) string {

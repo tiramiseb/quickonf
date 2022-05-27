@@ -4,8 +4,8 @@ package instructions
 type Instruction interface {
 	// Name returns the instruction name
 	Name() string
-	// Run the instruction and return the check reports
-	Run(Variables, chan bool) ([]*CheckReport, bool)
+	// RunCheck runs the instruction's check part and return the check reports
+	RunCheck(Variables, chan bool) ([]*CheckReport, bool)
 	// Reset everything, to have it as it has never run
 	Reset()
 }

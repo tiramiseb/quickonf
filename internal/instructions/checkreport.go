@@ -2,6 +2,7 @@ package instructions
 
 import (
 	"fmt"
+	"sync"
 
 	"github.com/tiramiseb/quickonf/internal/commands"
 )
@@ -9,12 +10,14 @@ import (
 // CheckReport is a single report after checking is something must be applied
 type CheckReport struct {
 	Name         string
-	Status       commands.Status
-	Message      string
+	status       commands.Status
+	message      string
 	apply        commands.Apply
 	signalTarget chan bool
 	Before       string
 	After        string
+
+	mu sync.Mutex
 }
 
 func (c *CheckReport) HasApply() bool {
@@ -29,66 +32,52 @@ func (c *CheckReport) Apply() bool {
 	return c.apply(c)
 }
 
-func (c *CheckReport) Info(message string) {
-	c.Status = commands.StatusInfo
-	c.Message = message
+func (c *CheckReport) GetStatusAndMessage() (commands.Status, string) {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	return c.status, c.message
+}
+
+func (c *CheckReport) setStatusAndMessage(status commands.Status, message string) {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	c.status = status
+	c.message = message
 	if c.signalTarget != nil {
-		c.signalTarget <- true
+		defer func() {
+			c.signalTarget <- true
+		}()
 	}
+}
+
+func (c *CheckReport) Info(message string) {
+	c.setStatusAndMessage(commands.StatusInfo, message)
 }
 
 func (c *CheckReport) Infof(format string, a ...interface{}) {
-	c.Status = commands.StatusInfo
-	c.Message = fmt.Sprintf(format, a...)
-	if c.signalTarget != nil {
-		c.signalTarget <- true
-	}
+	c.setStatusAndMessage(commands.StatusInfo, fmt.Sprintf(format, a...))
 }
 
 func (c *CheckReport) Running(message string) {
-	c.Status = commands.StatusRunning
-	c.Message = message
-	if c.signalTarget != nil {
-		c.signalTarget <- true
-	}
+	c.setStatusAndMessage(commands.StatusRunning, message)
 }
 
 func (c *CheckReport) Runningf(format string, a ...interface{}) {
-	c.Status = commands.StatusRunning
-	c.Message = fmt.Sprintf(format, a...)
-	if c.signalTarget != nil {
-		c.signalTarget <- true
-	}
+	c.setStatusAndMessage(commands.StatusRunning, fmt.Sprintf(format, a...))
 }
 
 func (c *CheckReport) Success(message string) {
-	c.Status = commands.StatusSuccess
-	c.Message = message
-	if c.signalTarget != nil {
-		c.signalTarget <- true
-	}
+	c.setStatusAndMessage(commands.StatusSuccess, message)
 }
 
 func (c *CheckReport) Successf(format string, a ...interface{}) {
-	c.Status = commands.StatusSuccess
-	c.Message = fmt.Sprintf(format, a...)
-	if c.signalTarget != nil {
-		c.signalTarget <- true
-	}
+	c.setStatusAndMessage(commands.StatusSuccess, fmt.Sprintf(format, a...))
 }
 
 func (c *CheckReport) Error(message string) {
-	c.Status = commands.StatusError
-	c.Message = message
-	if c.signalTarget != nil {
-		c.signalTarget <- true
-	}
+	c.setStatusAndMessage(commands.StatusError, message)
 }
 
 func (c *CheckReport) Errorf(format string, a ...interface{}) {
-	c.Status = commands.StatusError
-	c.Message = fmt.Sprintf(format, a...)
-	if c.signalTarget != nil {
-		c.signalTarget <- true
-	}
+	c.setStatusAndMessage(commands.StatusError, fmt.Sprintf(format, a...))
 }

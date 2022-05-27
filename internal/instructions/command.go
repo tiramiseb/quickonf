@@ -14,9 +14,14 @@ func (c *Command) Name() string {
 	return c.Command.Name
 }
 
-func (c *Command) Run(vars Variables, signalTarget chan bool) ([]*CheckReport, bool) {
+func (c *Command) RunCheck(vars Variables, signalTarget chan bool) ([]*CheckReport, bool) {
 	if len(c.Arguments) != len(c.Command.Arguments) {
-		return []*CheckReport{{c.Command.Name, commands.StatusError, "wrong number of arguments", nil, signalTarget, "", ""}}, false
+		return []*CheckReport{{
+			Name:         c.Command.Name,
+			status:       commands.StatusError,
+			message:      "wrong number of arguments",
+			signalTarget: signalTarget,
+		}}, false
 	}
 	args := make([]string, len(c.Arguments))
 	for i, src := range c.Arguments {
@@ -29,7 +34,15 @@ func (c *Command) Run(vars Variables, signalTarget chan bool) ([]*CheckReport, b
 		}
 		vars.define(tgt, result[i])
 	}
-	return []*CheckReport{{c.Command.Name, status, out, apply, signalTarget, before, after}}, status != commands.StatusError
+	return []*CheckReport{{
+		Name:         c.Command.Name,
+		status:       status,
+		message:      out,
+		apply:        apply,
+		signalTarget: signalTarget,
+		Before:       before,
+		After:        after,
+	}}, status != commands.StatusError
 }
 
 func (c *Command) Reset() {
