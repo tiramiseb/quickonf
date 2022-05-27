@@ -69,7 +69,7 @@ var gitClone = Command{
 				}
 				out.Infof("Checking out %s in %s", ref, dest)
 				if err := worktree.Checkout(&git.CheckoutOptions{
-					Hash: plumbing.NewHash(ref),
+					Hash: reference.Hash(),
 				}); err != nil {
 					out.Errorf("Could not checkout %s in %s: %s", ref, dest, err)
 					return false
@@ -126,7 +126,7 @@ var gitClone = Command{
 			}
 			out.Infof("Checking out %s in %s", ref, dest)
 			if err := worktree.Checkout(&git.CheckoutOptions{
-				Hash: plumbing.NewHash(ref),
+				Hash: reference.Hash(),
 			}); err != nil {
 				out.Errorf("Could not checkout %s in %s: %s", ref, dest, err)
 				return false
