@@ -1,8 +1,6 @@
 package program
 
 import (
-	"log"
-
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/tiramiseb/quickonf/internal/program/global/groups"
 )
@@ -43,7 +41,6 @@ func (m *model) next() tea.Cmd {
 		thisId := id
 		cmds[thisIdx] = func() tea.Msg {
 			groups.InitialCheck(thisId, m.signalTarget)
-			log.Print("DONE CHECK")
 			return checkDone{}
 		}
 	}
