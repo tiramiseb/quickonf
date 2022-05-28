@@ -1,8 +1,6 @@
 package instructions
 
 import (
-	"sort"
-
 	"github.com/tiramiseb/quickonf/internal/commands"
 )
 
@@ -74,10 +72,4 @@ func (g *Group) Apply() {
 			return
 		}
 	}
-}
-
-func SortGroups(groups []*Group) {
-	sort.Slice(groups, func(i, j int) bool {
-		return groups[i].Priority > groups[j].Priority
-	})
 }

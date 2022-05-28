@@ -2,6 +2,7 @@ package conf
 
 import (
 	"io"
+	"sort"
 
 	"github.com/tiramiseb/quickonf/internal/instructions"
 )
@@ -17,5 +18,9 @@ func Read(r io.Reader) ([]*instructions.Group, []error) {
 	if err != nil {
 		return nil, []error{err}
 	}
+	// Sort groups by priority
+	sort.Slice(groups, func(i, j int) bool {
+		return groups[i].Priority > groups[j].Priority
+	})
 	return groups, p.errs
 }
