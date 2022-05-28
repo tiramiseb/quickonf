@@ -101,9 +101,7 @@ func (p *parser) parseInstructions(prefixAllWith []*token, line tokens, group *i
 					newLine[i+nbPrefixes] = line[i]
 				}
 			} else {
-				for i, t := range prefixAllWith {
-					newLine[i] = t
-				}
+				copy(newLine, prefixAllWith)
 				for i, t := range line {
 					newLine[i+nbPrefixes] = t
 				}
