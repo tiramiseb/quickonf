@@ -43,14 +43,19 @@ func New() *Model {
 	return &Model{
 		filter:  button.NewToggle("Filter checks", 0, "filter"),
 		details: button.NewToggle("More details", 5, "details"),
-		help:    button.NewButton("Help", 0, global.ToggleHelp),
+		help:    button.NewButton("Help", 0, toggleHelp),
 		quit:    button.NewButton("Quit", 0, tea.Quit),
 
-		helpBack: button.NewButton("Back (esc)", -2, global.ToggleHelp),
+		helpBack: button.NewButton("Back (esc)", -2, toggleHelp),
 
 		view:     func() string { return "" },
 		helpView: func() string { return "" },
 	}
+}
+
+func toggleHelp() tea.Msg {
+	toggles.Toggle("help")
+	return nil
 }
 
 // Resize resizes the titlebar

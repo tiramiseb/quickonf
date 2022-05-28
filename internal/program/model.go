@@ -5,7 +5,6 @@ import (
 	"github.com/charmbracelet/lipgloss"
 
 	"github.com/tiramiseb/quickonf/internal/program/details"
-	"github.com/tiramiseb/quickonf/internal/program/global"
 	"github.com/tiramiseb/quickonf/internal/program/global/groups"
 	"github.com/tiramiseb/quickonf/internal/program/global/toggles"
 	groupsList "github.com/tiramiseb/quickonf/internal/program/groups"
@@ -129,8 +128,6 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		if m.currentlyRunningChecks == 0 {
 			cmd = m.next()
 		}
-	case global.ToggleHelpMsg:
-		toggles.Toggle("help")
 	case newSignal:
 		cmd = m.listenSignal
 	}
