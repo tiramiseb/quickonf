@@ -6,15 +6,16 @@ import (
 
 	"github.com/tiramiseb/quickonf/internal/program/details"
 	"github.com/tiramiseb/quickonf/internal/program/global"
+	"github.com/tiramiseb/quickonf/internal/program/global/groups"
 	"github.com/tiramiseb/quickonf/internal/program/global/toggles"
-	"github.com/tiramiseb/quickonf/internal/program/groups"
+	groupsList "github.com/tiramiseb/quickonf/internal/program/groups"
 	"github.com/tiramiseb/quickonf/internal/program/help"
 	"github.com/tiramiseb/quickonf/internal/program/titlebar"
 )
 
 type model struct {
 	titlebar *titlebar.Model
-	groups   *groups.Model
+	groups   *groupsList.Model
 	details  *details.Model
 	help     *help.Model
 
@@ -36,20 +37,13 @@ type model struct {
 }
 
 func newModel() *model {
-	var largestName int
-	for _, g := range global.AllGroups {
-		l := len(g.Name)
-		if l > largestName {
-			largestName = l
-		}
-	}
 	return &model{
 		titlebar: titlebar.New(),
-		groups:   groups.New(),
+		groups:   groupsList.New(),
 		details:  details.New(),
 		help:     help.New(),
 
-		largestGroupName: largestName,
+		largestGroupName: groups.GetMaxNameLength(),
 
 		byPriority: checksIndexByPriority(),
 
@@ -121,7 +115,7 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			// case "r", "R":
 			//
 			case "enter":
-				cmd = apply(global.SelectedGroup)
+				go groups.ApplySelected()
 			default:
 				if toggles.Get("focusOnDetails") {
 					m.details, cmd = m.details.Update(msg)
@@ -131,14 +125,9 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			}
 		}
 	case checkDone:
-		global.GroupsMayHaveChanged()
 		m.currentlyRunningChecks--
 		if m.currentlyRunningChecks == 0 {
-			if cmd == nil {
-				cmd = m.next()
-			} else {
-				cmd = tea.Batch(cmd, m.next())
-			}
+			cmd = m.next()
 		}
 	case global.ToggleHelpMsg:
 		toggles.Toggle("help")

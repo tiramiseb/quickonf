@@ -1,8 +1,10 @@
 package program
 
 import (
+	"log"
+
 	tea "github.com/charmbracelet/bubbletea"
-	"github.com/tiramiseb/quickonf/internal/program/global"
+	"github.com/tiramiseb/quickonf/internal/program/global/groups"
 )
 
 type checkDone struct{}
@@ -13,7 +15,7 @@ func checksIndexByPriority() [][]int {
 		byPriority      [][]int
 		thisPriority    []int
 	)
-	for i, g := range global.AllGroups {
+	for i, g := range groups.GetAll() {
 		if g.Priority != currentPriority {
 			if thisPriority != nil {
 				byPriority = append(byPriority, thisPriority)
@@ -37,16 +39,15 @@ func (m *model) next() tea.Cmd {
 	nbChecks := len(groupIDs)
 	cmds := make([]tea.Cmd, nbChecks)
 	for i, id := range groupIDs {
-		cmds[i] = m.check(id)
+		thisIdx := i
+		thisId := id
+		cmds[thisIdx] = func() tea.Msg {
+			groups.InitialCheck(thisId, m.signalTarget)
+			log.Print("DONE CHECK")
+			return checkDone{}
+		}
 	}
 	m.nextPriorityGroup++
 	m.currentlyRunningChecks = nbChecks
 	return tea.Batch(cmds...)
-}
-
-func (m *model) check(i int) tea.Cmd {
-	return func() tea.Msg {
-		global.AllGroups[i].Check(m.signalTarget)
-		return checkDone{}
-	}
 }

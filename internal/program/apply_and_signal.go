@@ -2,15 +2,7 @@ package program
 
 import (
 	tea "github.com/charmbracelet/bubbletea"
-	"github.com/tiramiseb/quickonf/internal/program/global"
 )
-
-func apply(i int) tea.Cmd {
-	return func() tea.Msg {
-		global.DisplayedGroups[i].Apply()
-		return nil
-	}
-}
 
 func (m *model) listenSignal() tea.Msg {
 	<-m.signalTarget

@@ -7,12 +7,13 @@ import (
 	"github.com/tiramiseb/quickonf/internal/commands"
 	"github.com/tiramiseb/quickonf/internal/instructions"
 	"github.com/tiramiseb/quickonf/internal/program/global"
+	"github.com/tiramiseb/quickonf/internal/program/global/groups"
 	"github.com/tiramiseb/quickonf/internal/program/global/toggles"
 )
 
 func (m *Model) View() string {
 	var view string
-	group := global.GetSelectedGroup()
+	group := groups.GetSelected()
 	if group == nil {
 		return ""
 	}

@@ -5,12 +5,12 @@ import (
 
 	"github.com/tiramiseb/quickonf/internal/commands"
 	"github.com/tiramiseb/quickonf/internal/instructions"
-	"github.com/tiramiseb/quickonf/internal/program/global"
+	"github.com/tiramiseb/quickonf/internal/program/global/groups"
 	"github.com/tiramiseb/quickonf/internal/program/global/toggles"
 )
 
 func Run(g []*instructions.Group) {
-	global.AllGroups = g
+	groups.Initialize(g)
 	toggles.Enable("filter")
 	toggles.Enable("helpIntro")
 	program := tea.NewProgram(

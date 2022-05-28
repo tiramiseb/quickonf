@@ -1,7 +1,7 @@
 package groups
 
 import (
-	"github.com/tiramiseb/quickonf/internal/program/global"
+	"github.com/tiramiseb/quickonf/internal/program/global/groups"
 )
 
 const scrollDelta = 3 // Same value as default value for viewport's mousewheeldelta
@@ -11,64 +11,51 @@ func (m *Model) centerOnSelectedGroup() {
 }
 
 func (m *Model) up() {
-	if global.SelectedGroup == 0 {
-		return
-	}
-	global.SelectedGroup--
+	groups.DecrementSelected(1)
 	m.centerOnSelectedGroup()
 }
 
 func (m *Model) down() {
-	if global.SelectedGroup == len(global.DisplayedGroups)-1 {
-		// Already last group
-		return
-	}
-	global.SelectedGroup++
+	groups.IncrementSelected(1)
 	m.centerOnSelectedGroup()
 }
 
 func (m *Model) pgup() {
-	global.SelectedGroup -= m.height / 2
-	if global.SelectedGroup < 0 {
-		global.SelectedGroup = 0
-	}
+	groups.DecrementSelected(m.height / 2)
 	m.centerOnSelectedGroup()
 }
 
 func (m *Model) pgdown() {
-	global.SelectedGroup += m.height / 2
-	if global.SelectedGroup >= len(global.DisplayedGroups) {
-		global.SelectedGroup = len(global.DisplayedGroups) - 1
-	}
+	groups.IncrementSelected(m.height / 2)
 	m.centerOnSelectedGroup()
 }
 
 func (m *Model) home() {
-	global.SelectedGroup = 0
+	groups.SelectFirst()
 	m.selectedGroupToViewportOffset = 0
 }
 
 func (m *Model) end() {
-	global.SelectedGroup = len(global.DisplayedGroups) - 1
-	m.selectedGroupToViewportOffset = len(global.DisplayedGroups) - m.height
+	groups.SelectLast()
+	m.selectedGroupToViewportOffset = groups.CountDisplayed() - m.height
 	if m.selectedGroupToViewportOffset < 0 {
 		// Less groups than available space, display all
-		m.selectedGroupToViewportOffset = len(global.DisplayedGroups) - 1
+		m.selectedGroupToViewportOffset = groups.CountDisplayed() - 1
 	}
 }
 
 func (m *Model) selectLine(lineIdx int) {
-	firstGroupInView := global.SelectedGroup - m.selectedGroupToViewportOffset
+	firstGroupInView := groups.GetSelectedIndex() - m.selectedGroupToViewportOffset
 	clickedGroup := firstGroupInView + lineIdx
-	if clickedGroup >= len(global.DisplayedGroups) {
+	if clickedGroup >= groups.CountDisplayed() {
 		return
 	}
-	global.SelectedGroup = global.SelectedGroup - m.selectedGroupToViewportOffset + lineIdx
+	groups.IncrementSelected(lineIdx - m.selectedGroupToViewportOffset)
 	m.selectedGroupToViewportOffset = lineIdx
 }
 
 func (m *Model) scrollUp() {
-	if global.SelectedGroup-m.selectedGroupToViewportOffset <= 0 {
+	if groups.GetSelectedIndex()-m.selectedGroupToViewportOffset <= 0 {
 		// Already at top of view, do not scroll more
 		return
 	}
@@ -76,7 +63,7 @@ func (m *Model) scrollUp() {
 }
 
 func (m *Model) scrollDown() {
-	if global.SelectedGroup-m.selectedGroupToViewportOffset+m.height >= len(global.DisplayedGroups) {
+	if groups.GetSelectedIndex()-m.selectedGroupToViewportOffset+m.height >= groups.CountDisplayed() {
 		// Already at bottom of view, do not scroll more
 		return
 	}
