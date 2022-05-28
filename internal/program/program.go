@@ -12,6 +12,8 @@ func Run(g []*instructions.Group) {
 	instructions.SortGroups(g)
 	global.AllGroups = g
 	global.DisplayedGroups = g
+	toggles.Enable("filter")
+	toggles.Enable("helpIntro")
 	program := tea.NewProgram(
 		newModel(),
 		tea.WithAltScreen(),

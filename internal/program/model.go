@@ -6,6 +6,7 @@ import (
 
 	"github.com/tiramiseb/quickonf/internal/program/details"
 	"github.com/tiramiseb/quickonf/internal/program/global"
+	"github.com/tiramiseb/quickonf/internal/program/global/toggles"
 	"github.com/tiramiseb/quickonf/internal/program/groups"
 	"github.com/tiramiseb/quickonf/internal/program/help"
 	"github.com/tiramiseb/quickonf/internal/program/titlebar"
@@ -74,7 +75,7 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case msg.Y == 0:
 			// Click on titlebar
 			m.titlebar, cmd = m.titlebar.Update(msg)
-		case global.Toggles["help"]:
+		case toggles.Get("help"):
 			// Help is displayed, forward to help
 			msg.Y--
 			m.help, cmd = m.help.Update(msg)
@@ -83,29 +84,23 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			msg.Y -= 3
 			m.groups, cmd = m.groups.Update(msg)
 			if msg.Type == tea.MouseRelease {
-				cmd = tea.Batch(
-					disable("focusOnDetails"),
-					cmd,
-				)
+				toggles.Disable("focusOnDetails")
 			}
 		case msg.X > m.separatorXPos:
 			// Clock on detail
 			msg.Y -= 3
 			m.details, cmd = m.details.Update(msg)
 			if msg.Type == tea.MouseRelease {
-				cmd = tea.Batch(
-					enable("focusOnDetails"),
-					cmd,
-				)
+				toggles.Enable("focusOnDetails")
 			}
 		}
 	case tea.KeyMsg:
-		if global.Toggles["help"] {
+		if toggles.Get("help") {
 			switch msg.String() {
 			case "ctrl+c":
 				cmd = tea.Quit
 			case "esc":
-				cmd = disable("help")
+				toggles.Disable("help")
 			default:
 				m.help, cmd = m.help.Update(msg)
 			}
@@ -114,21 +109,21 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			case "ctrl+c", "esc", "q", "Q":
 				cmd = tea.Quit
 			case "f", "F":
-				cmd = toggle("filter")
+				toggles.Toggle("filter")
 			case "d", "D":
-				cmd = toggle("details")
+				toggles.Toggle("details")
 			case "h", "H":
-				cmd = enable("help")
+				toggles.Enable("help")
 			case "right":
-				cmd = enable("focusOnDetails")
+				toggles.Enable("focusOnDetails")
 			case "left":
-				cmd = disable("focusOnDetails")
+				toggles.Disable("focusOnDetails")
 			// case "r", "R":
 			//
 			case "enter":
 				cmd = apply(global.SelectedGroup)
 			default:
-				if global.Toggles["focusOnDetails"] {
+				if toggles.Get("focusOnDetails") {
 					m.details, cmd = m.details.Update(msg)
 				} else {
 					m.groups, cmd = m.groups.Update(msg)
@@ -146,7 +141,7 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			}
 		}
 	case global.ToggleHelpMsg:
-		cmd = toggle("help")
+		toggles.Toggle("help")
 	case newSignal:
 		cmd = m.listenSignal
 	}
@@ -155,7 +150,7 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (m *model) View() string {
-	if global.Toggles["help"] {
+	if toggles.Get("help") {
 		return m.titlebar.View() + "\n" + m.help.View()
 	} else {
 		return m.titlebar.View() + "\n" + m.view()
@@ -164,7 +159,7 @@ func (m *model) View() string {
 
 func (m *model) view() string {
 	var leftTitle, rightTitle string
-	if global.Toggles["focusOnDetails"] {
+	if toggles.Get("focusOnDetails") {
 		leftTitle = m.leftTitle
 		rightTitle = m.rightTitleWithFocus
 	} else {

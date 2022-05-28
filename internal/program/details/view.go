@@ -7,6 +7,7 @@ import (
 	"github.com/tiramiseb/quickonf/internal/commands"
 	"github.com/tiramiseb/quickonf/internal/instructions"
 	"github.com/tiramiseb/quickonf/internal/program/global"
+	"github.com/tiramiseb/quickonf/internal/program/global/toggles"
 )
 
 func (m *Model) View() string {
@@ -22,7 +23,7 @@ func (m *Model) View() string {
 			) + "\n"
 		}
 	}
-	showDetails := global.Toggles["details"]
+	showDetails := toggles.Get("details")
 	for _, rep := range group.Reports {
 		view += m.reportView(rep, showDetails)
 	}

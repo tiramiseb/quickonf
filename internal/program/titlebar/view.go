@@ -3,7 +3,7 @@ package titlebar
 import (
 	"strings"
 
-	"github.com/tiramiseb/quickonf/internal/program/global"
+	"github.com/tiramiseb/quickonf/internal/program/global/toggles"
 )
 
 var space = style.Render(" ")
@@ -135,7 +135,7 @@ func (m *Model) drawHelp(width int) {
 }
 
 func (m *Model) View() string {
-	if global.Toggles["help"] {
+	if toggles.Get("help") {
 		return m.helpView()
 	}
 	return m.view()

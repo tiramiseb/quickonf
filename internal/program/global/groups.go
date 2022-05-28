@@ -3,6 +3,7 @@ package global
 import (
 	"github.com/tiramiseb/quickonf/internal/commands"
 	"github.com/tiramiseb/quickonf/internal/instructions"
+	"github.com/tiramiseb/quickonf/internal/program/global/toggles"
 )
 
 var (
@@ -19,15 +20,20 @@ func GetSelectedGroup() *instructions.Group {
 }
 
 func init() {
-	TogglesListeners["filter"] = append(TogglesListeners["filter"], allGroupsToDisplayedGroups)
+	toggles.AddListener("filter", allGroupsToDisplayedGroups)
 }
 
 func GroupsMayHaveChanged() {
-	allGroupsToDisplayedGroups(Toggles["filter"])
+	allGroupsToDisplayedGroups(toggles.Get("filter"))
 }
 
 func allGroupsToDisplayedGroups(filtered bool) {
-	selectedGroupAddr := DisplayedGroups[SelectedGroup]
+	var selectedGroupAddr *instructions.Group
+	if DisplayedGroups == nil {
+		selectedGroupAddr = AllGroups[0]
+	} else {
+		selectedGroupAddr = DisplayedGroups[SelectedGroup]
+	}
 	DisplayedGroups = nil
 	if filtered {
 		i := 0

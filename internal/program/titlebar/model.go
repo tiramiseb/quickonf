@@ -6,6 +6,7 @@ import (
 
 	"github.com/tiramiseb/quickonf/internal/program/button"
 	"github.com/tiramiseb/quickonf/internal/program/global"
+	"github.com/tiramiseb/quickonf/internal/program/global/toggles"
 )
 
 var style = lipgloss.NewStyle().
@@ -63,7 +64,7 @@ func (m *Model) Update(msg tea.Msg) (*Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.MouseMsg:
 		if msg.Type == tea.MouseRelease {
-			if global.Toggles["help"] {
+			if toggles.Get("help") {
 				switch {
 				case msg.X >= m.helpBackStart && msg.X <= m.helpBackEnd:
 					cmd = m.helpBack.Click()

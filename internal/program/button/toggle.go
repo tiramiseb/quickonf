@@ -3,7 +3,7 @@ package button
 import (
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
-	"github.com/tiramiseb/quickonf/internal/program/global"
+	"github.com/tiramiseb/quickonf/internal/program/global/toggles"
 )
 
 type Toggle struct {
@@ -25,14 +25,11 @@ func NewToggle(text string, hintPosition int, key string) *Toggle {
 }
 
 func (t *Toggle) Click() tea.Cmd {
-	return func() tea.Msg {
-		global.Toggles.Toggle(t.key)
-		return nil
-	}
+	return toggles.ToggleCmd(t.key)
 }
 
 func (t *Toggle) View() string {
-	if global.Toggles[t.key] {
+	if toggles.Get(t.key) {
 		return t.onView
 	}
 	return t.offView
