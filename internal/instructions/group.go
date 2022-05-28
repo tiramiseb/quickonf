@@ -63,24 +63,6 @@ func (g *Group) Status() commands.Status {
 	return commands.StatusNotRun
 }
 
-// HasApply checks if the group has at lease one instruction to apply
-func (g *Group) HasApply() bool {
-	for _, r := range g.Reports {
-		if r.HasApply() {
-			return true
-		}
-	}
-	return false
-}
-
-// Reset instructs to reset so that it can re-run later
-func (g *Group) Reset() {
-	for _, ins := range g.Instructions {
-		ins.Reset()
-		g.Reports = nil
-	}
-}
-
 // Apply applies modifications for this group
 func (g *Group) Apply() {
 	if g.alreadyApplied {

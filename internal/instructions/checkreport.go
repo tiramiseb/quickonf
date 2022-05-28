@@ -20,10 +20,6 @@ type CheckReport struct {
 	mu sync.Mutex
 }
 
-func (c *CheckReport) HasApply() bool {
-	return c.apply != nil
-}
-
 func (c *CheckReport) Apply() bool {
 	if c.apply == nil {
 		return true

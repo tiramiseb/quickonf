@@ -32,7 +32,6 @@ func allGroupsToDisplayedGroups(filtered bool) {
 	if filtered {
 		i := 0
 		for j, g := range AllGroups {
-			// TODO If selected group is not displayed, change selected group
 			if g.Status() != commands.StatusSuccess {
 				DisplayedGroups = append(DisplayedGroups, g)
 				if g == selectedGroupAddr {
