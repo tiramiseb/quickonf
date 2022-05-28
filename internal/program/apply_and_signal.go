@@ -7,7 +7,7 @@ import (
 
 func apply(i int) tea.Cmd {
 	return func() tea.Msg {
-		go global.DisplayedGroups[i].Apply()
+		global.DisplayedGroups[i].Apply()
 		return nil
 	}
 }
