@@ -36,13 +36,11 @@ func (c *CheckReport) GetStatusAndMessage() (commands.Status, string) {
 
 func (c *CheckReport) setStatusAndMessage(status commands.Status, message string) {
 	c.mu.Lock()
-	defer c.mu.Unlock()
 	c.status = status
 	c.message = message
+	c.mu.Unlock()
 	if c.signalTarget != nil {
-		defer func() {
-			c.signalTarget <- true
-		}()
+		c.signalTarget <- true
 	}
 }
 
