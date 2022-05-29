@@ -29,6 +29,8 @@ type model struct {
 	subtitlesSeparator  string
 	separatorXPos       int
 
+	focusOnDetails bool
+
 	signalTarget chan bool
 }
 
@@ -76,14 +78,14 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			msg.Y -= 3
 			m.groupsview, cmd = m.groupsview.Update(msg)
 			if msg.Type == tea.MouseRelease {
-				toggles.Disable("focusOnDetails")
+				m.focusOnDetails = false
 			}
 		case msg.X > m.separatorXPos:
 			// Clock on detail
 			msg.Y -= 3
 			m.details, cmd = m.details.Update(msg)
 			if msg.Type == tea.MouseRelease {
-				toggles.Enable("focusOnDetails")
+				m.focusOnDetails = true
 			}
 		}
 	case tea.KeyMsg:
@@ -107,15 +109,15 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			case "h", "H":
 				toggles.Enable("help")
 			case "right":
-				toggles.Enable("focusOnDetails")
+				m.focusOnDetails = true
 			case "left":
-				toggles.Disable("focusOnDetails")
+				m.focusOnDetails = false
 			// case "r", "R":
 			//
 			// case "enter":
 			// 	go groups.ApplySelected()
 			default:
-				if toggles.Get("focusOnDetails") {
+				if m.focusOnDetails {
 					m.details, cmd = m.details.Update(msg)
 				} else {
 					m.groupsview, cmd = m.groupsview.Update(msg)
@@ -141,7 +143,7 @@ func (m *model) View() string {
 
 func (m *model) view() string {
 	var leftTitle, rightTitle string
-	if toggles.Get("focusOnDetails") {
+	if m.focusOnDetails {
 		leftTitle = m.leftTitle
 		rightTitle = m.rightTitleWithFocus
 	} else {
