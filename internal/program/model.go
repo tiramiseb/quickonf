@@ -4,19 +4,22 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 
+	"github.com/tiramiseb/quickonf/internal/instructions"
 	"github.com/tiramiseb/quickonf/internal/program/details"
-	"github.com/tiramiseb/quickonf/internal/program/global/groups"
 	"github.com/tiramiseb/quickonf/internal/program/global/toggles"
-	groupsList "github.com/tiramiseb/quickonf/internal/program/groups"
+	"github.com/tiramiseb/quickonf/internal/program/groups"
 	"github.com/tiramiseb/quickonf/internal/program/help"
+	"github.com/tiramiseb/quickonf/internal/program/messages"
 	"github.com/tiramiseb/quickonf/internal/program/titlebar"
 )
 
 type model struct {
-	titlebar *titlebar.Model
-	groups   *groupsList.Model
-	details  *details.Model
-	help     *help.Model
+	groups *instructions.Groups
+
+	titlebar   *titlebar.Model
+	groupsview *groups.Model
+	details    *details.Model
+	help       *help.Model
 
 	leftTitle           string
 	leftTitleWithFocus  string
@@ -24,27 +27,20 @@ type model struct {
 	rightTitleWithFocus string
 	verticalSeparator   string
 	subtitlesSeparator  string
-
-	largestGroupName int
-	separatorXPos    int
-
-	byPriority             [][]int
-	nextPriorityGroup      int
-	currentlyRunningChecks int
+	separatorXPos       int
 
 	signalTarget chan bool
 }
 
-func newModel() *model {
+func newModel(g *instructions.Groups) *model {
+	initialGroup := g.FirstGroup()
+	details := details.New(initialGroup)
 	return &model{
-		titlebar: titlebar.New(),
-		groups:   groupsList.New(),
-		details:  details.New(),
-		help:     help.New(),
-
-		largestGroupName: groups.GetMaxNameLength(),
-
-		byPriority: checksIndexByPriority(),
+		groups:     g,
+		titlebar:   titlebar.New(),
+		groupsview: groups.New(g, initialGroup, details),
+		details:    details,
+		help:       help.New(),
 
 		signalTarget: make(chan bool),
 	}
@@ -54,7 +50,10 @@ func (m *model) Init() tea.Cmd {
 	tea.LogToFile("/tmp/tmplog", "")
 	return tea.Batch(
 		m.listenSignal,
-		m.next(),
+		func() tea.Msg {
+			m.groups.InitialChecks(m.signalTarget)
+			return nil
+		},
 	)
 }
 
@@ -75,7 +74,7 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case msg.X < m.separatorXPos:
 			// Click on group
 			msg.Y -= 3
-			m.groups, cmd = m.groups.Update(msg)
+			m.groupsview, cmd = m.groupsview.Update(msg)
 			if msg.Type == tea.MouseRelease {
 				toggles.Disable("focusOnDetails")
 			}
@@ -113,25 +112,22 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				toggles.Disable("focusOnDetails")
 			// case "r", "R":
 			//
-			case "enter":
-				go groups.ApplySelected()
+			// case "enter":
+			// 	go groups.ApplySelected()
 			default:
 				if toggles.Get("focusOnDetails") {
 					m.details, cmd = m.details.Update(msg)
 				} else {
-					m.groups, cmd = m.groups.Update(msg)
+					m.groupsview, cmd = m.groupsview.Update(msg)
 				}
 			}
 		}
-	case checkDone:
-		m.currentlyRunningChecks--
-		if m.currentlyRunningChecks == 0 {
-			cmd = m.next()
-		}
-	case newSignal:
-		cmd = m.listenSignal
+	case messages.SelectedGroup:
+		m.details, cmd = m.details.Update(msg)
+	case messages.NewSignal:
+		m.groupsview, cmd = m.groupsview.Update(msg)
+		cmd = tea.Batch(cmd, m.listenSignal)
 	}
-
 	return m, cmd
 }
 
@@ -152,5 +148,5 @@ func (m *model) view() string {
 		leftTitle = m.leftTitleWithFocus
 		rightTitle = m.rightTitle
 	}
-	return leftTitle + "│" + rightTitle + "\n" + m.subtitlesSeparator + "\n" + lipgloss.JoinHorizontal(lipgloss.Top, m.groups.View(), m.verticalSeparator, m.details.View())
+	return leftTitle + "│" + rightTitle + "\n" + m.subtitlesSeparator + "\n" + lipgloss.JoinHorizontal(lipgloss.Top, m.groupsview.View(), m.verticalSeparator, m.details.View())
 }

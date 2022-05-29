@@ -7,25 +7,23 @@ import (
 	"github.com/tiramiseb/quickonf/internal/commands"
 	"github.com/tiramiseb/quickonf/internal/instructions"
 	"github.com/tiramiseb/quickonf/internal/program/global"
-	"github.com/tiramiseb/quickonf/internal/program/global/groups"
 	"github.com/tiramiseb/quickonf/internal/program/global/toggles"
 )
 
 func (m *Model) View() string {
 	var view string
-	group := groups.GetSelected()
-	if group == nil {
+	if m.group == nil {
 		return ""
 	}
-	if len(group.Reports) == 0 {
-		for _, ins := range group.Instructions {
+	if len(m.group.Reports) == 0 {
+		for _, ins := range m.group.Instructions {
 			view += global.Styles[commands.StatusNotRun].Render(
 				global.MakeWidth(ins.Name(), m.width),
 			) + "\n"
 		}
 	}
 	showDetails := toggles.Get("details")
-	for _, rep := range group.Reports {
+	for _, rep := range m.group.Reports {
 		view += m.reportView(rep, showDetails)
 	}
 	m.viewport.SetContent(view)

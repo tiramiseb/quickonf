@@ -1,71 +1,49 @@
 package groups
 
 import (
-	"github.com/tiramiseb/quickonf/internal/program/global/groups"
+	"github.com/tiramiseb/quickonf/internal/program/global/toggles"
 )
 
 const scrollDelta = 3 // Same value as default value for viewport's mousewheeldelta
 
-func (m *Model) centerOnSelectedGroup() {
-	m.selectedGroupToViewportOffset = m.height / 2
-}
-
 func (m *Model) up() {
-	groups.DecrementSelected(1)
-	m.centerOnSelectedGroup()
+	m.selectedGroup = m.selectedGroup.Previous(1, !toggles.Get("filter"))
 }
 
 func (m *Model) down() {
-	groups.IncrementSelected(1)
-	m.centerOnSelectedGroup()
+	m.selectedGroup = m.selectedGroup.Next(1, !toggles.Get("filter"))
 }
 
 func (m *Model) pgup() {
-	groups.DecrementSelected(m.height / 2)
-	m.centerOnSelectedGroup()
+	m.selectedGroup = m.selectedGroup.Previous(m.height/2, !toggles.Get("filter"))
 }
 
 func (m *Model) pgdown() {
-	groups.IncrementSelected(m.height / 2)
-	m.centerOnSelectedGroup()
+	m.selectedGroup = m.selectedGroup.Next(m.height/2, !toggles.Get("filter"))
 }
 
 func (m *Model) home() {
-	groups.SelectFirst()
-	m.selectedGroupToViewportOffset = 0
+	m.selectedGroup = m.selectedGroup.Previous(m.groups.Count(), !toggles.Get("filter"))
 }
 
 func (m *Model) end() {
-	groups.SelectLast()
-	m.selectedGroupToViewportOffset = groups.CountDisplayed() - m.height
-	if m.selectedGroupToViewportOffset < 0 {
-		// Less groups than available space, display all
-		m.selectedGroupToViewportOffset = groups.CountDisplayed() - 1
-	}
+	m.selectedGroup = m.selectedGroup.Next(m.groups.Count(), !toggles.Get("filter"))
 }
 
 func (m *Model) selectLine(lineIdx int) {
-	firstGroupInView := groups.GetSelectedIndex() - m.selectedGroupToViewportOffset
-	clickedGroup := firstGroupInView + lineIdx
-	if clickedGroup >= groups.CountDisplayed() {
-		return
-	}
-	groups.IncrementSelected(lineIdx - m.selectedGroupToViewportOffset)
-	m.selectedGroupToViewportOffset = lineIdx
+	// firstGroupInView := groups.GetSelectedIndex() - m.selectedGroupToViewportOffset
+	// clickedGroup := firstGroupInView + lineIdx
+	// if clickedGroup >= groups.CountDisplayed() {
+	// 	return
+	// }
+	// groups.IncrementSelected(lineIdx - m.selectedGroupToViewportOffset)
+	// m.selectedGroupToViewportOffset = lineIdx
 }
 
 func (m *Model) scrollUp() {
-	if groups.GetSelectedIndex()-m.selectedGroupToViewportOffset <= 0 {
-		// Already at top of view, do not scroll more
-		return
-	}
-	m.selectedGroupToViewportOffset += scrollDelta
+	m.selectedGroup = m.selectedGroup.Previous(scrollDelta, !toggles.Get("filter"))
 }
 
 func (m *Model) scrollDown() {
-	if groups.GetSelectedIndex()-m.selectedGroupToViewportOffset+m.height >= groups.CountDisplayed() {
-		// Already at bottom of view, do not scroll more
-		return
-	}
-	m.selectedGroupToViewportOffset -= scrollDelta
+	m.selectedGroup = m.selectedGroup.Next(scrollDelta, !toggles.Get("filter"))
 }

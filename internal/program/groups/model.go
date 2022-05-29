@@ -2,17 +2,28 @@ package groups
 
 import (
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/tiramiseb/quickonf/internal/instructions"
+	"github.com/tiramiseb/quickonf/internal/program/details"
+	"github.com/tiramiseb/quickonf/internal/program/global/toggles"
+	"github.com/tiramiseb/quickonf/internal/program/messages"
 )
 
 type Model struct {
-	selectedGroupToViewportOffset int // How much must be removed from selected group to get viewport start
+	groups  *instructions.Groups
+	details *details.Model
+
+	selectedGroup *instructions.Group
 
 	width  int
 	height int
 }
 
-func New() *Model {
-	return &Model{}
+func New(g *instructions.Groups, initialGroup *instructions.Group, d *details.Model) *Model {
+	return &Model{
+		groups:        g,
+		details:       d,
+		selectedGroup: initialGroup,
+	}
 }
 
 func (m *Model) Update(msg tea.Msg) (*Model, tea.Cmd) {
@@ -22,30 +33,48 @@ func (m *Model) Update(msg tea.Msg) (*Model, tea.Cmd) {
 		switch msg.String() {
 		case "up":
 			m.up()
+			cmd = m.selectedGroupCmd
 		case "down":
 			m.down()
+			cmd = m.selectedGroupCmd
 		case "pgup":
 			m.pgup()
+			cmd = m.selectedGroupCmd
 		case "pgdown":
 			m.pgdown()
+			cmd = m.selectedGroupCmd
 		case "home":
 			m.home()
+			cmd = m.selectedGroupCmd
 		case "end":
 			m.end()
+			cmd = m.selectedGroupCmd
 		}
 	case tea.MouseMsg:
 		switch msg.Type {
 		case tea.MouseWheelUp:
 			m.scrollUp()
+			cmd = m.selectedGroupCmd
 		case tea.MouseWheelDown:
 			m.scrollDown()
+			cmd = m.selectedGroupCmd
 		case tea.MouseRelease:
 			if msg.Y >= 0 {
 				m.selectLine(msg.Y)
+				cmd = m.selectedGroupCmd
 			}
+		}
+	case messages.NewSignal:
+		if toggles.Get("filter") {
+			m.selectedGroup = m.selectedGroup.Next(0, false)
+			cmd = m.selectedGroupCmd
 		}
 	}
 	return m, cmd
+}
+
+func (m *Model) selectedGroupCmd() tea.Msg {
+	return messages.SelectedGroup{Group: m.selectedGroup}
 }
 
 func (m *Model) Resize(size tea.WindowSizeMsg) *Model {

@@ -28,7 +28,7 @@ func main() {
 	}
 	defer r.Close()
 	instructions.NewGlobalVar("confdir", filepath.Dir(config))
-	state, errs := conf.Read(r)
+	groups, errs := conf.Read(r)
 	if errs != nil {
 		fmt.Println("Configuration file", config, "is invalid:")
 		for _, err := range errs {
@@ -46,5 +46,5 @@ func main() {
 		fmt.Println("Quickonf must run as root")
 		os.Exit(1)
 	}
-	program.Run(state)
+	program.Run(groups)
 }

@@ -34,6 +34,11 @@ func (c *Command) RunCheck(vars Variables, signalTarget chan bool) ([]*CheckRepo
 		}
 		vars.define(tgt, result[i])
 	}
+	if signalTarget != nil {
+		defer func() {
+			signalTarget <- true
+		}()
+	}
 	return []*CheckReport{{
 		Name:         c.Command.Name,
 		status:       status,

@@ -1,55 +1,41 @@
 package groups
 
 import (
+	"strings"
+
 	"github.com/tiramiseb/quickonf/internal/program/global"
-	"github.com/tiramiseb/quickonf/internal/program/global/groups"
+	"github.com/tiramiseb/quickonf/internal/program/global/toggles"
 )
 
 func (m *Model) View() string {
-	if groups.CountAll() == 0 {
+	if m.groups.Count() == 0 {
 		return global.MakeWidth("No check", m.width)
 	}
-	displayed := groups.GetDisplayed()
-	countDisplayed := len(displayed)
-	if countDisplayed == 0 {
-		return global.MakeWidth("No change needed", m.width)
-	}
-	selected := groups.GetSelectedIndex()
+	firstGroup := m.selectedGroup.Previous(m.height/2, !toggles.Get("filter"))
+	grp := firstGroup
+	var i int
 	var view string
-	firstGroupInView := selected - m.selectedGroupToViewportOffset
-	if firstGroupInView < 0 {
-		firstGroupInView = 0
-		m.selectedGroupToViewportOffset = selected
-	}
-	afterLastGroupInView := firstGroupInView + m.height
-	freeLinesAtBottom := afterLastGroupInView - countDisplayed
-	if freeLinesAtBottom > 0 {
-		afterLastGroupInView = countDisplayed
-		firstGroupInView -= freeLinesAtBottom
-		if firstGroupInView < 0 {
-			firstGroupInView = 0
-			m.selectedGroupToViewportOffset = selected
+	for i = 0; i < m.height; i++ {
+		if grp == m.selectedGroup {
+			view += global.SelectedStyles[grp.Status()].Render(global.MakeWidth(grp.Name, m.width)) + "\n"
 		} else {
-			m.selectedGroupToViewportOffset = selected - firstGroupInView
+			view += global.Styles[grp.Status()].Render(global.MakeWidth(grp.Name, m.width)) + "\n"
 		}
-	}
-	for i := firstGroupInView; i < afterLastGroupInView-1; i++ {
-		g := displayed[i]
-		if i == selected {
-			view += global.SelectedStyles[g.Status()].Render(global.MakeWidth(g.Name, m.width)) + "\n"
-		} else {
-			view += global.Styles[g.Status()].Render(global.MakeWidth(g.Name, m.width)) + "\n"
+		newGrp := grp.Next(1, !toggles.Get("filter"))
+		if newGrp == grp {
+			break
 		}
+		grp = newGrp
 	}
-	lastGroup := afterLastGroupInView - 1
-	if lastGroup >= 0 {
-		g := displayed[lastGroup]
-		if lastGroup == selected {
-			view += global.SelectedStyles[g.Status()].Render(global.MakeWidth(g.Name, m.width))
-		} else {
-			view += global.Styles[g.Status()].Render(global.MakeWidth(g.Name, m.width))
+	grp = firstGroup
+	for ; i < m.height-1; i++ {
+		// There is still space at the bottom, try to add more on top
+		newGrp := grp.Previous(1, !toggles.Get("filter"))
+		if newGrp == grp {
+			break
 		}
+		grp = newGrp
+		view = global.Styles[grp.Status()].Render(global.MakeWidth(grp.Name, m.width)) + "\n" + view
 	}
-
-	return view
+	return strings.TrimRight(view, "\n")
 }

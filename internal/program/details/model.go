@@ -3,17 +3,21 @@ package details
 import (
 	"github.com/charmbracelet/bubbles/viewport"
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/tiramiseb/quickonf/internal/instructions"
+	"github.com/tiramiseb/quickonf/internal/program/messages"
 )
 
 type Model struct {
 	viewport viewport.Model
 
+	group *instructions.Group
 	width int
 }
 
-func New() *Model {
+func New(initialGroup *instructions.Group) *Model {
 	return &Model{
 		viewport: viewport.Model{Width: 1, Height: 1},
+		group:    initialGroup,
 	}
 }
 
@@ -33,6 +37,8 @@ func (m *Model) Update(msg tea.Msg) (*Model, tea.Cmd) {
 		if msg.Y >= 0 {
 			m.viewport, cmd = m.viewport.Update(msg)
 		}
+	case messages.SelectedGroup:
+		m.group = msg.Group
 	}
 	return m, cmd
 }

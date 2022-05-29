@@ -5,10 +5,6 @@ var (
 	listeners = map[string][]func(new bool){}
 )
 
-func AddListener(key string, fn func(new bool)) {
-	listeners[key] = append(listeners[key], fn)
-}
-
 func Get(key string) bool {
 	return toggles[key]
 }

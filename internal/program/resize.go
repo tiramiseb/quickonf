@@ -13,8 +13,8 @@ func (m *model) resize(size tea.WindowSizeMsg) {
 		Width:  width / 2,
 		Height: height,
 	}
-	if left.Width > m.largestGroupName+2 {
-		left.Width = m.largestGroupName + 2
+	if left.Width > m.groups.MaxNameLength()+2 {
+		left.Width = m.groups.MaxNameLength() + 2
 	}
 	m.separatorXPos = left.Width
 	right := tea.WindowSizeMsg{
@@ -37,7 +37,7 @@ func (m *model) resize(size tea.WindowSizeMsg) {
 	m.verticalSeparator = separator
 
 	m.titlebar = m.titlebar.Resize(size)
-	m.groups = m.groups.Resize(left)
+	m.groupsview = m.groupsview.Resize(left)
 	m.details = m.details.Resize(right)
 	m.help = m.help.Resize(tea.WindowSizeMsg{
 		Width:  size.Width,
