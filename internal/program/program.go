@@ -10,7 +10,6 @@ import (
 
 func Run(g *instructions.Groups) {
 	toggles.Enable("filter")
-	toggles.Enable("helpIntro")
 	program := tea.NewProgram(
 		newModel(g),
 		tea.WithAltScreen(),
