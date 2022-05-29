@@ -31,13 +31,7 @@ func (m *Model) end() {
 }
 
 func (m *Model) selectLine(lineIdx int) {
-	// firstGroupInView := groups.GetSelectedIndex() - m.selectedGroupToViewportOffset
-	// clickedGroup := firstGroupInView + lineIdx
-	// if clickedGroup >= groups.CountDisplayed() {
-	// 	return
-	// }
-	// groups.IncrementSelected(lineIdx - m.selectedGroupToViewportOffset)
-	// m.selectedGroupToViewportOffset = lineIdx
+	m.selectedGroup = m.firstDisplayedGroup.Next(lineIdx, !toggles.Get("filter"))
 }
 
 func (m *Model) scrollUp() {

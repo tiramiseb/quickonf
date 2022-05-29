@@ -11,8 +11,8 @@ func (m *Model) View() string {
 	if m.groups.Count() == 0 {
 		return global.MakeWidth("No check", m.width)
 	}
-	firstGroup := m.selectedGroup.Previous(m.height/2, !toggles.Get("filter"))
-	grp := firstGroup
+	m.firstDisplayedGroup = m.selectedGroup.Previous(m.height/2, !toggles.Get("filter"))
+	grp := m.firstDisplayedGroup
 	var i int
 	var view string
 	for i = 0; i < m.height; i++ {
@@ -27,7 +27,7 @@ func (m *Model) View() string {
 		}
 		grp = newGrp
 	}
-	grp = firstGroup
+	grp = m.firstDisplayedGroup
 	for ; i < m.height-1; i++ {
 		// There is still space at the bottom, try to add more on top
 		newGrp := grp.Previous(1, !toggles.Get("filter"))

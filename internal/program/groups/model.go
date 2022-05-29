@@ -12,7 +12,8 @@ type Model struct {
 	groups  *instructions.Groups
 	details *details.Model
 
-	selectedGroup *instructions.Group
+	firstDisplayedGroup *instructions.Group
+	selectedGroup       *instructions.Group
 
 	width  int
 	height int
