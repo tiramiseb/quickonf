@@ -3,12 +3,12 @@ package groups
 import (
 	"strings"
 
-	"github.com/tiramiseb/quickonf/internal/program/global"
+	"github.com/tiramiseb/quickonf/internal/program/styles"
 )
 
 func (m *Model) View() string {
 	if m.groups.Count() == 0 {
-		return global.MakeWidth("No check", m.width)
+		return styles.MakeWidth("No check", m.width)
 	}
 	m.firstDisplayedGroup = m.selectedGroup.Previous(m.height/2, m.showSuccessful)
 	grp := m.firstDisplayedGroup
@@ -16,9 +16,9 @@ func (m *Model) View() string {
 	var view string
 	for i = 0; i < m.height; i++ {
 		if grp == m.selectedGroup {
-			view += global.SelectedStyles[grp.Status()].Render(global.MakeWidth(grp.Name, m.width)) + "\n"
+			view += styles.SelectedStyles[grp.Status()].Render(styles.MakeWidth(grp.Name, m.width)) + "\n"
 		} else {
-			view += global.Styles[grp.Status()].Render(global.MakeWidth(grp.Name, m.width)) + "\n"
+			view += styles.Styles[grp.Status()].Render(styles.MakeWidth(grp.Name, m.width)) + "\n"
 		}
 		newGrp := grp.Next(1, m.showSuccessful)
 		if newGrp == grp {
@@ -34,7 +34,7 @@ func (m *Model) View() string {
 			break
 		}
 		grp = newGrp
-		view = global.Styles[grp.Status()].Render(global.MakeWidth(grp.Name, m.width)) + "\n" + view
+		view = styles.Styles[grp.Status()].Render(styles.MakeWidth(grp.Name, m.width)) + "\n" + view
 	}
 	return strings.TrimRight(view, "\n")
 }

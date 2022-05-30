@@ -6,7 +6,7 @@ import (
 	"github.com/charmbracelet/lipgloss"
 	"github.com/tiramiseb/quickonf/internal/commands"
 	"github.com/tiramiseb/quickonf/internal/instructions"
-	"github.com/tiramiseb/quickonf/internal/program/global"
+	"github.com/tiramiseb/quickonf/internal/program/styles"
 )
 
 func (m *Model) View() string {
@@ -16,8 +16,8 @@ func (m *Model) View() string {
 	}
 	if len(m.group.Reports) == 0 {
 		for _, ins := range m.group.Instructions {
-			view += global.Styles[commands.StatusNotRun].Render(
-				global.MakeWidth(ins.Name(), m.width),
+			view += styles.Styles[commands.StatusNotRun].Render(
+				styles.MakeWidth(ins.Name(), m.width),
 			) + "\n"
 		}
 	}
@@ -31,8 +31,8 @@ func (m *Model) View() string {
 func (m *Model) reportView(rep *instructions.CheckReport) string {
 	status, message := rep.GetStatusAndMessage()
 	content := fmt.Sprintf("[%s] %s", rep.Name, message)
-	result := global.Styles[status].Render(
-		global.MakeWidth(content, m.width),
+	result := styles.Styles[status].Render(
+		styles.MakeWidth(content, m.width),
 	) + "\n"
 	if status == commands.StatusInfo && m.showDetails {
 		result += m.detailsView(rep)

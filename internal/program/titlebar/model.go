@@ -5,13 +5,13 @@ import (
 	"github.com/charmbracelet/lipgloss"
 
 	"github.com/tiramiseb/quickonf/internal/program/button"
-	"github.com/tiramiseb/quickonf/internal/program/global"
 	"github.com/tiramiseb/quickonf/internal/program/messages"
+	"github.com/tiramiseb/quickonf/internal/program/styles"
 )
 
 var style = lipgloss.NewStyle().
-	Background(global.FgColor).
-	Foreground(global.BgColor).
+	Background(styles.FgColor).
+	Foreground(styles.BgColor).
 	Bold(true)
 
 type Model struct {

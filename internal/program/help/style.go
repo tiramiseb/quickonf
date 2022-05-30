@@ -2,14 +2,14 @@ package help
 
 import (
 	"github.com/charmbracelet/lipgloss"
-	"github.com/tiramiseb/quickonf/internal/program/global"
+	"github.com/tiramiseb/quickonf/internal/program/styles"
 )
 
 var (
 	subtitleStyle = lipgloss.NewStyle().
 			Align(lipgloss.Center)
 	subtitleWithFocusStyle = subtitleStyle.Copy().
-				Background(global.FgColor).
-				Foreground(global.BgColor).
+				Background(styles.FgColor).
+				Foreground(styles.BgColor).
 				Bold(true)
 )
