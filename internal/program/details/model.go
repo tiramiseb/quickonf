@@ -10,6 +10,8 @@ import (
 type Model struct {
 	viewport viewport.Model
 
+	showDetails bool
+
 	group *instructions.Group
 	width int
 }
@@ -48,4 +50,9 @@ func (m *Model) Resize(size tea.WindowSizeMsg) *Model {
 	m.viewport.Width = size.Width
 	m.width = size.Width
 	return m
+}
+
+func (m *Model) ToggleDetails() tea.Msg {
+	m.showDetails = !m.showDetails
+	return messages.ToggleStatus{Name: "details", Status: m.showDetails}
 }

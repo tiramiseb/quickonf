@@ -9,7 +9,7 @@ type Button struct {
 	View  string
 	Width int
 
-	action tea.Cmd
+	Click tea.Cmd
 }
 
 func NewButton(text string, hintPosition int, action tea.Cmd) *Button {
@@ -17,10 +17,6 @@ func NewButton(text string, hintPosition int, action tea.Cmd) *Button {
 		View:  lipgloss.StyleRunes("["+text+"]", []int{hintPosition + 1}, inactiveHintStyle, inactiveStyle),
 		Width: len(text) + 2,
 
-		action: action,
+		Click: action,
 	}
-}
-
-func (b *Button) Click() tea.Cmd {
-	return b.action
 }

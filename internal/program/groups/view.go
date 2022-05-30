@@ -4,14 +4,13 @@ import (
 	"strings"
 
 	"github.com/tiramiseb/quickonf/internal/program/global"
-	"github.com/tiramiseb/quickonf/internal/program/global/toggles"
 )
 
 func (m *Model) View() string {
 	if m.groups.Count() == 0 {
 		return global.MakeWidth("No check", m.width)
 	}
-	m.firstDisplayedGroup = m.selectedGroup.Previous(m.height/2, !toggles.Get("filter"))
+	m.firstDisplayedGroup = m.selectedGroup.Previous(m.height/2, m.showSuccessful)
 	grp := m.firstDisplayedGroup
 	var i int
 	var view string
@@ -21,7 +20,7 @@ func (m *Model) View() string {
 		} else {
 			view += global.Styles[grp.Status()].Render(global.MakeWidth(grp.Name, m.width)) + "\n"
 		}
-		newGrp := grp.Next(1, !toggles.Get("filter"))
+		newGrp := grp.Next(1, m.showSuccessful)
 		if newGrp == grp {
 			break
 		}
@@ -30,7 +29,7 @@ func (m *Model) View() string {
 	grp = m.firstDisplayedGroup
 	for ; i < m.height-1; i++ {
 		// There is still space at the bottom, try to add more on top
-		newGrp := grp.Previous(1, !toggles.Get("filter"))
+		newGrp := grp.Previous(1, m.showSuccessful)
 		if newGrp == grp {
 			break
 		}

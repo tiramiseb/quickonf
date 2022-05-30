@@ -6,7 +6,6 @@ import (
 
 	"github.com/tiramiseb/quickonf/internal/instructions"
 	"github.com/tiramiseb/quickonf/internal/program/details"
-	"github.com/tiramiseb/quickonf/internal/program/global/toggles"
 	"github.com/tiramiseb/quickonf/internal/program/groups"
 	"github.com/tiramiseb/quickonf/internal/program/help"
 	"github.com/tiramiseb/quickonf/internal/program/messages"
@@ -29,7 +28,8 @@ type model struct {
 	subtitlesSeparator  string
 	separatorXPos       int
 
-	focusOnDetails bool
+	isHelpDisplayed bool
+	focusOnDetails  bool
 
 	signalTarget chan bool
 }
@@ -69,7 +69,7 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case msg.Y == 0:
 			// Click on titlebar
 			m.titlebar, cmd = m.titlebar.Update(msg)
-		case toggles.Get("help"):
+		case m.isHelpDisplayed:
 			// Help is displayed, forward to help
 			msg.Y--
 			m.help, cmd = m.help.Update(msg)
@@ -89,12 +89,12 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			}
 		}
 	case tea.KeyMsg:
-		if toggles.Get("help") {
+		if m.isHelpDisplayed {
 			switch msg.String() {
 			case "ctrl+c":
 				cmd = tea.Quit
 			case "esc":
-				toggles.Disable("help")
+				m.isHelpDisplayed = false
 			default:
 				m.help, cmd = m.help.Update(msg)
 			}
@@ -103,11 +103,11 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			case "ctrl+c", "esc", "q", "Q":
 				cmd = tea.Quit
 			case "f", "F":
-				toggles.Toggle("filter")
+				cmd = m.groupsview.ToggleShowSuccessful
 			case "d", "D":
-				toggles.Toggle("details")
+				cmd = m.details.ToggleDetails
 			case "h", "H":
-				toggles.Enable("help")
+				m.isHelpDisplayed = true
 			case "right":
 				m.focusOnDetails = true
 			case "left":
@@ -129,13 +129,25 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case messages.NewSignal:
 		m.groupsview, cmd = m.groupsview.Update(msg)
 		cmd = tea.Batch(cmd, m.listenSignal)
+	case messages.Toggle:
+		switch msg.Name {
+		case "filter":
+			// TODO
+		case "details":
+			// TODO
+		case "help":
+			m.isHelpDisplayed = !m.isHelpDisplayed
+		}
+
+	case messages.ToggleStatus:
+		m.titlebar, cmd = m.titlebar.Update(msg)
 	}
 	return m, cmd
 }
 
 func (m *model) View() string {
-	if toggles.Get("help") {
-		return m.titlebar.View() + "\n" + m.help.View()
+	if m.isHelpDisplayed {
+		return m.titlebar.HelpView() + "\n" + m.help.View()
 	} else {
 		return m.titlebar.View() + "\n" + m.view()
 	}

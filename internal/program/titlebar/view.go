@@ -2,8 +2,6 @@ package titlebar
 
 import (
 	"strings"
-
-	"github.com/tiramiseb/quickonf/internal/program/global/toggles"
 )
 
 var space = style.Render(" ")
@@ -29,10 +27,10 @@ func (m *Model) drawRegular(width int) {
 	// No place even for the title, cut it
 	if availableWidth <= 0 {
 		view := style.Render(title[:width])
-		m.view = func() string {
+		m.View = func() string {
 			return view
 		}
-		m.helpView = m.view
+		m.HelpView = m.View
 		return
 	}
 
@@ -43,7 +41,7 @@ func (m *Model) drawRegular(width int) {
 	// No place for the quit button, only include the title
 	if availableWidth <= m.quit.Width {
 		view := leftPart(availableWidth)
-		m.view = func() string {
+		m.View = func() string {
 			return view
 		}
 		return
@@ -55,7 +53,7 @@ func (m *Model) drawRegular(width int) {
 	// No place for the help button, include title & quit
 	if availableWidth <= m.help.Width {
 		view := leftPart(availableWidth) + m.quit.View + space
-		m.view = func() string {
+		m.View = func() string {
 			return view
 		}
 		return
@@ -67,7 +65,7 @@ func (m *Model) drawRegular(width int) {
 	// No place for the filter button, include title & help & quit
 	if availableWidth <= m.filter.Width {
 		view := leftPart(availableWidth) + m.help.View + space + m.quit.View + space
-		m.view = func() string {
+		m.View = func() string {
 			return view
 		}
 		return
@@ -80,7 +78,7 @@ func (m *Model) drawRegular(width int) {
 	if availableWidth <= m.details.Width {
 		m.filterEnd = m.helpStart - 2
 		m.filterStart = m.filterEnd - m.filter.Width + 1
-		m.view = func() string {
+		m.View = func() string {
 			return leftPart(availableWidth) + m.filter.View() + endOfTitle
 		}
 		return
@@ -91,7 +89,7 @@ func (m *Model) drawRegular(width int) {
 	m.filterEnd = m.detailsStart - 2
 	m.filterStart = m.filterEnd - m.filter.Width + 1
 
-	m.view = func() string {
+	m.View = func() string {
 		return leftPart(availableWidth) + m.filter.View() + space + m.details.View() + endOfTitle
 	}
 }
@@ -106,7 +104,7 @@ func (m *Model) drawHelp(width int) {
 	// No place even for the title, cut it
 	if availableWidth <= 0 {
 		view := style.Render(title[:width])
-		m.helpView = func() string {
+		m.HelpView = func() string {
 			return view
 		}
 		return
@@ -119,7 +117,7 @@ func (m *Model) drawHelp(width int) {
 	// No place for the back button, only include the title
 	if availableWidth <= m.helpBack.Width {
 		view := leftPart(availableWidth)
-		m.helpView = func() string {
+		m.HelpView = func() string {
 			return view
 		}
 		return
@@ -129,14 +127,7 @@ func (m *Model) drawHelp(width int) {
 	m.helpBackStart = m.helpBackEnd - m.helpBack.Width + 1
 
 	view := leftPart(availableWidth) + m.helpBack.View + space
-	m.helpView = func() string {
+	m.HelpView = func() string {
 		return view
 	}
-}
-
-func (m *Model) View() string {
-	if toggles.Get("help") {
-		return m.helpView()
-	}
-	return m.view()
 }

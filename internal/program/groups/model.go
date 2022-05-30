@@ -4,7 +4,6 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/tiramiseb/quickonf/internal/instructions"
 	"github.com/tiramiseb/quickonf/internal/program/details"
-	"github.com/tiramiseb/quickonf/internal/program/global/toggles"
 	"github.com/tiramiseb/quickonf/internal/program/messages"
 )
 
@@ -14,6 +13,8 @@ type Model struct {
 
 	firstDisplayedGroup *instructions.Group
 	selectedGroup       *instructions.Group
+
+	showSuccessful bool
 
 	width  int
 	height int
@@ -66,10 +67,8 @@ func (m *Model) Update(msg tea.Msg) (*Model, tea.Cmd) {
 			}
 		}
 	case messages.NewSignal:
-		if toggles.Get("filter") {
-			m.selectedGroup = m.selectedGroup.Next(0, false)
-			cmd = m.selectedGroupCmd
-		}
+		m.selectedGroup = m.selectedGroup.Next(0, m.showSuccessful)
+		cmd = m.selectedGroupCmd
 	}
 	return m, cmd
 }
@@ -82,4 +81,9 @@ func (m *Model) Resize(size tea.WindowSizeMsg) *Model {
 	m.width = size.Width
 	m.height = size.Height
 	return m
+}
+
+func (m *Model) ToggleShowSuccessful() tea.Msg {
+	m.showSuccessful = !m.showSuccessful
+	return messages.ToggleStatus{Name: "filter", Status: !m.showSuccessful}
 }

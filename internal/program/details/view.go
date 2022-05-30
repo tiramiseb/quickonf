@@ -7,7 +7,6 @@ import (
 	"github.com/tiramiseb/quickonf/internal/commands"
 	"github.com/tiramiseb/quickonf/internal/instructions"
 	"github.com/tiramiseb/quickonf/internal/program/global"
-	"github.com/tiramiseb/quickonf/internal/program/global/toggles"
 )
 
 func (m *Model) View() string {
@@ -22,21 +21,20 @@ func (m *Model) View() string {
 			) + "\n"
 		}
 	}
-	showDetails := toggles.Get("details")
 	for _, rep := range m.group.Reports {
-		view += m.reportView(rep, showDetails)
+		view += m.reportView(rep)
 	}
 	m.viewport.SetContent(view)
 	return m.viewport.View()
 }
 
-func (m *Model) reportView(rep *instructions.CheckReport, details bool) string {
+func (m *Model) reportView(rep *instructions.CheckReport) string {
 	status, message := rep.GetStatusAndMessage()
 	content := fmt.Sprintf("[%s] %s", rep.Name, message)
 	result := global.Styles[status].Render(
 		global.MakeWidth(content, m.width),
 	) + "\n"
-	if status == commands.StatusInfo && details {
+	if status == commands.StatusInfo && m.showDetails {
 		result += m.detailsView(rep)
 	}
 	return result
