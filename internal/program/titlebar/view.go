@@ -12,86 +12,114 @@ func (m *Model) draw(width int) {
 }
 
 func (m *Model) drawRegular(width int) {
-	title := " Quickonf "
-	titleWidth := len(title)
-	m.quitStart = -1
-	m.quitEnd = -1
-	m.helpStart = -1
-	m.helpEnd = -1
-	m.detailsStart = -1
-	m.detailsEnd = -1
-	m.filterStart = -1
-	m.filterEnd = -1
-	availableWidth := width - titleWidth
+	availableWidth := width - len(m.title)
 
-	// No place even for the title, cut it
-	if availableWidth <= 0 {
-		view := style.Render(title[:width])
-		m.View = func() string {
-			return view
-		}
-		m.HelpView = m.View
-		return
+	neededWidth := m.quit.Width + 1
+	m.showQuit = availableWidth >= neededWidth
+
+	neededWidth += m.help.Width + 1
+	m.showHelp = availableWidth >= neededWidth
+
+	neededWidth += m.filter.Width + 1
+	m.showFilter = availableWidth >= neededWidth
+
+	neededWidth += m.apply.Width + 1
+	m.showApply = availableWidth >= neededWidth
+
+	neededWidth += m.details.Width + 1
+	m.showDetails = availableWidth >= neededWidth
+
+	neededWidth += m.recheck.Width + 1
+	m.showRecheck = availableWidth >= neededWidth
+
+	rightBorder := width
+
+	if m.showQuit {
+		m.quitEnd = rightBorder - 2
+		m.quitStart = m.quitEnd - m.quit.Width + 1
+		rightBorder = m.quitStart
+	} else {
+		m.quitEnd = -1
+		m.quitStart = -1
 	}
 
-	leftPart := func(availableWidth int) string {
-		return style.Render(title + strings.Repeat(" ", availableWidth))
+	if m.showHelp {
+		m.helpEnd = rightBorder - 2
+		m.helpStart = m.helpEnd - m.help.Width + 1
+		rightBorder = m.helpStart
+	} else {
+		m.helpEnd = -1
+		m.helpStart = -1
 	}
 
-	// No place for the quit button, only include the title
-	if availableWidth <= m.quit.Width {
-		view := leftPart(availableWidth)
-		m.View = func() string {
-			return view
-		}
-		return
+	if m.showDetails {
+		m.detailsEnd = rightBorder - 2
+		m.detailsStart = m.detailsEnd - m.details.Width + 1
+		rightBorder = m.detailsStart
+	} else {
+		m.detailsEnd = -1
+		m.detailsStart = -1
 	}
-	availableWidth = availableWidth - m.quit.Width - 1
-	m.quitEnd = width - 2
-	m.quitStart = m.quitEnd - m.quit.Width + 1
 
-	// No place for the help button, include title & quit
-	if availableWidth <= m.help.Width {
-		view := leftPart(availableWidth) + m.quit.View + space
-		m.View = func() string {
-			return view
-		}
-		return
-	}
-	availableWidth = availableWidth - m.help.Width - 1
-	m.helpEnd = m.quitStart - 2
-	m.helpStart = m.helpEnd - m.help.Width + 1
-
-	// No place for the filter button, include title & help & quit
-	if availableWidth <= m.filter.Width {
-		view := leftPart(availableWidth) + m.help.View + space + m.quit.View + space
-		m.View = func() string {
-			return view
-		}
-		return
-	}
-	availableWidth = availableWidth - m.filter.Width - 1
-
-	endOfTitle := space + m.help.View + space + m.quit.View + space
-
-	// No place for the details button, include title & filter & help & quit
-	if availableWidth <= m.details.Width {
-		m.filterEnd = m.helpStart - 2
+	if m.showFilter {
+		m.filterEnd = rightBorder - 2
 		m.filterStart = m.filterEnd - m.filter.Width + 1
-		m.View = func() string {
-			return leftPart(availableWidth) + m.filter.View() + endOfTitle
-		}
-		return
+		rightBorder = m.filterStart
+	} else {
+		m.filterEnd = -1
+		m.filterStart = -1
 	}
-	availableWidth = availableWidth - m.details.Width - 1
-	m.detailsEnd = m.helpStart - 2
-	m.detailsStart = m.detailsEnd - m.details.Width + 1
-	m.filterEnd = m.detailsStart - 2
-	m.filterStart = m.filterEnd - m.filter.Width + 1
 
-	m.View = func() string {
-		return leftPart(availableWidth) + m.filter.View() + space + m.details.View() + endOfTitle
+	if m.showRecheck {
+		m.recheckEnd = rightBorder - 2
+		m.recheckStart = m.recheckEnd - m.recheck.Width + 1
+		rightBorder = m.recheckStart
+	} else {
+		m.recheckEnd = -1
+		m.recheckStart = -1
 	}
+
+	if m.showApply {
+		m.applyEnd = rightBorder - 2
+		m.applyStart = m.applyEnd - m.apply.Width + 1
+		rightBorder = m.applyStart
+	} else {
+		m.applyEnd = -1
+		m.applyStart = -1
+	}
+
+	m.middleSpace = rightBorder - len(m.title)
+}
+
+func (m *Model) View() string {
+	var title strings.Builder
+
+	title.WriteString(style.Render(m.title + strings.Repeat(" ", m.middleSpace)))
+	if m.showApply {
+		title.WriteString(m.apply.View)
+		title.WriteString(space)
+	}
+	if m.showRecheck {
+		title.WriteString(m.recheck.View)
+		title.WriteString(space)
+	}
+	if m.showFilter {
+		title.WriteString(m.filter.View())
+		title.WriteString(space)
+	}
+	if m.showDetails {
+		title.WriteString(m.details.View())
+		title.WriteString(space)
+	}
+	if m.showHelp {
+		title.WriteString(m.help.View)
+		title.WriteString(space)
+	}
+	if m.showQuit {
+		title.WriteString(m.quit.View)
+		title.WriteString(space)
+	}
+	return title.String()
 }
 
 func (m *Model) drawHelp(width int) {
