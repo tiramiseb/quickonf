@@ -99,6 +99,8 @@ func (m *Model) Update(msg tea.Msg) (*Model, tea.Cmd) {
 	case tea.MouseMsg:
 		if msg.Type == tea.MouseRelease {
 			switch {
+			case msg.X >= m.applyStart && msg.X <= m.applyEnd:
+				cmd = m.apply.Click
 			case msg.X >= m.recheckStart && msg.X <= m.recheckEnd:
 				cmd = m.recheck.Click
 			case msg.X >= m.filterStart && msg.X <= m.filterEnd:
