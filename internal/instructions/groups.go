@@ -56,7 +56,7 @@ func (g *Groups) InitialChecks(signalTarget chan bool) {
 			wg.Add(1)
 			thisGroup := g
 			go func() {
-				thisGroup.Check(signalTarget)
+				thisGroup.Check(signalTarget, false)
 				wg.Done()
 			}()
 		}

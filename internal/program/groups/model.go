@@ -87,3 +87,15 @@ func (m *Model) ToggleShowSuccessful() tea.Msg {
 	m.showSuccessful = !m.showSuccessful
 	return messages.ToggleStatus{Name: "filter", Status: !m.showSuccessful}
 }
+
+func (m *Model) ApplySelected() tea.Msg {
+	m.selectedGroup.Apply()
+	return nil
+}
+
+func (m *Model) RecheckSelected(signalTarget chan bool) tea.Cmd {
+	return func() tea.Msg {
+		m.selectedGroup.Check(signalTarget, true)
+		return nil
+	}
+}

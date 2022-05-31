@@ -24,10 +24,17 @@ type Group struct {
 }
 
 // Check runs the group checks and returns its success status
-func (g *Group) Check(signalTarget chan bool) bool {
+func (g *Group) Check(signalTarget chan bool, reset bool) bool {
 	// TODO Is the return value really used?
 	vars := NewVariablesSet()
+	g.Reports = g.Reports[:0]
+	if signalTarget != nil {
+		signalTarget <- true
+	}
 	for _, ins := range g.Instructions {
+		if reset {
+			ins.Reset()
+		}
 		r, ok := ins.RunCheck(vars, signalTarget)
 		g.Reports = append(g.Reports, r...)
 		if !ok {

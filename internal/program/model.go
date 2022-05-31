@@ -112,10 +112,10 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				m.focusOnDetails = true
 			case "left":
 				m.focusOnDetails = false
-			// case "r", "R":
-			//
-			// case "enter":
-			// 	go groups.ApplySelected()
+			case "r", "R":
+				cmd = m.groupsview.RecheckSelected(m.signalTarget)
+			case "enter", "a", "A":
+				cmd = m.groupsview.ApplySelected
 			default:
 				if m.focusOnDetails {
 					m.details, cmd = m.details.Update(msg)
@@ -129,12 +129,16 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case messages.NewSignal:
 		m.groupsview, cmd = m.groupsview.Update(msg)
 		cmd = tea.Batch(cmd, m.listenSignal)
+	case messages.Apply:
+		cmd = m.groupsview.ApplySelected
+	case messages.Recheck:
+		cmd = m.groupsview.RecheckSelected(m.signalTarget)
 	case messages.Toggle:
 		switch msg.Name {
 		case "filter":
-			// TODO
+			cmd = m.groupsview.ToggleShowSuccessful
 		case "details":
-			// TODO
+			cmd = m.details.ToggleDetails
 		case "help":
 			m.isHelpDisplayed = !m.isHelpDisplayed
 		}
