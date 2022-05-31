@@ -37,6 +37,8 @@ If you need more details about actions that would be executed, you can toggle th
 | down (checks)  | select the next group                              |
 | up (details)   | scroll details up                                  |
 | down (details) | scroll details down                                |
+| enter, a       | apply the selected group                           |
+| r              | recheck the selected group                         |
 | f              | filter the groups (hide/show the succeeded groups) |
 | d              | show more details                                  |
 | h              | display the help                                   |
@@ -50,7 +52,11 @@ The buttons in the top-right corner are the following:
 
 | button         | action                                             |
 | -------------- | -------------------------------------------------- |
+| Apply          | apply the selected group                           |
+| Recheck        | recheck the selected group                         |
 | Filter checks  | filter the groups (hide/show the succeeded groups) |
 | More details   | show more details about changes in the right pane  |
 | Help           | show or hide the help section                      |
 | Quit           | quit _Quickonf_                                    |
+
+You can click on a group to select it, and you can use the mouse wheel to navigate in checks and details.
