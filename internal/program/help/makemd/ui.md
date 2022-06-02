@@ -29,20 +29,21 @@ If you need more details about actions that would be executed, you can toggle th
 
 # Keyboard usage
 
-| key            | action                                             |
-| -------------- | -------------------------------------------------- |
-| left           | switch to the checks pane                          |
-| right          | switch to the details pane                         |
-| up (checks)    | select the previous group                          |
-| down (checks)  | select the next group                              |
-| up (details)   | scroll details up                                  |
-| down (details) | scroll details down                                |
-| enter, a       | apply the selected group                           |
-| r              | recheck the selected group                         |
-| f              | filter the groups (hide/show the succeeded groups) |
-| d              | show more details                                  |
-| h              | display the help                                   |
-| q, esc, ctrl-c | quit _Quickonf_                                    |
+| key               | action                                             |
+| ----------------- | -------------------------------------------------- |
+| left              | switch to the checks pane                          |
+| right             | switch to the details pane                         |
+| up (checks)       | select the previous group                          |
+| down (checks)     | select the next group                              |
+| up (details)      | scroll details up                                  |
+| down (details)    | scroll details down                                |
+| enter, a, A       | apply the selected group                           |
+| r, R              | recheck the selected group                         |
+| l, L              | apply all groups                                   |
+| f, F              | filter the groups (hide/show the succeeded groups) |
+| d, D              | show more details                                  |
+| h, H, ?           | display the help                                   |
+| q, Q, esc, ctrl-c | quit _Quickonf_                                    |
 
 The _page up_, _page down_, _home_ and _end_ keys may also be used to navigate in checks and details.
 

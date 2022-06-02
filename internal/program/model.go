@@ -102,7 +102,8 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			}
 		}
 	case tea.KeyMsg:
-		if m.isHelpDisplayed {
+		switch {
+		case m.isHelpDisplayed:
 			switch msg.String() {
 			case "ctrl+c":
 				cmd = tea.Quit
@@ -111,7 +112,19 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			default:
 				m.help, cmd = m.help.Update(msg)
 			}
-		} else {
+		case m.askIfReallyApplyAll:
+			switch msg.String() {
+			case "ctrl+c", "q", "Q":
+				cmd = tea.Quit
+			case "esc":
+				cmd = m.toggleApplyAll
+			case "y", "Y":
+				cmd = m.doApplyAll
+			case "n", "N", "l", "L":
+				cmd = m.toggleApplyAll
+			}
+
+		default:
 			switch msg.String() {
 			case "ctrl+c", "esc", "q", "Q":
 				cmd = tea.Quit
@@ -119,7 +132,7 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				cmd = m.groupsview.ToggleShowSuccessful
 			case "d", "D":
 				cmd = m.details.ToggleDetails
-			case "h", "H":
+			case "h", "H", "?":
 				m.isHelpDisplayed = true
 			case "l", "L":
 				cmd = m.toggleApplyAll
