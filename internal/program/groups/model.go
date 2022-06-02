@@ -20,7 +20,9 @@ type Model struct {
 	height int
 }
 
-func New(g *instructions.Groups, initialGroup *instructions.Group, d *details.Model) *Model {
+func New(g *instructions.Groups, d *details.Model) *Model {
+	initialGroup := g.FirstGroup()
+	d.ShowGroup(initialGroup)
 	return &Model{
 		groups:        g,
 		details:       d,
@@ -29,52 +31,51 @@ func New(g *instructions.Groups, initialGroup *instructions.Group, d *details.Mo
 }
 
 func (m *Model) Update(msg tea.Msg) (*Model, tea.Cmd) {
-	var cmd tea.Cmd
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
 		switch msg.String() {
 		case "up":
 			m.up()
-			cmd = m.selectedGroupCmd
+			m.provideGroupToDetails()
 		case "down":
 			m.down()
-			cmd = m.selectedGroupCmd
+			m.provideGroupToDetails()
 		case "pgup":
 			m.pgup()
-			cmd = m.selectedGroupCmd
+			m.provideGroupToDetails()
 		case "pgdown":
 			m.pgdown()
-			cmd = m.selectedGroupCmd
+			m.provideGroupToDetails()
 		case "home":
 			m.home()
-			cmd = m.selectedGroupCmd
+			m.provideGroupToDetails()
 		case "end":
 			m.end()
-			cmd = m.selectedGroupCmd
+			m.provideGroupToDetails()
 		}
 	case tea.MouseMsg:
 		switch msg.Type {
 		case tea.MouseWheelUp:
 			m.scrollUp()
-			cmd = m.selectedGroupCmd
+			m.provideGroupToDetails()
 		case tea.MouseWheelDown:
 			m.scrollDown()
-			cmd = m.selectedGroupCmd
+			m.provideGroupToDetails()
 		case tea.MouseRelease:
 			if msg.Y >= 0 {
 				m.selectLine(msg.Y)
-				cmd = m.selectedGroupCmd
+				m.provideGroupToDetails()
 			}
 		}
 	case messages.NewSignal:
 		m.selectedGroup = m.selectedGroup.Next(0, m.showSuccessful)
-		cmd = m.selectedGroupCmd
+		m.provideGroupToDetails()
 	}
-	return m, cmd
+	return m, nil
 }
 
-func (m *Model) selectedGroupCmd() tea.Msg {
-	return messages.SelectedGroup{Group: m.selectedGroup}
+func (m *Model) provideGroupToDetails() {
+	m.details.ShowGroup(m.selectedGroup)
 }
 
 func (m *Model) Resize(size tea.WindowSizeMsg) *Model {

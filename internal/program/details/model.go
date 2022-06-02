@@ -16,11 +16,8 @@ type Model struct {
 	width int
 }
 
-func New(initialGroup *instructions.Group) *Model {
-	return &Model{
-		viewport: viewport.Model{Width: 1, Height: 1},
-		group:    initialGroup,
-	}
+func New() *Model {
+	return &Model{viewport: viewport.Model{Width: 1, Height: 1}}
 }
 
 func (m *Model) Update(msg tea.Msg) (*Model, tea.Cmd) {
@@ -39,10 +36,12 @@ func (m *Model) Update(msg tea.Msg) (*Model, tea.Cmd) {
 		if msg.Y >= 0 {
 			m.viewport, cmd = m.viewport.Update(msg)
 		}
-	case messages.SelectedGroup:
-		m.group = msg.Group
 	}
 	return m, cmd
+}
+
+func (m *Model) ShowGroup(g *instructions.Group) {
+	m.group = g
 }
 
 func (m *Model) Resize(size tea.WindowSizeMsg) *Model {

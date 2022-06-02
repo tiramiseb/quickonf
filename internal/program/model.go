@@ -35,13 +35,12 @@ type model struct {
 }
 
 func newModel(g *instructions.Groups) *model {
-	initialGroup := g.FirstGroup()
-	details := details.New(initialGroup)
+	d := details.New()
 	return &model{
 		groups:     g,
 		titlebar:   titlebar.New(),
-		groupsview: groups.New(g, initialGroup, details),
-		details:    details,
+		groupsview: groups.New(g, d),
+		details:    d,
 		help:       help.New(),
 
 		signalTarget: make(chan bool),
@@ -124,8 +123,6 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				}
 			}
 		}
-	case messages.SelectedGroup:
-		m.details, cmd = m.details.Update(msg)
 	case messages.NewSignal:
 		m.groupsview, cmd = m.groupsview.Update(msg)
 		cmd = tea.Batch(cmd, m.listenSignal)
