@@ -9,27 +9,32 @@ import (
 	"github.com/tiramiseb/quickonf/internal/program/groups"
 	"github.com/tiramiseb/quickonf/internal/program/help"
 	"github.com/tiramiseb/quickonf/internal/program/messages"
+	"github.com/tiramiseb/quickonf/internal/program/reallyapplyall"
 	"github.com/tiramiseb/quickonf/internal/program/titlebar"
 )
 
 type model struct {
 	groups *instructions.Groups
 
-	titlebar   *titlebar.Model
-	groupsview *groups.Model
-	details    *details.Model
-	help       *help.Model
+	titlebar       *titlebar.Model
+	groupsview     *groups.Model
+	details        *details.Model
+	reallyApplyAll *reallyapplyall.Model
+	help           *help.Model
 
-	leftTitle           string
-	leftTitleWithFocus  string
-	rightTitle          string
-	rightTitleWithFocus string
-	verticalSeparator   string
-	subtitlesSeparator  string
-	separatorXPos       int
+	leftTitle                      string
+	leftTitleWithFocus             string
+	rightTitle                     string
+	rightTitleWithFocus            string
+	reallyApplyRightTitle          string
+	reallyApplyRightTitleWithFocus string
+	verticalSeparator              string
+	subtitlesSeparator             string
+	separatorXPos                  int
 
-	isHelpDisplayed bool
-	focusOnDetails  bool
+	askIfReallyApplyAll bool
+	isHelpDisplayed     bool
+	focusOnDetails      bool
 
 	signalTarget chan bool
 }
@@ -37,11 +42,12 @@ type model struct {
 func newModel(g *instructions.Groups) *model {
 	d := details.New()
 	return &model{
-		groups:     g,
-		titlebar:   titlebar.New(),
-		groupsview: groups.New(g, d),
-		details:    d,
-		help:       help.New(),
+		groups:         g,
+		titlebar:       titlebar.New(),
+		groupsview:     groups.New(g, d),
+		details:        d,
+		reallyApplyAll: reallyapplyall.New(),
+		help:           help.New(),
 
 		signalTarget: make(chan bool),
 	}
@@ -80,11 +86,19 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				m.focusOnDetails = false
 			}
 		case msg.X > m.separatorXPos:
-			// Clock on detail
+			// Click on detail or "really apply all?"
 			msg.Y -= 3
-			m.details, cmd = m.details.Update(msg)
-			if msg.Type == tea.MouseRelease {
-				m.focusOnDetails = true
+			msg.X -= m.separatorXPos + 1
+			if m.askIfReallyApplyAll {
+				m.reallyApplyAll, cmd = m.reallyApplyAll.Update(msg)
+				if msg.Type == tea.MouseRelease {
+					m.focusOnDetails = true
+				}
+			} else {
+				m.details, cmd = m.details.Update(msg)
+				if msg.Type == tea.MouseRelease {
+					m.focusOnDetails = true
+				}
 			}
 		}
 	case tea.KeyMsg:
@@ -107,6 +121,8 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				cmd = m.details.ToggleDetails
 			case "h", "H":
 				m.isHelpDisplayed = true
+			case "l", "L":
+				cmd = m.toggleApplyAll
 			case "right":
 				m.focusOnDetails = true
 			case "left":
@@ -128,18 +144,18 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		cmd = tea.Batch(cmd, m.listenSignal)
 	case messages.Apply:
 		cmd = m.groupsview.ApplySelected
+	case messages.ApplyAll:
+		cmd = m.toggleApplyAll
+	case messages.ConfirmApplyAll:
+		cmd = m.doApplyAll
+	case messages.Filter:
+		cmd = m.groupsview.ToggleShowSuccessful
+	case messages.Details:
+		cmd = m.details.ToggleDetails
+	case messages.Help:
+		m.isHelpDisplayed = !m.isHelpDisplayed
 	case messages.Recheck:
 		cmd = m.groupsview.RecheckSelected(m.signalTarget)
-	case messages.Toggle:
-		switch msg.Name {
-		case "filter":
-			cmd = m.groupsview.ToggleShowSuccessful
-		case "details":
-			cmd = m.details.ToggleDetails
-		case "help":
-			m.isHelpDisplayed = !m.isHelpDisplayed
-		}
-
 	case messages.ToggleStatus:
 		m.titlebar, cmd = m.titlebar.Update(msg)
 	}
@@ -147,21 +163,46 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (m *model) View() string {
-	if m.isHelpDisplayed {
+	switch {
+	case m.isHelpDisplayed:
 		return m.titlebar.HelpView() + "\n" + m.help.View()
-	} else {
+	default:
 		return m.titlebar.View() + "\n" + m.view()
 	}
 }
 
 func (m *model) view() string {
-	var leftTitle, rightTitle string
+	var leftTitle, rightTitle, rightView string
 	if m.focusOnDetails {
 		leftTitle = m.leftTitle
-		rightTitle = m.rightTitleWithFocus
+		if m.askIfReallyApplyAll {
+			rightTitle = m.reallyApplyRightTitleWithFocus
+		} else {
+			rightTitle = m.rightTitleWithFocus
+		}
 	} else {
 		leftTitle = m.leftTitleWithFocus
-		rightTitle = m.rightTitle
+		if m.askIfReallyApplyAll {
+			rightTitle = m.reallyApplyRightTitle
+		} else {
+			rightTitle = m.rightTitle
+		}
 	}
-	return leftTitle + "│" + rightTitle + "\n" + m.subtitlesSeparator + "\n" + lipgloss.JoinHorizontal(lipgloss.Top, m.groupsview.View(), m.verticalSeparator, m.details.View())
+	if m.askIfReallyApplyAll {
+		rightView = m.reallyApplyAll.View()
+	} else {
+		rightView = m.details.View()
+	}
+	return leftTitle + "│" + rightTitle + "\n" + m.subtitlesSeparator + "\n" + lipgloss.JoinHorizontal(lipgloss.Top, m.groupsview.View(), m.verticalSeparator, rightView)
+}
+
+func (m *model) toggleApplyAll() tea.Msg {
+	m.askIfReallyApplyAll = !m.askIfReallyApplyAll
+	return messages.ToggleStatus{Name: "applyall", Status: m.askIfReallyApplyAll}
+}
+
+func (m *model) doApplyAll() tea.Msg {
+	m.groups.ApplyAll()
+	m.askIfReallyApplyAll = false
+	return messages.ToggleStatus{Name: "applyall", Status: false}
 }

@@ -26,6 +26,9 @@ func (m *Model) drawRegular(width int) {
 	neededWidth += m.apply.Width + 1
 	m.showApply = availableWidth >= neededWidth
 
+	neededWidth += m.applyAll.Width + 1
+	m.showApplyAll = availableWidth >= neededWidth
+
 	neededWidth += m.details.Width + 1
 	m.showDetails = availableWidth >= neededWidth
 
@@ -70,6 +73,15 @@ func (m *Model) drawRegular(width int) {
 		m.filterStart = -1
 	}
 
+	if m.showApplyAll {
+		m.applyAllEnd = rightBorder - 2
+		m.applyAllStart = m.applyAllEnd - m.applyAll.Width + 1
+		rightBorder = m.applyAllStart
+	} else {
+		m.applyAllEnd = -1
+		m.applyAllStart = -1
+	}
+
 	if m.showRecheck {
 		m.recheckEnd = rightBorder - 2
 		m.recheckStart = m.recheckEnd - m.recheck.Width + 1
@@ -101,6 +113,10 @@ func (m *Model) View() string {
 	}
 	if m.showRecheck {
 		title.WriteString(m.recheck.View)
+		title.WriteString(space)
+	}
+	if m.showApplyAll {
+		title.WriteString(m.applyAll.View())
 		title.WriteString(space)
 	}
 	if m.showFilter {

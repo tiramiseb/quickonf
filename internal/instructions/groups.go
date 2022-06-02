@@ -3,6 +3,8 @@ package instructions
 import (
 	"sort"
 	"sync"
+
+	"github.com/tiramiseb/quickonf/internal/commands"
 )
 
 type Groups struct {
@@ -62,6 +64,28 @@ func (g *Groups) InitialChecks(signalTarget chan bool) {
 		}
 		wg.Wait()
 	})
+}
+
+func (g *Groups) ApplyAll() {
+	currentPriority := g.groups[0].Priority
+	var wg sync.WaitGroup
+	for _, g := range g.groups {
+		if g.Priority != currentPriority {
+			wg.Wait()
+			currentPriority = g.Priority
+			wg = sync.WaitGroup{}
+		}
+		if g.Status() == commands.StatusSuccess || g.Status() == commands.StatusError {
+			continue
+		}
+		wg.Add(1)
+		thisGroup := g
+		go func() {
+			thisGroup.Apply()
+			wg.Done()
+		}()
+	}
+	wg.Wait()
 }
 
 func (g *Groups) FirstGroup() *Group {

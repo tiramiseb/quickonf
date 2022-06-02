@@ -23,6 +23,11 @@ type Model struct {
 	applyEnd   int
 	showApply  bool
 
+	applyAll      *button.Toggle
+	applyAllStart int
+	applyAllEnd   int
+	showApplyAll  bool
+
 	recheck      *button.Button
 	recheckStart int
 	recheckEnd   int
@@ -57,34 +62,43 @@ type Model struct {
 
 func New() *Model {
 	return &Model{
-		title:   " Quickonf ",
-		apply:   button.NewButton("Apply", 0, apply),
-		recheck: button.NewButton("Recheck", 0, recheck),
-		filter:  button.NewToggle("Filter checks", 0, "filter", true),
-		details: button.NewToggle("More details", 5, "details", false),
-		help:    button.NewButton("Help", 0, enableHelp),
-		quit:    button.NewButton("Quit", 0, tea.Quit),
+		title:    " Quickonf ",
+		apply:    button.NewButton("Apply", 0, apply),
+		applyAll: button.NewToggle("Apply all", 7, applyAll, false),
+		recheck:  button.NewButton("Recheck", 0, recheck),
+		filter:   button.NewToggle("Filter checks", 0, filter, true),
+		details:  button.NewToggle("More details", 5, details, false),
+		help:     button.NewButton("Help", 0, help),
+		quit:     button.NewButton("Quit", 0, tea.Quit),
 
-		helpBack: button.NewButton("Back (esc)", -2, disableHelp),
+		helpBack: button.NewButton("Back (esc)", -2, help),
 
 		HelpView: func() string { return "" },
 	}
 }
 
-func enableHelp() tea.Msg {
-	return messages.Toggle{Name: "help", Action: messages.ToggleActionEnable}
-}
-
-func disableHelp() tea.Msg {
-	return messages.Toggle{Name: "help", Action: messages.ToggleActionDisable}
+func help() tea.Msg {
+	return messages.Help{}
 }
 
 func recheck() tea.Msg {
 	return messages.Recheck{}
 }
 
+func filter() tea.Msg {
+	return messages.Filter{}
+}
+
+func details() tea.Msg {
+	return messages.Details{}
+}
+
 func apply() tea.Msg {
 	return messages.Apply{}
+}
+
+func applyAll() tea.Msg {
+	return messages.ApplyAll{}
 }
 
 // Resize resizes the titlebar
@@ -103,6 +117,8 @@ func (m *Model) Update(msg tea.Msg) (*Model, tea.Cmd) {
 				cmd = m.apply.Click
 			case msg.X >= m.recheckStart && msg.X <= m.recheckEnd:
 				cmd = m.recheck.Click
+			case msg.X >= m.applyAllStart && msg.X <= m.applyAllEnd:
+				cmd = m.applyAll.Click
 			case msg.X >= m.filterStart && msg.X <= m.filterEnd:
 				cmd = m.filter.Click
 			case msg.X >= m.detailsStart && msg.X <= m.detailsEnd:
@@ -115,6 +131,8 @@ func (m *Model) Update(msg tea.Msg) (*Model, tea.Cmd) {
 		}
 	case messages.ToggleStatus:
 		switch msg.Name {
+		case "applyall":
+			m.applyAll = m.applyAll.ChangeStatus(msg.Status)
 		case "filter":
 			m.filter = m.filter.ChangeStatus(msg.Status)
 		case "details":
