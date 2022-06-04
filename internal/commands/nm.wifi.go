@@ -32,20 +32,22 @@ var nmWifi = Command{
 			if conn.Type != "wifi" {
 				return nil, fmt.Sprintf("%s exists but is not a wifi connection", ssid), nil, StatusError, conn.String(), ""
 			}
+			if conn.Mode != "infrastructure" {
+				return nil, fmt.Sprintf("%s exists but is not an wifi client configuration", ssid), nil, StatusError, conn.String(), ""
+			}
 			if conn.PSK == psk {
 				return nil, fmt.Sprintf("%s is already configured", ssid), nil, StatusSuccess, conn.String(), ""
 			}
-			msg = fmt.Sprintf("Need to change psk for wifi network %s", ssid)
+			msg = fmt.Sprintf("Need to change PSK for wifi network %s", ssid)
 			before = conn.String()
 			after = psk
 			apply = func(out Output) bool {
-				out.Infof("Changing psk for wifi network %s", ssid)
+				out.Infof("Changing PSK for wifi network %s", ssid)
 				if err := helper.Exec(nil, nil, "nmcli", "connection", "modify", ssid, "802-11-wireless-security.psk", psk); err != nil {
-					out.Errorf("Could not change psk for wifi network %s: %s", ssid, helper.ExecErr(err))
+					out.Errorf("Could not change PSK for wifi network %s: %s", ssid, helper.ExecErr(err))
 					return false
 				}
-				out.Infof("Changing psk for wifi network %s", ssid)
-				out.Successf("Changed psk for wifi network %s", ssid)
+				out.Successf("Changed PSK for wifi network %s", ssid)
 				return true
 			}
 		} else {
