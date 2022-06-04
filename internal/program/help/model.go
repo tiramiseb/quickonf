@@ -69,6 +69,10 @@ func (m *Model) Update(msg tea.Msg) (*Model, tea.Cmd) {
 				m.activeSection++
 				m.setContent()
 			}
+		case "home":
+			m.viewport.GotoTop()
+		case "end":
+			m.viewport.GotoBottom()
 		case "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m",
 			"n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z",
 			"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M",
@@ -79,7 +83,7 @@ func (m *Model) Update(msg tea.Msg) (*Model, tea.Cmd) {
 				m.setContent()
 			}
 		case "backspace":
-			if m.activeSection == 2 && len(m.commandFilter) > 0 {
+			if m.activeSection == 2 && m.commandFilter != "" {
 				m.commandFilter = m.commandFilter[:len(m.commandFilter)-1]
 				m.setContent()
 			}
@@ -102,6 +106,8 @@ func (m *Model) Update(msg tea.Msg) (*Model, tea.Cmd) {
 				m.activeSection = 3
 				m.setContent()
 			}
+		} else {
+			m.viewport, cmd = m.viewport.Update(msg)
 		}
 	}
 	return m, cmd
