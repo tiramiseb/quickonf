@@ -4,6 +4,7 @@ import (
 	"bytes"
 	_ "embed"
 	"os"
+	"regexp"
 
 	"github.com/charmbracelet/glamour"
 	"github.com/muesli/ansi/compressor"
@@ -19,6 +20,9 @@ var (
 
 	darkStyle  = glamour.DarkStyleConfig
 	lightStyle = glamour.LightStyleConfig
+
+	imageRe       = regexp.MustCompile(`!\[[^]]*\]\([^)]*\)`)
+	frontmatterRe = regexp.MustCompile("(?s)---\n.*\n---")
 )
 
 func init() {
@@ -33,6 +37,8 @@ func makeUIFiles() {
 }
 
 func makeUIFile(name string, content []byte) {
+	content = imageRe.ReplaceAll(content, []byte{})
+	content = frontmatterRe.ReplaceAll(content, []byte{})
 	width := maxWidth(content)
 
 	darkRender, err := glamour.NewTermRenderer(
