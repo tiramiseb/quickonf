@@ -19,7 +19,7 @@ var fileAbsent = Command{
 		"Absolute path of the file to remove (including directory with content)",
 	},
 	nil,
-	`Make sure there is no "Photos" directory for jack\n  file.absent /home/jack/Photos`,
+	"Make sure there is no \"Photos\" directory for jack\n  file.absent /home/jack/Photos",
 	func(args []string) (result []string, msg string, apply Apply, status Status, before, after string) {
 		path := args[0]
 		if !filepath.IsAbs(path) {
