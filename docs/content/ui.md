@@ -9,6 +9,8 @@ The interactive user interface is composed of two panes.
 
 The left pane lists all groups (according to your configuration file), while the right pane shows details on the selected group.
 
+![UI Screenshot](screenshot.png)
+
 # Filters and details
 
 By default, groups are filtered so that only groups in need of a change are displayed. You can toggle this filter with the "F" key or the "Filter checks" button in the title bar.
