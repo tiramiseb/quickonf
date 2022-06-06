@@ -1,17 +1,7 @@
-<script>
-	function filterEm(filter) {
-		for (let item of document.getElementById("cmdsnav").children) {
-			item.classList.toggle(
-				"hide",
-				!item.id.substring(5).includes(filter)
-			)
-		}
-	}
-</script>
 <div class="commands">
 	<div class="cmdsnav">
 		<div class="filter">
-			<input name="filter" type="text" placeholder="Filter..." oninput="filterEm(this.value)">
+			<input id="filterinput" name="filter" type="text" placeholder="Filter...">
 		</div>
 		<aside>
 			<nav class>
@@ -20,7 +10,6 @@
 						<li id="link-{{ .name }}"><a href="#{{ .name }}">{{ .name }}</a></li>
 					{{ end }}
 				</ul>
-
 			</nav>
 		</aside>
 	</div>
@@ -60,3 +49,47 @@
 		{{ end }}
 	</div>
 </div>
+<script>
+	function filterEm(filter) {
+		for (let item of document.getElementById("cmdsnav").children) {
+			item.classList.toggle(
+				"hide",
+				!item.id.substring(5).includes(filter)
+			)
+		}
+	}
+
+	(() => {
+		document.getElementById("filterinput").addEventListener("input", ev => {
+			for (let item of document.getElementById("cmdsnav").children) {
+				item.classList.toggle(
+					"hide",
+					!item.id.substring(5).includes(ev.target.value)
+				)
+			}
+		})
+		let ticking = false;
+		document.addEventListener("scroll", (e) => {
+			if (!ticking) {
+				window.requestAnimationFrame(function() {
+					let viewportHeight = window.visualViewport.height;
+					let winner = null;
+
+					let commands = document.querySelectorAll(".cmdscontent > article")
+					for (let cmd of commands) {
+						let rect = cmd.getElementsByTagName("h2")[0].getBoundingClientRect();
+						if (rect.bottom > viewportHeight) { break }
+						winner = cmd.id
+						if (rect.bottom > 0) { break }
+					}
+					if (winner != null) {
+						document.querySelectorAll(".cmdsnav .active").forEach(e => e.classList.remove("active"))
+						document.getElementById(`link-${winner}`).classList.add("active")
+					}
+					ticking = false;
+				});
+				ticking = true;
+			}
+		})
+	})()
+</script>

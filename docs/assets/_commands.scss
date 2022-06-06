@@ -3,45 +3,53 @@
 		@media (min-width: map-get($breakpoints, "lg")) {
 			display: flex;
 			gap: var(--spacing);
-		}
-		.cmdsnav {
-			flex-shrink: 0;
-			position: sticky;
-			top: 0;
-			left: 0;
-			max-height: 100vh;
 
-			display: flex;
-			flex-direction: column;
+			.cmdsnav {
+				flex: none;
+				position: sticky;
+				top: 0;
+				left: 0;
+				max-height: 100vh;
 
-			--font-size: 0.875em;
+				display: flex;
+				flex-direction: column;
 
-			.filter {
-				flex-grow: 0;
-				flex-shrink: 0;
-				padding: var(--spacing);
-				margin-bottom: 0;
+				--font-size: 0.875em;
 
-				input {
-					margin-bottom: 0;
+				.filter {
+					flex: 0 0;
+					padding: var(--spacing);
+					margin-bottom: calc(var(--spacing) * -1);
+				}
+
+				aside {
+					overflow-y: auto;
+					overflow-x: hidden;
+
+					.hide {
+						display: none;
+					}
 				}
 			}
-
-			aside {
-				overflow-y: auto;
-				overflow-x: hidden;
-
-				.hide {
-					display: none;
-				}
+		}
+		@media (max-width: map-get($breakpoints, "lg")-1) {
+			.cmdsnav {
+			display: none;
 			}
 		}
 	}
-		@if map-get($breakpoints, "lg") {
-			@media (max-width: map-get($breakpoints, "lg")-1) {
-				.cmdsnav {
-				display: none;
-				}
-			}
+
+	#cmdsnav li {
+		border-top-left-radius: var(--border-radius);
+		border-bottom-left-radius: var(--border-radius);
+		&.active {
+			margin-left: var(--spacing);
+			background: var(--contrast-hover);
+			font-weight: 600;
 		}
+	}
+}
+
+article {
+	scroll-margin-top: var(--spacing);
 }
