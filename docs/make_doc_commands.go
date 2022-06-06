@@ -1,6 +1,6 @@
 package main
 
-//go:generate go run *.go doc
+//go:generate go run . doc
 
 import (
 	"os"
