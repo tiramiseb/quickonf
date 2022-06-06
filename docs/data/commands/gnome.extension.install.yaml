@@ -1,0 +1,9 @@
+name: gnome.extension.install
+action: Install a GNOME Shell extension from extensions.gnome.org
+arguments:
+    - Extension UUID
+outputs: []
+example: |-
+    Dash to dock
+      gnome.extension.install dash-to-dock@micxgx.gmail.com
+      gnome.extension.enable dash-to-dock@micxgx.gmail.com

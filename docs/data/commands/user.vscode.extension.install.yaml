@@ -1,0 +1,10 @@
+name: user.vscode.extension.install
+action: Install a VSCode extension
+arguments:
+    - Username
+    - Extension identifier
+outputs: []
+example: |-
+    VSCode with go
+      snap.install code classic
+      user.vscode.extension.install alice golang.go

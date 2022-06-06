@@ -1,0 +1,10 @@
+name: user.file.content
+action: Create a file owned by a user (if path is relative, it is relative to the user's home directory)
+arguments:
+    - Username
+    - Path of the file
+    - Content of the file
+outputs: []
+example: |-
+    Say hello in /home/alice/hello.txt
+      user.file.content alice hello.txt "Hello World!"

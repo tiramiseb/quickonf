@@ -1,0 +1,9 @@
+name: make
+action: Execute the make command
+arguments:
+    - Directory where to execute the command
+    - Make target
+outputs: []
+example: |-
+    Compile foobar
+      make /tmp/foobar compile

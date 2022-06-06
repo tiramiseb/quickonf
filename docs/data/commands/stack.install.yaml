@@ -1,0 +1,8 @@
+name: stack.install
+action: Execute the stack command (from Haskell)
+arguments:
+    - Directory where to execute the command
+outputs: []
+example: |-
+    Install foobar
+      stack.install /tmp/foobar

@@ -1,0 +1,9 @@
+name: nm.wifi
+action: Have knowledge of a wifi network
+arguments:
+    - SSID of the wifi network
+    - PSK of the wifi network (password)
+outputs: []
+example: |-
+    My own wifi network
+      nm.wifi mynetwork n0tSecureP4ssw0rd

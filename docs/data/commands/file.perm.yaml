@@ -1,0 +1,9 @@
+name: file.perm
+action: Change a file permissions
+arguments:
+    - Absolute path of the file
+    - Permissions (000-777)
+outputs: []
+example: |-
+    Restrict private key
+      file.chown /home/alice/.ssh/id_rsa 600

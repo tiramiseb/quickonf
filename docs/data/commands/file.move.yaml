@@ -1,0 +1,9 @@
+name: file.move
+action: Move a file or directory to another place (does not fail if the source does not exist)
+arguments:
+    - Souce path
+    - Destination path
+outputs: []
+example: |-
+    Move previous documents directory for jane
+      file.move /home/jane.old/Documents /home/jane/Documents

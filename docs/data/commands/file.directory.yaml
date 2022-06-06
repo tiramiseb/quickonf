@@ -1,0 +1,8 @@
+name: file.directory
+action: Create a directory (path must be absolute)
+arguments:
+    - Directory path
+outputs: []
+example: |-
+    Create web root
+      file.directory /srv/web

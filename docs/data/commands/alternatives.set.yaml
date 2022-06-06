@@ -1,0 +1,9 @@
+name: alternatives.set
+action: Set an alternative
+arguments:
+    - Name of the alternative
+    - Value to set (file path)
+outputs: []
+example: |-
+    Use Vim
+      alternatives.set vi /usr/bin/vim.basic

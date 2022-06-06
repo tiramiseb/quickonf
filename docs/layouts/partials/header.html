@@ -1,0 +1,21 @@
+{{ $sass := resources.Get "main.scss" }}
+{{ $options := (dict "targetPath" "style.css" "outputStyle" "compressed") }}
+{{ $style := $sass | resources.ToCSS $options }}
+<!DOCTYPE html>
+<html class="has-navbar-fixed-top">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>{{ .Site.Title }} &mdash; {{ .Title }}</title>
+	<meta property="og:title" content="{{ .Site.Title }}">
+	<meta property="og:url" content="{{ .Site.BaseURL }}">
+	<meta property="og:description" content="{{ .Site.Params.description }}">
+	<link rel="stylesheet" href="https://maxst.icons8.com/vue-static/landings/line-awesome/line-awesome/1.3.0/css/line-awesome.min.css">
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@300;600&family=Fira+Code:wght@300&display=swap" rel="stylesheet">
+	<link rel="stylesheet" href="{{ $style.Permalink }}">
+</head>
+
+<body>
+	{{ partial "navbar.html" . }}
+	{{ partial "downloads.html" . }}

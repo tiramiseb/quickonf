@@ -1,0 +1,9 @@
+name: snap.version
+action: Get the version of an installed snap package
+arguments:
+    - Name of the package
+outputs:
+    - Version of the package
+example: |-
+    Example package version
+      version = snap.version obsidian

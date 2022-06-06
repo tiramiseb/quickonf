@@ -1,0 +1,9 @@
+name: nm.import
+action: Import a VPN configuration in NetworkManager
+arguments:
+    - Type of the VPN
+    - Path of the configuration file to import
+outputs: []
+example: |-
+    Import my VPN configuration
+      nm.import openvpn /opt/openvpn.conf

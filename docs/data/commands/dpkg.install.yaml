@@ -1,0 +1,8 @@
+name: dpkg.install
+action: Install a package using dpkg (does not check the file exists first)
+arguments:
+    - Absolute path to the package file
+outputs: []
+example: |-
+    Install that awesome package
+      dpkg.install <confdir>/my-awesome-stuff.deb

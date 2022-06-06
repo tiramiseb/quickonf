@@ -1,0 +1,8 @@
+name: pip.install
+action: Install a Python package using pip3
+arguments:
+    - Name of the package to install
+outputs: []
+example: |-
+    Pip Passlib
+      pip.install passlib

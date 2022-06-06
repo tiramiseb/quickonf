@@ -1,0 +1,10 @@
+name: file.read
+action: Read the content of a file
+arguments:
+    - Path of the file
+outputs:
+    - Content of the file
+example: |-
+    APT sources
+      aptsrc = file.read <confdir>/sources.list
+      file.content /etc/apt/sources.list <aptsrc>

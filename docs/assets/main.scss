@@ -1,0 +1,23 @@
+// Extract/modification of pico/pico.scss
+
+@import "pico/variables";
+
+@import "theme";
+
+@import "pico/layout/document";
+@import "pico/layout/sectioning";
+@import "pico/layout/container";
+
+@import "pico/content/typography";
+@import "pico/content/code";
+@import "pico/content/button";
+@import "pico/content/form";
+@import "pico/content/table";
+
+// @import "pico/scss/components/dropdown";
+@import "pico/components/card";
+@import "pico/components/nav";
+
+@import "specifics";
+@import "commands";
+@import "example";

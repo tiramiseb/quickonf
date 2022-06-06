@@ -1,0 +1,204 @@
+
+
+
+<!DOCTYPE html>
+<html class="has-navbar-fixed-top">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Quickonf &mdash; Configuration language</title>
+	<meta property="og:title" content="Quickonf">
+	<meta property="og:url" content="https://tiramiseb.github.io/quickonf/">
+	<meta property="og:description" content="Quickly (re)configure a Linux desktop system">
+	<link rel="stylesheet" href="https://maxst.icons8.com/vue-static/landings/line-awesome/line-awesome/1.3.0/css/line-awesome.min.css">
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@300;600&family=Fira+Code:wght@300&display=swap" rel="stylesheet">
+	<link rel="stylesheet" href="https://tiramiseb.github.io/quickonf/style.css">
+</head>
+
+<body>
+	<nav class="container-fluid head">
+	<ul>
+		<li>
+			<a href="https://tiramiseb.github.io/quickonf/" alt="Quickonf">
+				Quickonf
+			</a>
+		</li>
+	</ul>
+	<ul>
+		
+		
+			
+			<li>
+				<a href="https://tiramiseb.github.io/quickonf/intro/">
+					<span class="sm">
+						Intro
+					</span>
+					<span class="lg">
+						Introduction
+					</span>
+				</a>
+			</li>
+			
+		
+			
+			<li>
+				<a href="https://tiramiseb.github.io/quickonf/language/">
+					<span class="sm">
+						Lang
+					</span>
+					<span class="lg">
+						Configuration language
+					</span>
+				</a>
+			</li>
+			
+		
+			
+			<li>
+				<a href="https://tiramiseb.github.io/quickonf/commands/">
+					<span class="sm">
+						Cmds
+					</span>
+					<span class="lg">
+						Commands
+					</span>
+				</a>
+			</li>
+			
+		
+			
+			<li>
+				<a href="https://tiramiseb.github.io/quickonf/ui/">
+					<span class="sm">
+						UI
+					</span>
+					<span class="lg">
+						User interface
+					</span>
+				</a>
+			</li>
+			
+		
+	</ul>
+</nav>
+
+	<nav class="container-fluid">
+	<ul>
+		<li>
+			<a role="button" class="contrast" href="https://github.com/tiramiseb/quickonf/releases">
+				<i class="las la-download"></i>
+				All releases
+			</a>
+		</li>
+		<li>
+			<a role="button" class="contrast" href="https://github.com/tiramiseb/quickonf">
+				<i class="lab la-github"></i>
+				View on GitHub
+			</a>
+		</li>
+	</ul>
+</nav>
+
+
+<main class="container">
+	<h1 id="groups">Groups</h1>
+<p>A <em>Quickonf</em> configuration file is composed of multiple sections, called groups. The group name starts at the beginning of the line, instructions are indented.</p>
+<div class="highlight"><pre class="chroma"><code class="language-text" data-lang="text">group name
+  instruction A
+  instruction B
+  ...
+  instruction G
+    instruction H depending on instruction G
+    instruction I depending on instruction G
+</code></pre></div><p>Indentations length and type (spaces or tabs) is not strict, you may use whichever you want. Keep in mind that, when mixing indentations, tabs are considered to be equivalent to aligning to multiples of 8 spaces (ie. <code>&lt;space&gt;&lt;space&gt;&lt;tab&gt;</code> is equivalent to 8 spaces).</p>
+<p>Some instructions have an impact on multiple other instructions, like conditional execution (<code>if</code>) or repetition (<code>repeat</code>), in this case you must use a 2nd indentation level (or even more). See below for examples.</p>
+<h1 id="commands">Commands</h1>
+<p>The most important type of instruction is the commands. There are many available commands, and probably many more to come. A command is the instruction given to <em>Quickonf</em> for system checking and modification. The commands may need arguments and may return output values (see <em>Variables</em> below). See the <em>Commands</em> section for details on how to use commands.</p>
+<p>By convention, commands modifying data only for one user are prefixed with &ldquo;<code>user.</code>&rdquo; and take the username as their first argument. Other commands modify system-wide values.</p>
+<h1 id="variables">Variables</h1>
+<p>Some commands return output values, that can be stored in variables if needed. Variables are named with alphanumerical characters. Syntax to store values is the following:</p>
+<div class="highlight"><pre class="chroma"><code class="language-text" data-lang="text">group name
+  var1 var2 = command arg1 arg2
+</code></pre></div><p>Using variables after assignment is as simple as putting the variable name between &ldquo;&lt;&rdquo; and &ldquo;&gt;&rdquo; anywhere, like:</p>
+<div class="highlight"><pre class="chroma"><code class="language-text" data-lang="text">group name
+  var = command1 arg1 arg2
+  command2 &lt;var&gt;
+</code></pre></div><p>&hellip; here, the first output of the first command is used as the argument of the second command.</p>
+<h2 id="global-variables">Global variables</h2>
+<p>Some global variables are set when <em>Quickonf</em> starts:</p>
+<ul>
+<li><code>hostname</code>: the hostname of the computer</li>
+<li><code>oscodename</code>: the codename of the current operating system version</li>
+<li><code>confdir</code>: path of the directory containing the configuration file (can be used to read other files in the same directory, templates etc)</li>
+</ul>
+<h2 id="expanding-variables-content">Expanding variables content</h2>
+<p>Sometimes, a variable&rsquo;s content refers to other variables. Take for instance a file that contains variables names. If you read the file with the <code>file.read</code> command, it may be stored in a variable, but the content of the read file is not processed for variables names. In order to process variables names references inside a variable content, simply use the <code>expand</code> instruction with the variable name as its only argument.</p>
+<p>Example:</p>
+<div class="highlight"><pre class="chroma"><code class="language-text" data-lang="text">APT sources
+  aptsrc = file.read &lt;confdir&gt;/sources.list.tmpl
+  expand aptsrc
+  file.content /etc/apt/sources.list &lt;aptsrc&gt;
+</code></pre></div><p>&hellip; here, the <code>sources.list.tmpl</code> file may contain <code>&lt;oscodename&gt;</code>.</p>
+<h1 id="conditional-execution">Conditional execution</h1>
+<p>Instructions can be grouped below a <code>if</code> instruction, which executes then only if the condition is true.</p>
+<p>Supported conditions are:</p>
+<ul>
+<li><code>file.absent &lt;/path/to/file&gt;</code>: true if the file does not exist</li>
+<li><code>file.present &lt;/path/to/file&gt;</code>: true if the file exists</li>
+<li><code>&lt;value1&gt; = &lt;value2&gt;</code>: true if values are equal (compared as strings)</li>
+<li><code>&lt;value1&gt; != &lt;value2&gt;</code>: true if values are different (compared as strings)</li>
+</ul>
+<p>Example:</p>
+<div class="highlight"><pre class="chroma"><code class="language-text" data-lang="text">VPN
+  if &lt;hostname&gt; = mylaptop
+    nm.import openvpn &lt;confdir&gt;/myvpn.ovpn
+</code></pre></div><p>&hellip; here, the <code>nm.import openvpn &lt;confdir&gt;/myvpn.ovpn</code> is only executed if the host name is &ldquo;mylaptop&rdquo;. You may of course put multiple instructions with the 2nd indentation level.</p>
+<h1 id="repeating-identical-commands-and-arguments">Repeating identical commands and arguments</h1>
+<p>Say you want to apply similar commands multiple times. Instead of writing the same prefix in multiple lines, you can use the <code>repeat</code> instruction. It makes it easier to write and to read your configuration file. It takes as arguments the command to be repeated, optionally with its first arguments.</p>
+<p><em>Quickonf</em> translates it by prepending this command name and these arguments to all lines.</p>
+<p>Example:</p>
+<div class="highlight"><pre class="chroma"><code class="language-text" data-lang="text">Wifi
+  repeat nm.wifi
+    ssid1 psk1
+    ssid2 psk2
+    ssid3 psk3
+
+My XDG dirs
+  repeat user.xdg.userdir alice
+    desktop DESKtop
+    documents MyDocs
+    download UglyStuff
+</code></pre></div><p>&hellip; translates internally to:</p>
+<div class="highlight"><pre class="chroma"><code class="language-text" data-lang="text">Wifi
+  nm.wifi ssid1 psk1
+  nm.wifi ssid2 psk2
+  nm.wifi ssid3 psk3
+
+My XDG dirs
+  user.xdg.userdir alice desktop DESKtop
+  user.xdg.userdir alice documents MyDocs
+  user.xdg.userdir alice download UglyStuff
+</code></pre></div><h1 id="priority">Priority</h1>
+<p>Some instructions may need to be executed before other ones, when executing all instructions. For instance, changing the packages sources or adding an installer like snap or flatpak. For that specific case, You may use the <code>priority</code> instruction, which takes an integer as an arguments. The default priority is 0, and larger value means higher priority.</p>
+<p>If you use the <code>priority</code> instruction in a conditional block, it impacts the whole group (meaning you may give different priorities depending on conditions).</p>
+<p>Keep in mind that it only impacts the order of execution and display in the interface. You still can manually apply instructions of lower priority before instructions of higher priority.</p>
+<p>For instance:</p>
+<div class="highlight"><pre class="chroma"><code class="language-text" data-lang="text">Flatpak
+  priority 1
+  apt.install flatpak
+</code></pre></div><h1 id="multi-level-indentation">Multi-level indentation</h1>
+<p>You may use multiple level indentation, if needed by the instructions you want to use.</p>
+<p>Example:</p>
+<div class="highlight"><pre class="chroma"><code class="language-text" data-lang="text">Wifi
+  nm.wifi home homessid
+  if &lt;hostname&gt; = worklaptop
+    repeat nm.wifi
+      worknetwork workssid
+      mobilenetwork mobilessid
+</code></pre></div><p>&hellip; here, the &ldquo;home&rdquo; network will be known by all computers, but &ldquo;worknetwork&rdquo; and &ldquo;mobilenetwork&rdquo; are only known by your work laptop.</p>
+
+</main>
+
+</body>
+

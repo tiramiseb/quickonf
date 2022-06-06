@@ -1,0 +1,15 @@
+baseURL: https://tiramiseb.github.io/quickonf/
+title: Quickonf
+defaultContentLanguage: en
+
+params:
+  description: Quickly (re)configure a Linux desktop system
+  pages:
+    - intro
+    - language
+    - commands
+    - ui
+
+markup:
+  highlight:
+    noClasses: false

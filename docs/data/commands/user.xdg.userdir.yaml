@@ -1,0 +1,11 @@
+name: user.xdg.userdir
+action: Set a XDG user dir
+arguments:
+    - Username
+    - Directory name (one of DESKTOP, DOWNLOAD, TEMPLATES, PUBLICSHARE, DOCUMENTS, MUSIC, PICTURES, VIDEOS, case-insensitive)
+    - Directory path
+outputs: []
+example: |-
+    Change downloads directory for john
+      user.file.directory john Downs
+      user.xdg.userdir john DOWNLOAD Downs

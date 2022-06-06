@@ -1,0 +1,9 @@
+name: file.content
+action: Create a file owned by root
+arguments:
+    - Absolute path of the file
+    - Content of the file
+outputs: []
+example: |-
+    Say hello
+      file.content /home/hello.txt "Hello World!"

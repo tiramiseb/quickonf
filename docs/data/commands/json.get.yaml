@@ -1,0 +1,10 @@
+name: json.get
+action: Get a JSON value from a variable
+arguments:
+    - Variable containing the JSON object
+    - Path of the value to get
+outputs:
+    - Value
+example: |-
+    Get a value
+      val = json.get "{\"download\":{\"url\":\"http://www.example.com/\"}}" download.url

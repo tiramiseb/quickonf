@@ -1,0 +1,10 @@
+name: http.post.var
+action: Send content with a HTTP POST request (data is sent when checking)
+arguments:
+    - URI of the content to download
+    - Body (payload)
+outputs:
+    - Downloaded content
+example: |-
+    Download example
+      foobar = http.post.var http://www.example.com "example data"

@@ -1,0 +1,8 @@
+name: apt.remove
+action: Remove a package using apt
+arguments:
+    - Name of the package to remove
+outputs: []
+example: |-
+    Remove the "ipcalc" tool
+      apt.remove ipcalc

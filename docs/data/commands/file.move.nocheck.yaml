@@ -1,0 +1,9 @@
+name: file.move.nocheck
+action: Move a file or directory to another place (with no check). Necessary if the file does not exist in the check phase (for instance if it is downloaded when applying).
+arguments:
+    - Souce path
+    - Destination path
+outputs: []
+example: |-
+    Move previous documents directory for jane
+      file.move.nocheck /home/jane.old/Documents /home/jane/Documents

@@ -1,0 +1,11 @@
+name: github.latest
+action: Check the latest release from a GitHub repository
+arguments:
+    - GitHub repository name
+    - Pattern to match an asset
+outputs:
+    - Release name
+    - Asset URL
+example: |-
+    Kmonad
+      release url = github.latest kmonad/kmonad kmonad-*-linux

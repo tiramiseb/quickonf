@@ -1,0 +1,7 @@
+name: apt.upgrade
+action: Upgrade packages from apt repositories
+arguments: []
+outputs: []
+example: |-
+    Upgrade packages
+      apt.upgrade
