@@ -1,0 +1,11 @@
+name: user.git.clone
+action: Clone a git repository as provided user (if the repository already exists locally, pull the last commit) and switch to the requested reference (branch, tag...)
+arguments:
+    - Username
+    - Remote repository URI
+    - Clone target (if path is relative, it is relative to the user's nome directory)
+    - Reference (branch, tag...)
+outputs: []
+example: |-
+    Oh My Bash
+      user.git.clone alice https://github.com/ohmybash/oh-my-bash.git .oh-my-bash master

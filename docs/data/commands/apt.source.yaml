@@ -1,0 +1,9 @@
+name: apt.source
+action: Add apt source repository(ies), and update the available packages list if needed
+arguments:
+    - Local name of the source(s) (simple short text)
+    - Source(s)
+outputs: []
+example: |-
+    NextDNS
+      apt.source nextdns "deb https://repo.nextdns.io/deb stable main"

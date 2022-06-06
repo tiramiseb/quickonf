@@ -1,0 +1,11 @@
+name: debconf.set
+action: Set a debconf parameter
+arguments:
+    - Package where the parameter belong
+    - Name of the parameter
+    - Value to apply to the parameter
+outputs: []
+example: |-
+    Install MS fonts
+      debconf.set ttf-mscorefonts-installer msttcorefonts/accepted-mscorefonts-eula true
+      apt.install ttf-mscorefonts-installer

@@ -1,0 +1,14 @@
+name: regexp.submatch
+action: Find submatches using a regexp
+arguments:
+    - Regexp
+    - Source string
+outputs:
+    - First submatch
+    - Second submatch
+    - '...'
+example: |-
+    Find src
+      webpage = http.get.var http://www.example.com
+      src = regexp.substring "<script .*src=(.*)>" <webpage>
+      ...

@@ -1,0 +1,8 @@
+name: apt.install
+action: Install a package using apt
+arguments:
+    - Name of the package to install
+outputs: []
+example: |-
+    Install the "ipcalc" tool
+      apt.install ipcalc

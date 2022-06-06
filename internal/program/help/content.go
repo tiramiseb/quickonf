@@ -2,7 +2,7 @@ package help
 
 import _ "embed"
 
-//go:generate go run makemd/main.go
+//go:generate go run ../../../docs/*.go ui
 
 var (
 	//go:embed intro.dark.msg

@@ -1,0 +1,13 @@
+{{ partial "header.html" . }}
+<main class="container">
+	<hgroup>
+		<h1>{{ .Site.Title }}</h1>
+		<h2>{{ .Site.Params.description }}</h2>
+	</hgroup>
+	{{ $image := resources.Get "keyboard.jpg" }}
+	<img src="{{ $image.RelPermalink }}" style="width:100%" />
+	{{ with .GetPage "frontpage" }}
+		{{ .Content }}
+	{{ end }}
+</main>
+{{ partial "footer.html" . }}

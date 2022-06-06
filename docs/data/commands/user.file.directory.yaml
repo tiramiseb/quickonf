@@ -1,0 +1,9 @@
+name: user.file.directory
+action: Create a directory belonging to the given user (if path is relative, it is relative to the user's home directory
+arguments:
+    - Username
+    - Directory path
+outputs: []
+example: |-
+    Create Picz photos for alice
+      user.file.directory alice Picz

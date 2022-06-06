@@ -1,0 +1,137 @@
+:root {
+	--background-color: #222;
+
+	--color: #bbb;
+	--h1-color: #fff;
+	--h2-color: #ddd;
+
+	--primary: #bbf;
+	--primary-hover: #eef;
+	--primary-focus: #444;
+	--primary-inverse: #222;
+
+	--contrast: #333;
+	--contrast-hover: #444;
+
+	--code-background-color: #555;
+	--code-color: #fff;
+
+	--font-family: 'Comfortaa', cursive;
+	--line-height: 1.5;
+	--font-weight: 300;
+	--font-size: 15px;
+
+	  // Responsive typography
+	  @if $enable-responsive-typography {
+		@if map-get($breakpoints, "sm") {
+			@media (min-width: map-get($breakpoints, "sm")) {
+				--font-size: 16px;
+			}
+		}
+
+		@if map-get($breakpoints, "md") {
+			@media (min-width: map-get($breakpoints, "md")) {
+				--font-size: 17px;
+			}
+		}
+
+		@if map-get($breakpoints, "lg") {
+			@media (min-width: map-get($breakpoints, "lg")) {
+				--font-size: 18px;
+			}
+		}
+
+		@if map-get($breakpoints, "xl") {
+			@media (min-width: map-get($breakpoints, "xl")) {
+				--font-size: 19px;
+			}
+		}
+	}
+
+	--border-radius: 0.5rem;
+
+	--spacing: 0.5rem;
+	--typography-spacing-vertical: 1rem;
+	--block-spacing-vertical: calc(var(--spacing) * 4);
+	--block-spacing-horizontal: var(--spacing);
+
+	@if ($enable-classes and $enable-grid) {
+		--grid-spacing-vertical: 0;
+		--grid-spacing-horizontal: var(--spacing);
+	}
+
+	--form-element-spacing-vertical: 0.5rem;
+	--form-element-spacing-horizontal: 0.5rem;
+	--form-element-background-color: #333;
+	--form-element-color: var(--color);
+	--form-element-border-color: var(--color);
+	--button-box-shadow: 0 0 2px 1px var(--color);
+	--button-hover-box-shadow: 0 0 2px 1px var(--primary);
+
+	--nav-element-spacing-vertical: 1rem;
+	--nav-element-spacing-horizontal: 0.5rem;
+	--nav-link-spacing-vertical: 0.5rem;
+	--nav-link-spacing-horizontal: 0.5rem;
+
+	--table-border-color: var(--primary);
+
+	// Card (<article>)
+	--card-background-color: #333;
+	--card-border-color: var(--color);
+	--card-box-shadow: 0 0.125rem 1rem #000,
+}
+
+pre, code {
+	--font-family: 'Fira Code', monospace;
+}
+
+small {
+	--font-size: 0.875em;
+}
+
+h1 {
+	--font-weight: 600;
+	--font-size: 2rem;
+	--typography-spacing-vertical: 2rem;
+}
+
+h2 {
+	--font-weight: 600;
+	--font-size: 1.5rem;
+	--typography-spacing-vertical: 1.5rem;
+}
+
+nav {
+	--background-color: #444;
+	--color: #fff;
+}
+
+.contrast {
+	--button-box-shadow: 0 0 0 rgba(0, 0, 0, 0);
+	--button-hover-box-shadow: 0 0 0 rgba(0, 0, 0, 0);
+}
+
+thead,
+tfoot {
+  th,
+  td {
+    --border-width: 2px;
+  }
+}
+
+input {
+	--box-shadow: var(--button-box-shadow) !important;
+}
+
+:not(thead):not(tfoot) > * {
+
+	 > td {
+	--font-size: 0.875em;
+	--border-width: 1px;
+	--table-border-color: #444;
+	 }
+
+	&:last-child > td {
+		--table-border-color: var(--primary);
+	}
+}

@@ -1,0 +1,65 @@
+html {
+	scroll-behavior: smooth;
+}
+
+nav.head {
+	background-color: var(--background-color);
+	padding-left: calc(var(--nav-element-spacing-horizontal) * 2);
+	padding-right: calc(var(--nav-element-spacing-horizontal) * 2);
+}
+
+code {
+  padding: 0.15rem 0.25rem;
+}
+
+pre {
+	box-shadow: 0 0 0 1px var(--color);
+	margin-bottom: var(--typography-spacing-vertical);
+}
+
+a,
+[role="link"] {
+	&:is([aria-current], :hover, :active, :focus) {
+		text-shadow: 0 0 5px var(--primary);
+	}
+}
+
+button,
+input[type="submit"],
+input[type="button"],
+input[type="reset"],
+[role="button"] {
+	> i:is(.lab, .lar, .las):first-child {
+		font-size: 1.25em;
+		vertical-align: top;
+	}
+}
+
+
+dl, ol, ul {
+	margin-left: calc(var(--spacing) * 5);
+}
+
+article {
+	border-radius: calc(var(--border-radius) * 2);
+	padding-top: var(--block-spacing-horizontal);
+	padding-bottom: var(--block-spacing-horizontal);
+
+	> :last-child {
+		margin-bottom: 0;
+	}
+}
+
+
+@if map-get($breakpoints, "lg") {
+	@media (min-width: map-get($breakpoints, "lg")) {
+		.sm {
+			display: none;
+		}
+	}
+	@media (max-width: map-get($breakpoints, "lg")-1) {
+		.lg {
+			display: none;
+		}
+	}
+}

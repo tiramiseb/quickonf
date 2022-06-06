@@ -10,11 +10,11 @@ import (
 )
 
 var (
-	//go:embed intro.md
+	//go:embed content/intro.md
 	intro []byte
-	//go:embed language.md
+	//go:embed content/language.md
 	language []byte
-	//go:embed ui.md
+	//go:embed content/ui.md
 	ui []byte
 
 	darkStyle  = glamour.DarkStyleConfig
@@ -26,13 +26,13 @@ func init() {
 	lightStyle.Document.Margin = nil
 }
 
-func main() {
-	make("intro", intro)
-	make("language", language)
-	make("ui", ui)
+func makeUIFiles() {
+	makeUIFile("intro", intro)
+	makeUIFile("language", language)
+	makeUIFile("ui", ui)
 }
 
-func make(name string, content []byte) {
+func makeUIFile(name string, content []byte) {
 	width := maxWidth(content)
 
 	darkRender, err := glamour.NewTermRenderer(

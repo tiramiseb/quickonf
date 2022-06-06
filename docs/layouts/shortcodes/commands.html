@@ -1,0 +1,62 @@
+<script>
+	function filterEm(filter) {
+		for (let item of document.getElementById("cmdsnav").children) {
+			item.classList.toggle(
+				"hide",
+				!item.id.substring(5).includes(filter)
+			)
+		}
+	}
+</script>
+<div class="commands">
+	<div class="cmdsnav">
+		<div class="filter">
+			<input name="filter" type="text" placeholder="Filter..." oninput="filterEm(this.value)">
+		</div>
+		<aside>
+			<nav class>
+				<ul id="cmdsnav">
+					{{ range $.Site.Data.commands }}
+						<li id="link-{{ .name }}"><a href="#{{ .name }}">{{ .name }}</a></li>
+					{{ end }}
+				</ul>
+
+			</nav>
+		</aside>
+	</div>
+	<div class="cmdscontent">
+		{{ range $.Site.Data.commands }}
+			<article id="{{ .name }}">
+				<h2>{{ .name }}</h2>
+				<p>{{ .action }}</p>
+				{{ if .arguments }}
+					<p>Arguments:</p>
+					<ol>
+						{{ range .arguments }}
+							<li>
+								{{ . }}
+							</li>
+						{{ end }}
+					</ol>
+				{{ else }}
+					<p>No arguments</p>
+				{{ end }}
+				{{ if .outputs }}
+					<p>Outputs:</p>
+					<ol>
+						{{ range .outputs }}
+							<li>
+								{{ . }}
+							</li>
+						{{ end }}
+					</ol>
+				{{ else }}
+					<p>No output</p>
+				{{ end }}
+
+				<p>Example:</p>
+				<pre><code>{{ .example }}</code></pre>
+			</article>
+		{{ end }}
+	</div>
+</div>

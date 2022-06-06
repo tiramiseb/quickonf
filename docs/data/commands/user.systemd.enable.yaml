@@ -1,0 +1,9 @@
+name: user.systemd.enable
+action: Enable and start a systemd user service
+arguments:
+    - Username
+    - Name of the service to enable
+outputs: []
+example: |-
+    Enable syncthing
+      systemd.enable alice syncthing

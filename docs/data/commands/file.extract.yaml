@@ -1,0 +1,10 @@
+name: file.extract
+action: Extract a (compressed) archive
+arguments:
+    - Archive format (one of zip, tar.xz)
+    - Archive absolute path
+    - Target absolute path
+outputs: []
+example: |-
+    Extract something
+      file.extract zip /foo/bar.zip /bar

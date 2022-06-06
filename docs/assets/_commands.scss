@@ -1,0 +1,47 @@
+.commands {
+	@if map-get($breakpoints, "lg") {
+		@media (min-width: map-get($breakpoints, "lg")) {
+			display: flex;
+			gap: var(--spacing);
+		}
+		.cmdsnav {
+			flex-shrink: 0;
+			position: sticky;
+			top: 0;
+			left: 0;
+			max-height: 100vh;
+
+			display: flex;
+			flex-direction: column;
+
+			--font-size: 0.875em;
+
+			.filter {
+				flex-grow: 0;
+				flex-shrink: 0;
+				padding: var(--spacing);
+				margin-bottom: 0;
+
+				input {
+					margin-bottom: 0;
+				}
+			}
+
+			aside {
+				overflow-y: auto;
+				overflow-x: hidden;
+
+				.hide {
+					display: none;
+				}
+			}
+		}
+	}
+		@if map-get($breakpoints, "lg") {
+			@media (max-width: map-get($breakpoints, "lg")-1) {
+				.cmdsnav {
+				display: none;
+				}
+			}
+		}
+}

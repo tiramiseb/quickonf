@@ -1,0 +1,9 @@
+name: dpkg.version
+action: Get the version of an installed dpkg package
+arguments:
+    - Name of the package
+outputs:
+    - Version of the package
+example: |-
+    Example package version
+      version = dpkg.version gnome-shell

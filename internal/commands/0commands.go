@@ -51,8 +51,8 @@ type Command struct {
 	Arguments []string // [used for doc & counting args] Arguments description
 	Outputs   []string // [used for doc & counting outputs] Outputs description
 	Example   string   // [used for doc] Example(s)
-	Run       run      // The function to run the command
-	Reset     func()   // The function to reset data in order to cleanly re-run the command
+	Run       run      `yaml:"-"` // The function to run the command
+	Reset     func()   `yaml:"-"` // The function to reset data in order to cleanly re-run the command
 }
 
 // Apply is the process to apply a given instance of a command on the system

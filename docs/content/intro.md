@@ -1,3 +1,8 @@
+---
+Title: Introduction
+short_title: Intro
+---
+
 # Introduction
 
 _Quickonf_ is a semi-automatic configuration tool for Linux desktop computers, allowing you to reinstall your Linux system and quickly get your favorite environment back.

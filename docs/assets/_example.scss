@@ -1,0 +1,18 @@
+.example {
+	padding-top: var(--spacing);
+	clear: both;
+
+    @if map-get($breakpoints, "lg") {
+		@media (min-width: map-get($breakpoints, "lg")) {
+			> :first-child {
+				width: 50%;
+				float: left;
+				margin-top: calc(var(--spacing) * -1);
+				padding-right: var(--spacing);
+			}
+			> :not(:first-child) {
+				margin-left: calc(50% + var(--spacing));
+			}
+		}
+	}
+}

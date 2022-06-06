@@ -1,0 +1,9 @@
+name: file.symlink
+action: Create a symlink
+arguments:
+    - Absolute path of the symlink
+    - Absolute path of the target file
+outputs: []
+example: |-
+    Very dumb symlink
+      file.symlink /home/alice/temp /tmp

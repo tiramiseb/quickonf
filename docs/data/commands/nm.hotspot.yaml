@@ -1,0 +1,11 @@
+name: nm.hotspot
+action: Setup a wifi access point (hotspot) - only one can be configured
+arguments:
+    - Network Interface name
+    - SSID of the hotspot
+    - PSK of the hotspot (password)
+    - 'Autoconnect (one of: 1, t, T, TRUE, true, True, 0, f, F, FALSE, false, False)'
+outputs: []
+example: |-
+    Share connection
+      nm.hotspot wlp4s0 mynetwork n0tSecureP4ssw0rd true

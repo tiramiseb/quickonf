@@ -1,0 +1,8 @@
+name: systemd.enable
+action: Enable and start a systemd service
+arguments:
+    - Name of the service to enable
+outputs: []
+example: |-
+    Enable nextdns
+      systemd.enable nextdns

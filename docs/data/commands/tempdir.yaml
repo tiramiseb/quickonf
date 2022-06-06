@@ -1,0 +1,9 @@
+name: tempdir
+action: Create a temporary directory (directory is automatically deleted when closing the application)
+arguments: []
+outputs:
+    - Path of the created directory
+example: |-
+    Temporarily clone git repository
+      tmp = tempdir
+      git.clone https://www.example.com/foobar.git <tmp>

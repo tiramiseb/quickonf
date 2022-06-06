@@ -1,0 +1,10 @@
+name: git.hash
+action: Get the latest hash for a reference (generally branch or tag) in a git repository
+arguments:
+    - Git repository URI
+    - Reference (generally, branch or tag)
+outputs:
+    - Commit hash
+example: |-
+    Pop Shell
+      pophash = git.hash https://github.com/pop-os/shell.git master

@@ -1,0 +1,10 @@
+name: user.git.config
+action: Set a git configuration parameter for a user
+arguments:
+    - Username
+    - Name (in the form "x.y")
+    - Value
+outputs: []
+example: |-
+    Git parameter
+      user.git.config alice branch.autosetuprebase always

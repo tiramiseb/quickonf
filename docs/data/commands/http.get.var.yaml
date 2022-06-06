@@ -1,0 +1,9 @@
+name: http.get.var
+action: Download content with a HTTP GET request (URI is downloaded when checking)
+arguments:
+    - URI of the content to download
+outputs:
+    - Downloaded content
+example: |-
+    Download example
+      foobar = http.get.var http://www.example.com

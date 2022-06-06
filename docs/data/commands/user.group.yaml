@@ -1,0 +1,9 @@
+name: user.group
+action: Add the user to the group (if the group does not exist, it is created)
+arguments:
+    - Username
+    - Groupname
+outputs: []
+example: |-
+    Allow alice to dial with a modem
+      user.group alice dialout

@@ -1,0 +1,9 @@
+name: git.config
+action: Set a git configuration parameter in the system
+arguments:
+    - Name (in the form "x.y")
+    - Value
+outputs: []
+example: |-
+    Git parameter
+      git.config branch.autosetuprebase always

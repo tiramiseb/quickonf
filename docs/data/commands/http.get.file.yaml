@@ -1,0 +1,9 @@
+name: http.get.file
+action: Download a file with a HTTP GET request (URI is downloaded when applying)
+arguments:
+    - URI of the file to download
+    - Path of the destination file
+outputs: []
+example: |-
+    Download example
+      http.get.file http://www.example.com /opt/example

@@ -1,0 +1,8 @@
+name: file.absent
+action: Make sure a file is absent
+arguments:
+    - Absolute path of the file to remove (including directory with content)
+outputs: []
+example: |-
+    Make sure there is no "Photos" directory for jack
+      file.absent /home/jack/Photos

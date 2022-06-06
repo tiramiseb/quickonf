@@ -1,3 +1,8 @@
+---
+Title: User interface
+short_title: UI
+---
+
 # User interface
 
 The interactive user interface is composed of two panes.

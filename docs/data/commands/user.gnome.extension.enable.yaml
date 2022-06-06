@@ -1,0 +1,10 @@
+name: user.gnome.extension.enable
+action: Enable a GNOME Shell extension
+arguments:
+    - Username
+    - UUID of the extension
+outputs: []
+example: |-
+    Dash to dock
+      gnome.extension.install dash-to-dock@micxgx.gmail.com
+      user.gnome.extension.enable alice dash-to-dock@micxgx.gmail.com

@@ -1,0 +1,26 @@
+<nav class="container-fluid head">
+	<ul>
+		<li>
+			<a href="{{ .Site.BaseURL }}" alt="{{ .Site.Title }}">
+				{{ .Site.Title }}
+			</a>
+		</li>
+	</ul>
+	<ul>
+		{{ $site := .Site }}
+		{{ range .Site.Params.pages }}
+			{{ with $site.GetPage . }}
+			<li>
+				<a href="{{ .Permalink }}">
+					<span class="sm">
+						{{ .Params.short_title}}
+					</span>
+					<span class="lg">
+						{{ .Title }}
+					</span>
+				</a>
+			</li>
+			{{ end }}
+		{{ end }}
+	</ul>
+</nav>

@@ -1,0 +1,10 @@
+name: user.dconf.set
+action: Set a dconf parameter
+arguments:
+    - Username
+    - Key (in the form "/x/y/z")
+    - Value
+outputs: []
+example: |-
+    Show date in GNOME
+      user.dconf.set /org/gnome/desktop/interface/clock-show-date true

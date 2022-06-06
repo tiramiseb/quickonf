@@ -1,3 +1,8 @@
+---
+Title: Configuration language
+short_title: Lang
+---
+
 # Groups
 
 A _Quickonf_ configuration file is composed of multiple sections, called groups. The group name starts at the beginning of the line, instructions are indented.

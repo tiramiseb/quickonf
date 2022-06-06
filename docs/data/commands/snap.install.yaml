@@ -1,0 +1,9 @@
+name: snap.install
+action: Install a package using snap
+arguments:
+    - Name of the package to install
+    - 'Options, comma-separated, at least one of: stable, candidate, edge, beta, classic, dangerous'
+outputs: []
+example: |-
+    Install node
+      snap.install node stable
