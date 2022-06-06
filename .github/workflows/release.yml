@@ -21,9 +21,6 @@ jobs:
       - name: Get dependencies
         run: go get ./...
 
-      - name: Generate dynamic data
-        run: go generate ./...
-
       - name: Build
         run: make all
 
