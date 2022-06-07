@@ -15,7 +15,7 @@ func makeDocCommands() {
 		if err != nil {
 			panic(err)
 		}
-		if err := os.WriteFile("data/commands/"+cmd.Name+".yaml", cmdYAML, 0644); err != nil {
+		if err := os.WriteFile("data/commands/"+cmd.Name+".yaml", cmdYAML, 0o644); err != nil {
 			panic(err)
 		}
 	}
