@@ -36,3 +36,36 @@ It will also allow you to run the command on a regular basis to ensure all appli
 _Quickonf_ must be run as root, (eg. using `sudo`) because a large part of a system configuration is done as root (installing packages, etc). Moreover, it is easier to execute commands and modify files as root, allowing access to any part of the system.
 
 Therefore, most paths given as arguments of the instructions must be absolute. Some user-specific instructions allow relative paths, which are relative to the relevant user.
+
+# Quickstart
+
+This quickstart guide works on Debian-based systems, especially Ubuntu, if the _Flatpak_ installer is not already installed.
+
+1. Download [the latest executable](https://github.com/tiramiseb/quickonf/releases/latest/download/quickonf)
+2. Open a terminal and `cd` into the directory where you have downloaded _Quickonf_
+3. Make it executable with `chmod a+x quickonf`
+4. Create a `example.qconf` file in the same directory
+5. Copy/paste the following lines in that file:
+
+```plain
+Flatpak installer
+	priority 1
+	apt.install flatpak
+
+EasyEffects
+	flatpak.install com.github.wwmm.easyeffects
+
+Remove Flatpak
+	apt.remove flatpak
+```
+
+6. Execute _Quickonf_ with `sudo ./quickonf example.qconf`
+7. The user interface is then displayed, showing the groups in the left side, the first group being selected, and its detailed actions in the right side
+8. Select the line "Flatpak installer" in the left side, press the _Enter_ key: _Quickonf_ installs _Flatpak_
+9. Press the _Esc_ key to quit _Quickonf_
+10. Restart _Quickonf_ with `sudo ./quickonf example.qconf`
+11. Now, the "Flatpak installer" in the left side is hidden because Flatpak is already installed
+12. If you want to have the _EasyEffects_ installed, select "EasyEffects" and press _Enter_
+13. If you want to remove _Flatpak_, Select "Remove Flatpak" and press _Enter_
+
+_Note_: for this example, there is a group to install _Flatpak_ and another group to remove it, but usually, you wouldn't do that!
