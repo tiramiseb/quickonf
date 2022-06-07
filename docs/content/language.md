@@ -46,6 +46,8 @@ group name
 
 ... here, the first output of the first command is used as the argument of the second command.
 
+Except for the following global ones, variables are limited to their groups: there is no risk of conflict between variables in different groups.
+
 ## Global variables
 
 Some global variables are set when _Quickonf_ starts:
