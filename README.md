@@ -1,16 +1,19 @@
-# quickonf
+# Quickonf: a tool to quickly (re)configure a Linux system
 
-Downloads:
-[![Latest release (64b)](https://img.shields.io/github/downloads/tiramiseb/quickonf/latest/quickonf)](https://github.com/tiramiseb/quickonf/releases/latest/download/quickonf)
-[![Latest release (32b)](https://img.shields.io/github/downloads/tiramiseb/quickonf/latest/quickonf-32)](https://github.com/tiramiseb/quickonf/releases/latest/download/quickonf-32)
-[![Latest release](https://img.shields.io/github/downloads/tiramiseb/quickonf/latest/total)](https://github.com/tiramiseb/quickonf/releases/latest)
-[![All releases](https://img.shields.io/github/downloads/tiramiseb/quickonf/total)](https://GitHub.com/tiramiseb/quickonf/releases/)
+## Introduction
 
-Development:
-[![Issues](https://img.shields.io/github/issues/tiramiseb/quickonf.svg)](https://GitHub.com/tiramiseb/quickonf/issues/)
-[![Pull-requests](https://img.shields.io/github/issues-pr/tiramiseb/quickonf.svg)](https://GitHub.com/tiramiseb/quickonf/pull/)
-[![Commits since latest release](https://img.shields.io/github/commits-since/tiramiseb/quickonf/latest)](https://github.com/tiramiseb/quickonf/commits/main)
+_Quickonf_ is a semi-automatic configuration tool for Linux desktop computers, allowing you to reinstall your Linux system and quickly get your favorite environment back.
 
-A tool to quickly (re)configure a Linux system
+It is especially useful if you reinstall _Ubuntu_ every now and then and do not want to use the same user environment over and over (because sometimes, when keeping older configuration files, some app may disfunction).
 
-For documentation, see <https://tiramiseb.github.io/quickonf/>
+Think Ansible, but as a single binary command tailored for local desktop usage.
+
+## How it works
+
+You write the desired state of your system in a configuration file (named `quickonf.qconf` by default).
+
+Then you execute `quickonf` or `quickonf your-file.qconf`. _Quickonf_ reads this file and checks the status of the systems, then allows you to apply modifications to the system. No other argument is needed, everything is done in an interactive interface.
+
+## Want to try it?
+
+See the documentation: <https://tiramiseb.github.io/quickonf/intro.html>.
