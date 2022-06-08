@@ -50,15 +50,6 @@
 	</div>
 </div>
 <script>
-	function filterEm(filter) {
-		for (let item of document.getElementById("cmdsnav").children) {
-			item.classList.toggle(
-				"hide",
-				!item.id.substring(5).includes(filter)
-			)
-		}
-	}
-
 	(() => {
 		document.getElementById("filterinput").addEventListener("input", ev => {
 			for (let item of document.getElementById("cmdsnav").children) {
