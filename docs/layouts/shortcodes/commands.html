@@ -75,7 +75,17 @@
 					}
 					if (winner != null) {
 						document.querySelectorAll(".cmdsnav .active").forEach(e => e.classList.remove("active"))
-						document.getElementById(`link-${winner}`).classList.add("active")
+						const active = document.getElementById(`link-${winner}`)
+						active.classList.add("active")
+						const list = document.querySelector(".cmdsnav aside")
+						const listRect = list.getBoundingClientRect()
+						const activeRect = active.getBoundingClientRect()
+
+						if (activeRect.top < listRect.top) {
+							list.scrollBy(0, activeRect.top-listRect.top)
+						} else if (activeRect.bottom > listRect.bottom) {
+							list.scrollBy(0, activeRect.bottom-listRect.bottom)
+						}
 					}
 					ticking = false;
 				});
