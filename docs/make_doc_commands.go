@@ -5,7 +5,7 @@ package main
 import (
 	"os"
 
-	"github.com/tiramiseb/quickonf/internal/commands"
+	"github.com/tiramiseb/quickonf/commands"
 	"gopkg.in/yaml.v3"
 )
 

@@ -8,9 +8,9 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/tiramiseb/quickonf/internal/conf"
-	"github.com/tiramiseb/quickonf/internal/instructions"
-	"github.com/tiramiseb/quickonf/internal/program"
+	"github.com/tiramiseb/quickonf/conf"
+	"github.com/tiramiseb/quickonf/instructions"
+	"github.com/tiramiseb/quickonf/program"
 )
 
 func main() {
