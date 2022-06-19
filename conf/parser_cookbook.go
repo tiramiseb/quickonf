@@ -30,7 +30,7 @@ func (p *parser) parseCookbook(uri *token) {
 		defer f.Close()
 		reader = f
 	default:
-		p.errs = append(p.errs, uri.errorf(`cannot understand URI "%s"`, target))
+		p.errs = append(p.errs, uri.errorf(`cannot understand URI "%s" (supports local files (absolute path), HTTP and HTTPS)`, target))
 		return
 	}
 	recipes, errs := Read(reader)
