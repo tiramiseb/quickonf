@@ -65,6 +65,7 @@ func (l *lexer) scan() (tokens, error) {
 		}
 	}
 	if errors.Is(err, io.EOF) {
+		l.tokens = append(l.tokens, &token{l.curLine, l.curCol, tokenEOL, ""})
 		err = nil
 	}
 	return l.tokens, err
@@ -209,6 +210,9 @@ func (l *lexer) defaut() (lexerContext, error) {
 	for {
 		b, err := l.next()
 		if err != nil {
+			if errors.Is(err, io.EOF) {
+				l.tokens = append(l.tokens, identifyToken(l.curWordLine, l.curWordCol, string(l.currentWord)))
+			}
 			return contextDefault, err
 		}
 		switch b {
@@ -241,6 +245,9 @@ func (l *lexer) quotes() (lexerContext, error) {
 	for {
 		b, err := l.next()
 		if err != nil {
+			if errors.Is(err, io.EOF) {
+				err = errors.New("unclosed quote at end of file")
+			}
 			return contextQuotes, err
 		}
 		switch b {
@@ -301,7 +308,7 @@ func (l *lexer) space() (lexerContext, error) {
 func (l *lexer) cookbook() (lexerContext, error) {
 	b, err := l.next()
 	if err != nil {
-		return contextGroupName, err
+		return contextCookbookURI, err
 	}
 	l.currentWord = append(l.currentWord, b)
 	for {
