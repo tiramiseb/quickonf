@@ -25,7 +25,7 @@ func (c *Command) RunCheck(vars Variables, signalTarget chan bool) ([]*CheckRepo
 	}
 	args := make([]string, len(c.Arguments))
 	for i, src := range c.Arguments {
-		args[i] = vars.translateVariables(src)
+		args[i] = vars.TranslateVariables(src)
 	}
 	result, out, apply, status, before, after := c.Command.Run(args)
 	for i, tgt := range c.Targets {

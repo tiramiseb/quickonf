@@ -44,7 +44,7 @@ func (v Variables) define(key, val string) {
 	v["<"+key+">"] = val
 }
 
-func (v Variables) translateVariables(src string) string {
+func (v Variables) TranslateVariables(src string) string {
 	for key, val := range v {
 		src = strings.ReplaceAll(src, key, val)
 	}

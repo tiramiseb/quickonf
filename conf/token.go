@@ -17,6 +17,7 @@ const (
 	tokenExpand
 	tokenIf
 	tokenPriority
+	tokenCookbook
 	tokenRepeat
 )
 

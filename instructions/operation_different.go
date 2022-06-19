@@ -10,8 +10,8 @@ type Different struct {
 }
 
 func (d *Different) Compare(vars Variables) bool {
-	left := vars.translateVariables(d.Left)
-	right := vars.translateVariables(d.Right)
+	left := vars.TranslateVariables(d.Left)
+	right := vars.TranslateVariables(d.Right)
 
 	return left != right
 

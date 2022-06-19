@@ -1,10 +1,15 @@
 package conf
 
 import (
+	"strings"
+
 	"github.com/tiramiseb/quickonf/instructions"
 )
 
 type parser struct {
+	groups  []*instructions.Group
+	recipes map[string][]instructions.Instruction
+
 	tokens tokens
 	idx    int
 
@@ -30,43 +35,49 @@ func (p *parser) nextLine() (toks tokens) {
 // All functions called from this function receive the "next" line for
 // processing and return the "next" line for processing by another sub-parser.
 // It is necessary in order to know how to process next line
-func (p *parser) parse() (groups []*instructions.Group, err error) {
+func (p *parser) parse() ([]*instructions.Group, error) {
 	next := p.nextLine()
-	for {
-		if next == nil {
-			break
-		}
-		var group *instructions.Group
-		group, next = p.parseGroup(next)
-		if group != nil {
-			groups = append(groups, group)
-		}
+	for next != nil {
+		next = p.parseWithoutIndentation(next)
 	}
-	return
+	return p.groups, nil
 }
 
-func (p *parser) parseGroup(line tokens) (group *instructions.Group, next tokens) {
+func (p *parser) parseWithoutIndentation(line tokens) (next tokens) {
 	next = p.nextLine()
 	if len(line) == 0 {
 		return
 	}
-	if line[0].typ != tokenGroupName {
-		// Expecting group name only. In any other situation, it is a syntax error
-		switch {
-		case len(line) == 1:
-			p.errs = append(p.errs, line[0].errorf(`expected group name, got "%v"`, line[0].content))
-		case line[0].typ == tokenIndentation:
-			p.errs = append(p.errs, line[1].errorf(`expected group name, got "%v"`, line[1].content))
-		default:
-			p.errs = append(p.errs, line[0].error("expected group name, got an empty line"))
-		}
+	switch line[0].typ {
+	case tokenGroupName:
+		return p.parseGroup(line[0], next)
+	case tokenCookbook:
+		p.parseCookbook(line[0])
 		return
 	}
 
-	group = &instructions.Group{Name: line[0].content}
+	// Illegal token...
+	switch {
+	case len(line) == 1:
+		p.errs = append(p.errs, line[0].errorf(`expected group name, got "%s"`, line[0].content))
+	case line[0].typ == tokenIndentation:
+		p.errs = append(p.errs, line[1].errorf(`expected group name, got "%s"`, line[1].content))
+	default:
+		content := make([]string, len(line))
+		for i, t := range line {
+			content[i] = t.content
+		}
+		contentStr := strings.Join(content, " ")
+		p.errs = append(p.errs, line[0].errorf(`expected group name, got "%s"`, contentStr))
+	}
+	return
+}
+
+func (p *parser) parseGroup(name *token, next tokens) tokens {
+	group := &instructions.Group{Name: name.content}
 	indent, _ := next.indentation()
 	if indent == 0 {
-		return
+		return next
 	}
 	group.Instructions, next = p.parseInstructions(nil, next, group, indent)
 	nextIndent, firstToken := next.indentation()
@@ -74,7 +85,8 @@ func (p *parser) parseGroup(line tokens) (group *instructions.Group, next tokens
 		p.errs = append(p.errs, firstToken.errorf("invalid indentation (expecting none or %d)", indent))
 		next = p.nextLine()
 	}
-	return
+	p.groups = append(p.groups, group)
+	return next
 }
 
 func (p *parser) parseInstructions(prefixAllWith []*token, line tokens, group *instructions.Group, currentIndent int) (instrs []instructions.Instruction, next tokens) {

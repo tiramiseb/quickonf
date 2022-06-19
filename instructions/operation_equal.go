@@ -10,8 +10,8 @@ type Equal struct {
 }
 
 func (e *Equal) Compare(vars Variables) bool {
-	left := vars.translateVariables(e.Left)
-	right := vars.translateVariables(e.Right)
+	left := vars.TranslateVariables(e.Left)
+	right := vars.TranslateVariables(e.Right)
 
 	return left == right
 }
