@@ -24,17 +24,13 @@ func newParser(tokens tokens) parser {
 }
 
 func (p *parser) nextLine() (toks tokens) {
-	for {
-		if p.idx >= len(p.tokens) {
-			return nil
-		}
-		t := p.tokens[p.idx]
+	for p.idx < len(p.tokens) && p.tokens[p.idx].typ != tokenEOL {
+		toks = append(toks, p.tokens[p.idx])
 		p.idx++
-		if t.typ == tokenEOL {
-			return toks
-		}
-		toks = append(toks, t)
 	}
+	// Ignore tokenEOL
+	p.idx++
+	return toks
 }
 
 // parse parses the tokens in order to create a list of groups.
@@ -83,7 +79,7 @@ func (p *parser) parseWithoutIndentation(line tokens) (next tokens) {
 func (p *parser) parseGroup(name *token, firstInstruction tokens) (next tokens) {
 	indent, _ := firstInstruction.indentation()
 	if indent == 0 {
-		// The group was empty, this line has no indentation, process it as a new group
+		// The group was empty, this line has no indentation, ignore the group and process that line
 		return firstInstruction
 	}
 
