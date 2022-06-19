@@ -19,13 +19,19 @@ func (p *parser) parseCookbook(uri *token) {
 		response, err := http.Get(target)
 		if err != nil {
 			p.errs = append(p.errs, uri.errorf(`cannot download %s: %s`, target, err.Error()))
+			return
 		}
 		defer response.Body.Close()
+		if response.StatusCode != 200 {
+			p.errs = append(p.errs, uri.errorf(`cannot download %s (error %s)`, target, response.Status))
+			return
+		}
 		reader = response.Body
 	case filepath.IsAbs(target):
 		f, err := os.Open(target)
 		if err != nil {
 			p.errs = append(p.errs, uri.errorf(`cannot open file %s: %s`, target, err.Error()))
+			return
 		}
 		defer f.Close()
 		reader = f

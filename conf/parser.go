@@ -16,6 +16,13 @@ type parser struct {
 	errs []error
 }
 
+func newParser(tokens tokens) parser {
+	return parser{
+		tokens:  tokens,
+		recipes: map[string][]instructions.Instruction{},
+	}
+}
+
 func (p *parser) nextLine() (toks tokens) {
 	for {
 		if p.idx >= len(p.tokens) {

@@ -12,7 +12,7 @@ func Read(r io.Reader) (*instructions.Groups, []error) {
 	if err != nil {
 		return nil, []error{err}
 	}
-	p := parser{tokens: tokens}
+	p := newParser(tokens)
 	groups, err := p.parse()
 	if err != nil {
 		return nil, []error{err}
