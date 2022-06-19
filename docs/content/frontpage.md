@@ -2,7 +2,7 @@ With _Quickonf_, you are able to configure your Linux computers, and keep the co
 
 You may execute it whenever you want, to check your system is configured as needed or to fix some configuration you should not have changed.
 
-After reinstalling your system, you simply have to run _Quickonf_ and voilà, your system is reconfigured exactly how you had it before (as long as your configuration is described in your _Quickonf_ configuration file, of course)!
+After reinstalling your system or anytime you want, you simply have to run _Quickonf_ and voilà, your system is (re)configured exactly how you had it before (as long as your configuration is described in your _Quickonf_ configuration file, of course)!
 
 ## Example overview
 
