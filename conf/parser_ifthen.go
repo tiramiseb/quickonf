@@ -36,9 +36,13 @@ var conditionsComparison = map[string]func(left, right string) (instructions.Ope
 	},
 }
 
-func (p *parser) ifThen(toks []*token, group *instructions.Group, currentIndent int) (instructions.Instruction, tokens) {
-	values := make([]tokenOrOperation, len(toks))
-	for i, t := range toks {
+func (p *parser) ifThen(toks tokens, group *instructions.Group, currentIndent int) (instrs []instructions.Instruction, next tokens) {
+	if len(toks) < 2 {
+		p.errs = append(p.errs, toks[0].error("expected an operation"))
+		return nil, p.nextLine()
+	}
+	values := make([]tokenOrOperation, len(toks[1:]))
+	for i, t := range toks[1:] {
 		values[i] = tokenOrOperation{token: t}
 	}
 	values = p.findConditionsWithOneArgument(values)
@@ -46,14 +50,14 @@ func (p *parser) ifThen(toks []*token, group *instructions.Group, currentIndent 
 	if len(values) != 1 || values[0].operation == nil {
 		p.errs = append(p.errs, values[0].token.error("Invalid condition"))
 	}
-	next := p.nextLine()
-	indent, _ := next.indentation()
-	if indent <= currentIndent {
+	next = p.nextLine()
+	nextIndent, _ := next.indentation()
+	if nextIndent <= currentIndent {
 		p.errs = append(p.errs, toks[0].error(`expected commands in the if clause`))
 	}
-	inss, next := p.parseInstructions(nil, next, group, indent)
+	inss, next := p.parseInstructions(nil, next, group, nextIndent)
 	ins := &instructions.If{Operation: values[0].operation, Instructions: inss}
-	return ins, next
+	return []instructions.Instruction{ins}, next
 }
 
 func (p *parser) findConditionsWithOneArgument(input []tokenOrOperation) (output []tokenOrOperation) {
