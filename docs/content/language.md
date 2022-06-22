@@ -162,6 +162,23 @@ Apply it
     package = my-beloved-package
 ```
 
+## Writing cookbooks
+
+A cookbook may be written as any Quickonf configuration file, it is based on the very same language.
+
+The specificities are the following:
+
+- Groups are recipes: to execute a recipe, use its group name.
+- You cannot declare another cookbook in a cookbook with the `cookbook` instruction.
+- You may use undeclared variables in recipes, making them customizable: the variables can be provided when executing the recipe.
+
+For instance (this cookbook file example matches the `cookbook`/`recipe` example above):
+
+```text
+My wonderful recipe
+  apt.install <package>
+```
+
 # Multi-level indentation
 
 You may use multiple level indentation, if needed by the instructions you want to use.
