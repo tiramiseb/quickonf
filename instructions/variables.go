@@ -33,11 +33,15 @@ func NewGlobalVar(key, value string) {
 }
 
 func NewVariablesSet() Variables {
-	v := Variables{}
-	for key, val := range globalVars {
-		v[key] = val
+	return globalVars.clone()
+}
+
+func (v Variables) clone() Variables {
+	newVars := map[string]string{}
+	for key, value := range v {
+		newVars[key] = value
 	}
-	return v
+	return newVars
 }
 
 func (v Variables) define(key, val string) {

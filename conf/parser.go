@@ -142,6 +142,8 @@ func (p *parser) parseInstructions(prefixAllWith, line tokens, group *instructio
 			ins, line = p.ifThen(toks, group, currentIndent)
 		case tokenPriority:
 			ins, line = p.priority(toks, group)
+		case tokenRecipe:
+			ins, line = p.recipe(toks, group, currentIndent)
 		case tokenRepeat:
 			ins, line = p.repeat(toks, group, currentIndent)
 		default:
