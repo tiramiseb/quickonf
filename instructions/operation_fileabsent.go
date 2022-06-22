@@ -12,7 +12,7 @@ type FileAbsent struct {
 }
 
 func (f *FileAbsent) Compare(vars Variables) bool {
-	path := vars.translateVariables(f.Path)
+	path := vars.TranslateVariables(f.Path)
 	_, err := os.Stat(path)
 	return err != nil && errors.Is(err, fs.ErrNotExist)
 }

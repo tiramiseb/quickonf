@@ -17,6 +17,8 @@ const (
 	tokenExpand
 	tokenIf
 	tokenPriority
+	tokenCookbook
+	tokenRecipe
 	tokenRepeat
 )
 
@@ -42,6 +44,8 @@ func identifyToken(line int, column int, content string) *token {
 		typ = tokenIf
 	case "priority":
 		typ = tokenPriority
+	case "recipe":
+		typ = tokenRecipe
 	case "repeat":
 		typ = tokenRepeat
 	}
@@ -57,14 +61,14 @@ func (t *token) errorf(format string, a ...interface{}) error {
 	return fmt.Errorf("[%d:%d] "+format, a...)
 }
 
-// indentations returns the indentation size and the first token of the line
-func (t tokens) indentation() (int, *token) {
+// indentations returns the indentation size and the remaining token of the line
+func (t tokens) indentation() (int, tokens) {
 	if len(t) == 0 {
 		return 0, nil
 	}
 	if t[0].typ != tokenIndentation {
-		return 0, t[0]
+		return 0, t
 	}
 	size, _ := binary.Uvarint([]byte(t[0].content))
-	return int(size), t[1]
+	return int(size), t[1:]
 }

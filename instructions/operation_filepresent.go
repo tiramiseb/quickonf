@@ -10,7 +10,7 @@ type FilePresent struct {
 }
 
 func (f *FilePresent) Compare(vars Variables) bool {
-	path := vars.translateVariables(f.Path)
+	path := vars.TranslateVariables(f.Path)
 	_, err := os.Stat(path)
 	return err == nil
 }

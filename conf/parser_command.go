@@ -5,7 +5,7 @@ import (
 	"github.com/tiramiseb/quickonf/instructions"
 )
 
-func (p *parser) command(toks []*token) instructions.Instruction {
+func (p *parser) command(toks tokens) (instrs []instructions.Instruction, next tokens) {
 	var targets []string
 	for equalPos, tok := range toks {
 		if tok.typ == tokenEqual {
@@ -24,7 +24,7 @@ func (p *parser) command(toks []*token) instructions.Instruction {
 	command, ok := commands.Get(commandName)
 	if !ok {
 		p.errs = append(p.errs, toks[0].errorf(`no command named "%s"`, commandName))
-		return nil
+		return nil, p.nextLine()
 	}
 	if len(targets) > len(command.Outputs) {
 		p.errs = append(
@@ -37,7 +37,7 @@ func (p *parser) command(toks []*token) instructions.Instruction {
 			p.errs,
 			toks[1].errorf("expected %d arguments, got %d", len(command.Arguments), len(args)),
 		)
-		return nil
+		return nil, p.nextLine()
 	}
-	return &instructions.Command{Command: command, Arguments: args, Targets: targets}
+	return []instructions.Instruction{&instructions.Command{Command: command, Arguments: args, Targets: targets}}, p.nextLine()
 }

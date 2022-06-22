@@ -24,13 +24,14 @@ type lexer struct {
 type lexerContext int
 
 const (
-	contextStartOfLine lexerContext = iota
-	contextIndentation
-	contextComment
-	contextGroupName
-	contextDefault
-	contextQuotes
-	contextSpace
+	contextStartOfLine lexerContext = iota // About to read the first character of a line
+	contextIndentation                     // Reading spaces from the beginning of the line
+	contextComment                         // Reading comment (starting with "#")
+	contextGroupName                       // Reading the name of a group
+	contextDefault                         // Reading some word, nothing special
+	contextQuotes                          // Reading the content of a quoted string
+	contextCookbookURI                     // Reading the URI of a recipes book
+	contextSpace                           // Reading a space
 )
 
 func newLexer(r io.Reader) *lexer {
@@ -57,11 +58,14 @@ func (l *lexer) scan() (tokens, error) {
 			currentContext, err = l.defaut()
 		case contextQuotes:
 			currentContext, err = l.quotes()
+		case contextCookbookURI:
+			currentContext, err = l.cookbook()
 		case contextSpace:
 			currentContext, err = l.space()
 		}
 	}
 	if errors.Is(err, io.EOF) {
+		l.tokens = append(l.tokens, &token{l.curLine, l.curCol, tokenEOL, ""})
 		err = nil
 	}
 	return l.tokens, err
@@ -165,6 +169,17 @@ func (l *lexer) groupName() (lexerContext, error) {
 			return contextGroupName, err
 		}
 		switch b {
+		case ' ':
+			// At the first space, check if it is something else than a group name
+			switch string(l.currentWord) {
+			case "cookbook":
+				// Prepare to get the cookbook URI
+				l.curWordLine = l.curLine
+				l.curWordCol = l.curCol + 1
+				l.currentWord = l.currentWord[:0]
+				return contextCookbookURI, nil
+			}
+			l.currentWord = append(l.currentWord, b)
 		case '\n':
 			l.tokens = append(l.tokens, &token{
 				l.curLine, 1, tokenGroupName,
@@ -195,6 +210,9 @@ func (l *lexer) defaut() (lexerContext, error) {
 	for {
 		b, err := l.next()
 		if err != nil {
+			if errors.Is(err, io.EOF) {
+				l.tokens = append(l.tokens, identifyToken(l.curWordLine, l.curWordCol, string(l.currentWord)))
+			}
 			return contextDefault, err
 		}
 		switch b {
@@ -227,6 +245,9 @@ func (l *lexer) quotes() (lexerContext, error) {
 	for {
 		b, err := l.next()
 		if err != nil {
+			if errors.Is(err, io.EOF) {
+				err = errors.New("unclosed quote at end of file")
+			}
 			return contextQuotes, err
 		}
 		switch b {
@@ -280,6 +301,44 @@ func (l *lexer) space() (lexerContext, error) {
 			l.curWordLine = l.curLine
 			l.curWordCol = l.curCol
 			return contextDefault, nil
+		}
+	}
+}
+
+func (l *lexer) cookbook() (lexerContext, error) {
+	b, err := l.next()
+	if err != nil {
+		return contextCookbookURI, err
+	}
+	l.currentWord = append(l.currentWord, b)
+	for {
+		b, err := l.next()
+		if err != nil {
+			return contextCookbookURI, err
+		}
+		switch b {
+		case '\n':
+			l.tokens = append(l.tokens, &token{
+				l.curWordLine, l.curWordCol, tokenCookbook,
+				strings.TrimSpace(string(l.currentWord)),
+			})
+			l.tokens = append(l.tokens, &token{l.curLine, l.curCol, tokenEOL, ""})
+			return contextStartOfLine, nil
+		case '#':
+			l.tokens = append(l.tokens, &token{
+				l.curWordLine, l.curWordCol, tokenCookbook,
+				strings.TrimSpace(string(l.currentWord)),
+			})
+			l.tokens = append(l.tokens, &token{l.curLine, l.curCol, tokenEOL, ""})
+			return contextComment, nil
+		case '\\':
+			b, err := l.next()
+			if err != nil {
+				return contextCookbookURI, err
+			}
+			l.currentWord = append(l.currentWord, b)
+		default:
+			l.currentWord = append(l.currentWord, b)
 		}
 	}
 }

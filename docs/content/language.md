@@ -144,6 +144,24 @@ Flatpak
   apt.install flatpak
 ```
 
+# Recipes
+
+In order to keep the configuration simple, some common groups may be defined in cookbooks, available locally on your filesystem or online.
+
+The `cookbook` instruction, used at the root level of your configuration file (the same place where you usually put groups names), allows defining custom local files or HTTP/HTTPs URLS where to read recipes.
+
+The `recipe` instruction executes a recipe. It may read existing variables, or specific variables for the recipe may be defined on the 2nd indentation level.
+
+For instance:
+
+```text
+cookbook <confdir>/myrecipes.qconf
+
+Apply it
+  recipe My wonderful recipe
+    package = my-beloved-package
+```
+
 # Multi-level indentation
 
 You may use multiple level indentation, if needed by the instructions you want to use.

@@ -1,28 +1,35 @@
 package conf
 
 import (
+	"strings"
+
 	"github.com/tiramiseb/quickonf/instructions"
 )
 
 type parser struct {
+	groups    []*instructions.Group
+	cookbooks []string
+
 	tokens tokens
 	idx    int
 
 	errs []error
 }
 
-func (p *parser) nextLine() (toks tokens) {
-	for {
-		if p.idx >= len(p.tokens) {
-			return nil
-		}
-		t := p.tokens[p.idx]
-		p.idx++
-		if t.typ == tokenEOL {
-			return toks
-		}
-		toks = append(toks, t)
+func newParser(tokens tokens) parser {
+	return parser{
+		tokens: tokens,
 	}
+}
+
+func (p *parser) nextLine() (toks tokens) {
+	for p.idx < len(p.tokens) && p.tokens[p.idx].typ != tokenEOL {
+		toks = append(toks, p.tokens[p.idx])
+		p.idx++
+	}
+	// Ignore tokenEOL
+	p.idx++
+	return toks
 }
 
 // parse parses the tokens in order to create a list of groups.
@@ -32,117 +39,134 @@ func (p *parser) nextLine() (toks tokens) {
 // It is necessary in order to know how to process next line
 func (p *parser) parse() (groups []*instructions.Group, err error) {
 	next := p.nextLine()
-	for {
-		if next == nil {
-			break
-		}
-		var group *instructions.Group
-		group, next = p.parseGroup(next)
-		if group != nil {
-			groups = append(groups, group)
-		}
+	for next != nil {
+		next = p.parseWithoutIndentation(next)
 	}
-	return
+	if len(p.cookbooks) > 0 {
+		maximumPriority := 0
+		for _, g := range p.groups {
+			if g.Priority > maximumPriority {
+				maximumPriority = g.Priority
+			}
+		}
+		cookbooks := &instructions.Group{
+			Name:     "Cookbooks",
+			Priority: maximumPriority + 1,
+		}
+		for _, uri := range p.cookbooks {
+			cookbooks.Instructions = append(cookbooks.Instructions, &instructions.Cookbook{URI: uri, ReadFn: Read})
+		}
+		p.groups = append(p.groups, cookbooks)
+	}
+	return p.groups, nil
 }
 
-func (p *parser) parseGroup(line tokens) (group *instructions.Group, next tokens) {
-	next = p.nextLine()
+func (p *parser) parseWithoutIndentation(line tokens) (next tokens) {
 	if len(line) == 0 {
-		return
+		// Line is empty, ignore it (should not happen, empty lines are removed by the lexer)
+		return p.nextLine()
 	}
-	if line[0].typ != tokenGroupName {
-		// Expecting group name only. In any other situation, it is a syntax error
-		switch {
-		case len(line) == 1:
-			p.errs = append(p.errs, line[0].errorf(`expected group name, got "%v"`, line[0].content))
-		case line[0].typ == tokenIndentation:
-			p.errs = append(p.errs, line[1].errorf(`expected group name, got "%v"`, line[1].content))
-		default:
-			p.errs = append(p.errs, line[0].error("expected group name, got an empty line"))
-		}
-		return
+	switch line[0].typ {
+	case tokenGroupName:
+		return p.parseGroup(line[0])
+	case tokenCookbook:
+		p.cookbooks = append(p.cookbooks, line[0].content)
+		return p.nextLine()
 	}
 
-	group = &instructions.Group{Name: line[0].content}
-	indent, _ := next.indentation()
-	if indent == 0 {
-		return
+	// Illegal token...
+	switch {
+	case len(line) == 1:
+		p.errs = append(p.errs, line[0].errorf(`expected group name, got "%s"`, line[0].content))
+	case line[0].typ == tokenIndentation:
+		p.errs = append(p.errs, line[1].errorf(`expected group name, got "%s"`, line[1].content))
+	default:
+		content := make([]string, len(line))
+		for i, t := range line {
+			content[i] = t.content
+		}
+		contentStr := strings.Join(content, " ")
+		p.errs = append(p.errs, line[0].errorf(`expected group name, got "%s"`, contentStr))
 	}
-	group.Instructions, next = p.parseInstructions(nil, next, group, indent)
-	nextIndent, firstToken := next.indentation()
+	return p.nextLine()
+}
+
+func (p *parser) parseGroup(name *token) (next tokens) {
+	firstInstruction := p.nextLine()
+	indent, _ := firstInstruction.indentation()
+	if indent == 0 {
+		// The group was empty, this line has no indentation, ignore the group and process that line
+		return firstInstruction
+	}
+
+	group := &instructions.Group{Name: name.content}
+	group.Instructions, next = p.parseInstructions(nil, firstInstruction, group, indent)
+	p.groups = append(p.groups, group)
+
+	nextIndent, remainingTokens := next.indentation()
 	if nextIndent > 0 {
-		p.errs = append(p.errs, firstToken.errorf("invalid indentation (expecting none or %d)", indent))
+		p.errs = append(p.errs, remainingTokens[0].errorf("invalid indentation (expecting none or %d)", indent))
 		next = p.nextLine()
 	}
-	return
+	return next
 }
 
-func (p *parser) parseInstructions(prefixAllWith []*token, line tokens, group *instructions.Group, currentIndent int) (instrs []instructions.Instruction, next tokens) {
-	// Read a list of commands
-	nbPrefixes := len(prefixAllWith)
+func (p *parser) parseInstructions(prefixAllWith, line tokens, group *instructions.Group, currentIndent int) (instrs []instructions.Instruction, next tokens) {
+	// Read a list of instructions...
 	for {
-		thisIndent, firstToken := line.indentation()
-		if thisIndent > currentIndent {
-			p.errs = append(p.errs, firstToken.errorf("invalid indentation (expecting %d)", currentIndent))
-			next = p.nextLine()
-			return
-		} else if thisIndent < currentIndent {
-			next = line
+		if len(line) == 0 {
+			// End of file (the lexer doesn't leave any empty line)
 			return
 		}
-		if len(prefixAllWith) > 0 {
-			newLine := make(tokens, len(prefixAllWith)+len(line))
-			if line[0].typ == tokenIndentation {
-				newLine[0] = line[0]
-				for i, t := range prefixAllWith {
-					newLine[i+1] = t
-				}
-				for i := 1; i < len(line); i++ {
-					newLine[i+nbPrefixes] = line[i]
-				}
-			} else {
-				copy(newLine, prefixAllWith)
-				for i, t := range line {
-					newLine[i+nbPrefixes] = t
-				}
-			}
-			line = newLine
+		thisIndent, toks := line.indentation()
+
+		switch {
+		case thisIndent > currentIndent:
+			// A larger indentation should not happen, unless we are in another block (which would be started when parsing an instruction needing another block)
+			p.errs = append(p.errs, toks[0].errorf("invalid indentation (expecting %d)", currentIndent))
+			return instrs, p.nextLine()
+		case thisIndent < currentIndent:
+			// This indentation block is finished, quit the function
+			return instrs, line
 		}
-		var ins instructions.Instruction
-		switch firstToken.typ {
+
+		// Add prefix to instruction if needed
+		toks = addPrefix(prefixAllWith, toks)
+
+		// Parse the tokens for this instruction!
+		var ins []instructions.Instruction
+		switch toks[0].typ {
 		case tokenExpand:
-			if len(line) > 3 {
-				p.errs = append(p.errs, firstToken.error("expected a variable name as the only argument"))
-				break
-			}
-			ins = p.expand(line[2])
+			ins, line = p.expand(toks)
 		case tokenIf:
-			if len(line) < 3 {
-				p.errs = append(p.errs, firstToken.error("expected an operation"))
-				break
-			}
-			ins, next = p.ifThen(line[2:], group, currentIndent)
+			ins, line = p.ifThen(toks, group, currentIndent)
 		case tokenPriority:
-			p.priority(line[1:], group)
+			ins, line = p.priority(toks, group)
+		case tokenRecipe:
+			ins, line = p.recipe(toks, group, currentIndent)
 		case tokenRepeat:
-			if len(line) < 3 {
-				p.errs = append(p.errs, firstToken.error("expected something to repeat"))
-				break
-			}
-			var inss []instructions.Instruction
-			inss, next = p.repeat(line[2:], group, currentIndent)
-			instrs = append(instrs, inss...)
+			ins, line = p.repeat(toks, group, currentIndent)
 		default:
-			ins = p.command(line[1:])
+			ins, line = p.command(toks)
 		}
-		if ins != nil {
-			instrs = append(instrs, ins)
-		}
-		if next == nil {
-			line = p.nextLine()
-		} else {
-			line = next
-			next = nil
-		}
+		instrs = append(instrs, ins...)
 	}
+}
+
+func addPrefix(prefix tokens, existing tokens) tokens {
+	if len(prefix) == 0 {
+		return existing
+	}
+
+	nbPrefixes := len(prefix)
+
+	newTokens := make(tokens, len(prefix)+len(existing))
+
+	copy(newTokens, prefix)
+
+	for i, t := range existing {
+		newTokens[i+nbPrefixes] = t
+	}
+
+	return newTokens
 }
