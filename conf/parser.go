@@ -7,8 +7,8 @@ import (
 )
 
 type parser struct {
-	groups  []*instructions.Group
-	recipes map[string][]instructions.Instruction
+	groups    []*instructions.Group
+	cookbooks []string
 
 	tokens tokens
 	idx    int
@@ -18,8 +18,7 @@ type parser struct {
 
 func newParser(tokens tokens) parser {
 	return parser{
-		tokens:  tokens,
-		recipes: map[string][]instructions.Instruction{},
+		tokens: tokens,
 	}
 }
 
@@ -38,10 +37,26 @@ func (p *parser) nextLine() (toks tokens) {
 // All functions called from this function receive the "next" line for
 // processing and return the "next" line for processing by another sub-parser.
 // It is necessary in order to know how to process next line
-func (p *parser) parse() ([]*instructions.Group, error) {
+func (p *parser) parse() (groups []*instructions.Group, err error) {
 	next := p.nextLine()
 	for next != nil {
 		next = p.parseWithoutIndentation(next)
+	}
+	if len(p.cookbooks) > 0 {
+		maximumPriority := 0
+		for _, g := range p.groups {
+			if g.Priority > maximumPriority {
+				maximumPriority = g.Priority
+			}
+		}
+		cookbooks := &instructions.Group{
+			Name:     "Cookbooks",
+			Priority: maximumPriority + 1,
+		}
+		for _, uri := range p.cookbooks {
+			cookbooks.Instructions = append(cookbooks.Instructions, &instructions.Cookbook{URI: uri, ReadFn: Read})
+		}
+		p.groups = append(p.groups, cookbooks)
 	}
 	return p.groups, nil
 }
@@ -53,9 +68,9 @@ func (p *parser) parseWithoutIndentation(line tokens) (next tokens) {
 	}
 	switch line[0].typ {
 	case tokenGroupName:
-		return p.parseGroup(line[0], p.nextLine())
+		return p.parseGroup(line[0])
 	case tokenCookbook:
-		p.parseCookbook(line[0])
+		p.cookbooks = append(p.cookbooks, line[0].content)
 		return p.nextLine()
 	}
 
@@ -76,7 +91,8 @@ func (p *parser) parseWithoutIndentation(line tokens) (next tokens) {
 	return p.nextLine()
 }
 
-func (p *parser) parseGroup(name *token, firstInstruction tokens) (next tokens) {
+func (p *parser) parseGroup(name *token) (next tokens) {
+	firstInstruction := p.nextLine()
 	indent, _ := firstInstruction.indentation()
 	if indent == 0 {
 		// The group was empty, this line has no indentation, ignore the group and process that line

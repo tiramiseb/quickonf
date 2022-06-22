@@ -66,10 +66,6 @@ func (g *Groups) InitialChecks(signalTarget chan bool) {
 	})
 }
 
-func (g *Groups) All() []*Group {
-	return g.groups
-}
-
 func (g *Groups) ApplyAll() {
 	currentPriority := g.groups[0].Priority
 	var wg sync.WaitGroup
