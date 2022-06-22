@@ -32,7 +32,7 @@ func NewGlobalVar(key, value string) {
 	globalVars.define(key, value)
 }
 
-func NewVariablesSet() Variables {
+func newVariablesSet() Variables {
 	return globalVars.clone()
 }
 
