@@ -1,6 +1,9 @@
 package help
 
 import (
+	"bytes"
+	"compress/gzip"
+	"io"
 	"strings"
 
 	"github.com/charmbracelet/bubbles/viewport"
@@ -114,31 +117,31 @@ func (m *Model) setContent() {
 	if lipgloss.HasDarkBackground() {
 		switch m.activeSection {
 		case 0:
-			text = introDark
+			text = gunzip(introDark)
 			m.viewport.Height = m.height - 2
 		case 1:
-			text = languageDark
+			text = gunzip(languageDark)
 			m.viewport.Height = m.height - 2
 		case 2:
 			m.viewport.Height = m.height - 4
 			text = m.commandsDoc(true)
 		case 3:
-			text = uiDark
+			text = gunzip(uiDark)
 			m.viewport.Height = m.height - 2
 		}
 	} else {
 		switch m.activeSection {
 		case 0:
-			text = introLight
+			text = gunzip(introLight)
 			m.viewport.Height = m.height - 2
 		case 1:
-			text = languageLight
+			text = gunzip(languageLight)
 			m.viewport.Height = m.height - 2
 		case 2:
 			m.viewport.Height = m.height - 4
 			text = m.commandsDoc(false)
 		case 3:
-			text = uiLight
+			text = gunzip(uiLight)
 			m.viewport.Height = m.height - 2
 		}
 	}
@@ -146,4 +149,13 @@ func (m *Model) setContent() {
 	m.viewport.SetContent(
 		wordwrap.String(text, m.width-4),
 	)
+}
+
+func gunzip(gzipped []byte) string {
+	buf := bytes.NewReader(gzipped)
+	r, _ := gzip.NewReader(buf)
+	defer r.Close()
+	unzipped, _ := io.ReadAll(r)
+	return string(unzipped)
+
 }

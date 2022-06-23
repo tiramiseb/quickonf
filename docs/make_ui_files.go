@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"compress/gzip"
 	_ "embed"
 	"os"
 	"regexp"
@@ -64,14 +65,34 @@ func makeUIFile(name string, content []byte) {
 		panic(err)
 	}
 	resp = compressor.Bytes(resp)
-	os.WriteFile(name+".dark.msg", resp, 0o644)
+
+	f, err := os.Create(name + ".dark.msg")
+	if err != nil {
+		panic(err)
+	}
+	defer f.Close()
+	g, _ := gzip.NewWriterLevel(f, gzip.BestCompression)
+	defer g.Close()
+	if _, err := g.Write(resp); err != nil {
+		panic(err)
+	}
 
 	resp, err = lightRender.RenderBytes(content)
 	if err != nil {
 		panic(err)
 	}
 	resp = compressor.Bytes(resp)
-	os.WriteFile(name+".light.msg", resp, 0o644)
+
+	f, err = os.Create(name + ".light.msg")
+	if err != nil {
+		panic(err)
+	}
+	defer f.Close()
+	g, _ = gzip.NewWriterLevel(f, gzip.BestCompression)
+	defer g.Close()
+	if _, err := g.Write(resp); err != nil {
+		panic(err)
+	}
 }
 
 func maxWidth(content []byte) int {

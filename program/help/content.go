@@ -8,22 +8,22 @@ import (
 
 var (
 	//go:embed intro.dark.msg
-	introDark string
+	introDark []byte
 
 	//go:embed intro.light.msg
-	introLight string
+	introLight []byte
 
 	//go:embed language.dark.msg
-	languageDark string
+	languageDark []byte
 
 	//go:embed language.light.msg
-	languageLight string
+	languageLight []byte
 
 	//go:embed ui.dark.msg
-	uiDark string
+	uiDark []byte
 
 	//go:embed ui.light.msg
-	uiLight string
+	uiLight []byte
 
 	//go:embed commands
 	commandsFS embed.FS
