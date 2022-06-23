@@ -7,7 +7,6 @@ require (
 	github.com/charmbracelet/bubbletea v0.19.3
 	github.com/charmbracelet/glamour v0.5.0
 	github.com/charmbracelet/lipgloss v0.4.0
-	github.com/gabriel-vasile/mimetype v1.4.0
 	github.com/go-git/go-git/v5 v5.4.2
 	github.com/muesli/ansi v0.0.0-20211018074035-2e021307bc4b
 	github.com/muesli/reflow v0.3.0

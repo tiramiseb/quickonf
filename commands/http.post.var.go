@@ -6,8 +6,6 @@ import (
 	"io"
 	"net/http"
 	"strings"
-
-	"github.com/gabriel-vasile/mimetype"
 )
 
 func init() {
@@ -28,7 +26,7 @@ var httpPostVar = Command{
 	func(args []string) (result []string, msg string, apply Apply, status Status, before, after string) {
 		uri := args[0]
 		payload := []byte(args[1])
-		contentType := mimetype.Detect(payload).String()
+		contentType := "application/octet-stream"
 
 		resp, err := http.Post(uri, contentType, bytes.NewReader(payload))
 		if err != nil {
