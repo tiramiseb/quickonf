@@ -1,8 +1,6 @@
 package commands
 
 import (
-	"fmt"
-
 	"github.com/tidwall/gjson"
 )
 
@@ -29,7 +27,7 @@ var jsonGet = Command{
 		}
 		value := gjson.Get(data, path)
 		str := value.String()
-		return []string{str}, fmt.Sprintf("Read value from JSON"), nil, StatusInfo, "", str
+		return []string{str}, "Read value from JSON", nil, StatusInfo, "", str
 	},
 	nil,
 }
