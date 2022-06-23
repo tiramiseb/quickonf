@@ -7,7 +7,6 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 	"github.com/muesli/reflow/wordwrap"
-	"github.com/tiramiseb/quickonf/commands"
 )
 
 const filterMaxLength = 20
@@ -36,20 +35,16 @@ type Model struct {
 	uiEnd                  int
 	subtitleSeparator      string
 
-	activeSection       int
-	commandFilter       string
-	filteredCommandsDoc map[string]string
-	commands            []commands.Command
+	activeSection int
+	commandFilter string
 }
 
 func New() *Model {
 	v := viewport.Model{Width: 1, Height: 1}
 	v.Style = lipgloss.NewStyle().MarginLeft(2).MarginRight(2)
 	return &Model{
-		viewport:            v,
-		activeSection:       0,
-		filteredCommandsDoc: map[string]string{},
-		commands:            commands.GetAll(),
+		viewport:      v,
+		activeSection: 0,
 	}
 }
 

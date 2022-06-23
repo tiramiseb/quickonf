@@ -1,0 +1,17 @@
+# {{ .Name }}
+
+{{ .Action }}
+
+{{ if .Arguments }}## Arguments
+
+{{ range .Arguments }}- {{ . }}
+{{ end }}{{ end }}
+{{ if .Outputs }}## Outputs
+
+{{ range .Outputs }}- {{ . }}
+{{ end }}{{ end }}
+{{ if .Example }}## Example
+
+```plain
+{{ .Example }}
+```{{ end }}

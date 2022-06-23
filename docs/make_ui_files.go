@@ -5,9 +5,11 @@ import (
 	_ "embed"
 	"os"
 	"regexp"
+	"text/template"
 
 	"github.com/charmbracelet/glamour"
 	"github.com/muesli/ansi/compressor"
+	"github.com/tiramiseb/quickonf/commands"
 )
 
 var (
@@ -34,6 +36,7 @@ func makeUIFiles() {
 	makeUIFile("intro", intro)
 	makeUIFile("language", language)
 	makeUIFile("ui", ui)
+	makeHelpCommands()
 }
 
 func makeUIFile(name string, content []byte) {
@@ -80,4 +83,19 @@ func maxWidth(content []byte) int {
 		}
 	}
 	return max
+}
+
+func makeHelpCommands() {
+	tmpl, err := template.ParseFiles("command.md.tmpl")
+	if err != nil {
+		panic(err)
+	}
+	var buf bytes.Buffer
+	for _, cmd := range commands.GetAll() {
+		buf.Reset()
+		if err := tmpl.Execute(&buf, cmd); err != nil {
+			panic(err)
+		}
+		makeUIFile("commands/"+cmd.Name, buf.Bytes())
+	}
 }
