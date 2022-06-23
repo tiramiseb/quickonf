@@ -1,7 +1,6 @@
 package help
 
 import (
-	"compress/gzip"
 	"fmt"
 	"io"
 	"io/fs"
@@ -34,8 +33,7 @@ func (m *Model) commandsDoc(dark bool) string {
 			return err
 		}
 		defer src.Close()
-		g, _ := gzip.NewReader(src)
-		_, err = io.Copy(&result, g)
+		_, err = io.Copy(&result, src)
 		return err
 	}); err != nil {
 		return "Could not render documentation: " + err.Error() + "\n-----\n" + result.String()
