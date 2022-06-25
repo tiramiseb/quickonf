@@ -71,6 +71,11 @@ func Get(name string) (Command, bool) {
 	return instr, ok
 }
 
+// UGet returns the named command
+func UGet(name string) Command {
+	return registry[name]
+}
+
 // GetAll returns all registered commands, sorted alphabetically
 func GetAll() []Command {
 	all := make([]Command, len(registry))
