@@ -1,6 +1,8 @@
 package help
 
-import _ "embed"
+import (
+	"embed"
+)
 
 //go:generate go run ../../docs ui
 
@@ -22,4 +24,7 @@ var (
 
 	//go:embed ui.light.msg
 	uiLight string
+
+	//go:embed commands
+	commandsFS embed.FS
 )

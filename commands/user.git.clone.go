@@ -6,9 +6,8 @@ import (
 	"io/fs"
 	"os"
 	"path/filepath"
+	"strings"
 
-	"github.com/go-git/go-git/v5"
-	"github.com/go-git/go-git/v5/plumbing"
 	"github.com/tiramiseb/quickonf/commands/datastores"
 	"github.com/tiramiseb/quickonf/commands/helper"
 )
@@ -43,32 +42,13 @@ var userGitClone = Command{
 			dest = filepath.Join(usr.User.HomeDir, dest)
 		}
 
-		lst, err := datastores.GitRemotes.List(uri)
-		if err != nil {
-			return nil, fmt.Sprintf("Could not list remote references for %s: %s", uri, err), nil, StatusError, "", ""
-		}
-		var reference *plumbing.Reference
-		for _, l := range lst {
-			if l.Name().Short() == ref {
-				reference = l
-			}
-		}
-		if reference == nil {
-			return nil, fmt.Sprintf(`Reference "%s" does not exist in %s`, ref, uri), nil, StatusError, "", ""
-		}
-
 		// Check if destination already exists
 		finfo, err := os.Stat(dest)
 		if errors.Is(err, fs.ErrNotExist) {
 			apply = func(out Output) bool {
 				out.Runningf("Cloning %s into %s", uri, dest)
-				if err := helper.ExecAs(usr.User, nil, nil, "git", "clone", uri, dest); err != nil {
+				if err := helper.ExecAs(usr.User, nil, nil, "git", "clone", "--branch", ref, "--single-branch", uri, dest); err != nil {
 					out.Errorf("Could not clone %s: %s", uri, err)
-					return false
-				}
-				out.Infof("Checking out %s in %s", ref, dest)
-				if err := helper.ExecAs(usr.User, nil, nil, "git", "-C", dest, "checkout", ref); err != nil {
-					out.Errorf("Could not checkout %s in %s: %s", ref, dest, err)
 					return false
 				}
 				out.Successf("Cloned %s into %s", uri, dest)
@@ -86,26 +66,23 @@ var userGitClone = Command{
 		}
 
 		// Is destination a repository?
-		repo, err := git.PlainOpen(dest)
+		info, err := os.Stat(filepath.Join(dest, ".git"))
 		if err != nil {
-			return nil, fmt.Sprintf("%s is not a repository: %s", dest, err), nil, StatusError, "", ""
+			if errors.Is(err, os.ErrNotExist) {
+				return nil, fmt.Sprintf("%s is not a repository: %s", dest, err), nil, StatusError, "", ""
+			}
+			return nil, fmt.Sprintf("Could not check if %s is a repository: %s", dest, err), nil, StatusError, "", ""
+		}
+		if !info.IsDir() {
+			return nil, fmt.Sprintf("%s is not a repository", dest), nil, StatusError, "", ""
 		}
 
 		// Is the destination repository the one we want?
-		remotes, err := repo.Remotes()
-		if err != nil {
+		var out strings.Builder
+		if err := helper.ExecAs(usr.User, nil, &out, "git", "-C", dest, "remote", "--verbose"); err != nil {
 			return nil, fmt.Sprintf("Could not list remotes of %s: %s", dest, err), nil, StatusError, "", ""
 		}
-		var isTheCorrectRepository bool
-		for _, r := range remotes {
-			for _, u := range r.Config().URLs {
-				if u == uri {
-					isTheCorrectRepository = true
-				}
-			}
-		}
-
-		if !isTheCorrectRepository {
+		if !strings.Contains(out.String(), " "+ref+" ") {
 			return nil, fmt.Sprintf("%s is not a clone of %s", dest, uri), nil, StatusError, "", ""
 		}
 
@@ -126,8 +103,5 @@ var userGitClone = Command{
 
 		return nil, fmt.Sprintf("Need to pull updates in %s", dest), apply, StatusInfo, "", ""
 	},
-	func() {
-		datastores.GitRemotes.Reset()
-		datastores.Users.Reset()
-	},
+	datastores.Users.Reset,
 }

@@ -2,8 +2,9 @@ package commands
 
 import (
 	"fmt"
+	"strings"
 
-	"github.com/tiramiseb/quickonf/commands/datastores"
+	"github.com/tiramiseb/quickonf/commands/helper"
 )
 
 func init() {
@@ -24,17 +25,15 @@ var gitHash = Command{
 	func(args []string) (result []string, msg string, apply Apply, status Status, before, after string) {
 		uri := args[0]
 		ref := args[1]
-		lst, err := datastores.GitRemotes.List(uri)
-		if err != nil {
-			return nil, fmt.Sprintf("Could not list remote references for %s: %s", uri, err), nil, StatusError, "", ""
+		var out strings.Builder
+		if err := helper.Exec(nil, &out, "git", "ls-remote", uri, ref); err != nil {
+			return nil, fmt.Sprintf("Could not list references for %s: %s", uri, helper.ExecErr(err)), nil, StatusError, "", ""
 		}
-		for _, l := range lst {
-			if l.Name().Short() == ref {
-				hash := l.Hash().String()
-				return []string{hash}, fmt.Sprintf("Got hash for %s of %s", ref, uri), nil, StatusSuccess, "", hash
-			}
+		fields := strings.Fields(out.String())
+		if len(fields) != 2 {
+			return nil, fmt.Sprintf("Wrong format for references %s: %s", uri, out.String()), nil, StatusError, "", ""
 		}
-		return nil, fmt.Sprintf("Cannot find %s of %s", ref, uri), nil, StatusError, "", ""
+		return []string{fields[0]}, fmt.Sprintf("Got hash for %s of %s", ref, uri), nil, StatusSuccess, "", fields[0]
 	},
-	datastores.GitRemotes.Reset,
+	nil,
 }
