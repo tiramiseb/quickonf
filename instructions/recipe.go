@@ -37,13 +37,14 @@ func (r *Recipe) RunCheck(vars Variables, signalTarget chan bool) ([]*CheckRepor
 	r.instructions = make([]Instruction, len(rec))
 	copy(r.instructions, rec)
 
-	vars = vars.clone()
+	thisVars := vars.clone()
 	for key, value := range r.Variables {
-		vars.define(key, value)
+		value = vars.TranslateVariables(value)
+		thisVars.define(key, value)
 	}
 
 	for _, ins := range r.instructions {
-		thisReports, ok := ins.RunCheck(vars, signalTarget)
+		thisReports, ok := ins.RunCheck(thisVars, signalTarget)
 		if thisReports != nil {
 			reports = append(reports, thisReports...)
 		}
