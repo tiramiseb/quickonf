@@ -1,31 +1,55 @@
 package main
 
+//go:generate go run .
+
 import (
 	"os"
+
+	"github.com/gosimple/slug"
+	"gopkg.in/yaml.v3"
+
+	"github.com/tiramiseb/quickonf/commands"
+	"github.com/tiramiseb/quickonf/embeddedcookbook"
+	"github.com/tiramiseb/quickonf/instructions"
 )
 
-func main() {
-	var makeDoc, makeUiFiles bool
+type shortRecipe struct {
+	Slug    string
+	Name    string
+	Doc     string
+	VarsDoc map[string]string
+}
 
-	if len(os.Args) == 1 {
-		makeDoc = true
-		makeUiFiles = true
-	} else {
-		for _, arg := range os.Args[1:] {
-			switch arg {
-			case "doc":
-				makeDoc = true
-			case "ui":
-				makeUiFiles = true
-			}
+func main() {
+
+	// Commands
+	for _, cmd := range commands.GetAll() {
+		cmdYAML, err := yaml.Marshal(cmd)
+		if err != nil {
+			panic(err)
+		}
+		if err := os.WriteFile("data/commands/"+cmd.Name+".yaml", cmdYAML, 0o644); err != nil {
+			panic(err)
 		}
 	}
 
-	if makeDoc {
-		makeDocCommands()
-	}
-
-	if makeUiFiles {
-		makeUIFiles()
+	// Cookbook
+	if err := embeddedcookbook.ForEach(func(recipe *instructions.Group) error {
+		short := shortRecipe{
+			Slug:    slug.Make(recipe.Name),
+			Name:    recipe.Name,
+			Doc:     recipe.RecipeDoc,
+			VarsDoc: recipe.RecipeVarsDoc,
+		}
+		cmdYAML, err := yaml.Marshal(short)
+		if err != nil {
+			panic(err)
+		}
+		if err := os.WriteFile("data/cookbook/"+slug.Make(short.Name)+".yaml", cmdYAML, 0o644); err != nil {
+			panic(err)
+		}
+		return nil
+	}); err != nil {
+		panic(err)
 	}
 }

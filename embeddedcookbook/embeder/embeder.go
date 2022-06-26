@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io"
 
+	"github.com/tiramiseb/quickonf/embeddedcookbook"
 	"github.com/tiramiseb/quickonf/instructions"
 )
 
@@ -22,26 +23,35 @@ func init() {
 )
 
 type embeder struct {
-	groups *instructions.Groups
-	w      io.Writer
+	w io.Writer
 }
 
 func (e *embeder) make() {
 	e.w.Write(head)
 
-	group := e.groups.FirstGroup()
-	for {
-		e.write(1, "recipes[\"%s\"] = []Instruction{", group.Name)
+	if err := embeddedcookbook.ForEach(func(group *instructions.Group) error {
+		e.write(1, "recipes[\"%s\"] = CookbookRecipe{", group.Name)
+		if group.RecipeDoc != "" {
+			e.write(2, "Doc: `%s`,", group.RecipeDoc)
+		}
+		if len(group.RecipeVarsDoc) > 0 {
+			e.write(2, "VarsDoc: map[string]string{")
+			for k, v := range group.RecipeVarsDoc {
+				e.write(3, "`%s`: `%s`,", k, v)
+			}
+			e.write(2, "},")
+		}
+		e.write(2, "Instructions: []Instruction{")
 		for _, ins := range group.Instructions {
-			e.instruction(2, ins)
+			e.instruction(3, ins)
 		}
+		e.write(2, "},")
 		e.write(1, "}")
-		newGrp := group.Next(1, true)
-		if newGrp == group {
-			break
-		}
-		group = newGrp
+		return nil
+	}); err != nil {
+		panic(err)
 	}
+
 	e.w.Write(foot)
 }
 

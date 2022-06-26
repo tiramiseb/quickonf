@@ -15,6 +15,10 @@ type Group struct {
 	Priority     int
 	Instructions []Instruction
 
+	// RecipeDoc and RecipeVarsDoc are only used in recipes, for documentation generation, only in parsing stage
+	RecipeDoc     string
+	RecipeVarsDoc map[string]string
+
 	Reports []*CheckReport
 
 	alreadyApplied bool

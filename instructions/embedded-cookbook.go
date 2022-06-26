@@ -5,40 +5,49 @@ package instructions
 import "github.com/tiramiseb/quickonf/commands"
 
 func init() {
-	recipes["apt sources.list"] = []Instruction{
-		&Command{
-			Command: commands.UGet("file.read"),
-			Arguments: []string{
-				`<src>`,
-			},
-			Targets: []string{
-				`aptsrc`,
-			},
+	recipes["apt sources.list"] = CookbookRecipe{
+		Doc: `Change the sources list file for APT from a file`,
+		VarsDoc: map[string]string{
+			`src`: `Path of the file to use as sources.list`,
 		},
-		&Expand{
-			Variable: "aptsrc",
-		},
-		&Command{
-			Command: commands.UGet("file.content"),
-			Arguments: []string{
-				`/etc/apt/sources.list`,
-				`<aptsrc>`,
+		Instructions: []Instruction{
+			&Command{
+				Command: commands.UGet("file.read"),
+				Arguments: []string{
+					`<src>`,
+				},
+				Targets: []string{
+					`aptsrc`,
+				},
 			},
-		},
-		&Command{
-			Command: commands.UGet("apt.upgrade"),
+			&Expand{
+				Variable: "aptsrc",
+			},
+			&Command{
+				Command: commands.UGet("file.content"),
+				Arguments: []string{
+					`/etc/apt/sources.list`,
+					`<aptsrc>`,
+				},
+			},
+			&Command{
+				Command: commands.UGet("apt.upgrade"),
+			},
 		},
 	}
-	recipes["no automatic apt updates"] = []Instruction{
-		&Command{
-			Command: commands.UGet("file.content"),
-			Arguments: []string{
-				`/etc/apt/apt.conf.d/10periodic`,
-				`# Placed by Quickonf
+	recipes["no automatic apt updates"] = CookbookRecipe{
+		Doc: `Disable periodic apt update, upgrade, autoclean`,
+		Instructions: []Instruction{
+			&Command{
+				Command: commands.UGet("file.content"),
+				Arguments: []string{
+					`/etc/apt/apt.conf.d/10periodic`,
+					`# Placed by Quickonf
 APT::Periodic::Update-Package-Lists 0;
 APT::Periodic::Download-Upgradeable-Packages 0;
 APT::Periodic::AutocleanInterval 0;
 `,
+				},
 			},
 		},
 	}

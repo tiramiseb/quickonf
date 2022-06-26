@@ -1,0 +1,5 @@
+slug: apt-sources-list
+name: apt sources.list
+doc: Change the sources list file for APT from a file
+varsdoc:
+    src: Path of the file to use as sources.list

@@ -8,4 +8,4 @@ outputs: []
 example: |-
     Temporarily clone git repository
       tmp = temppath
-      git.clone https://www.example.com/foobar.git <tmp>
+      git.clone https://www.example.com/foobar.git <tmp> main

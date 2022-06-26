@@ -8,27 +8,27 @@ import (
 	"strings"
 )
 
-func (m *Model) commandsDoc(dark bool) string {
+func (m *Model) recipesDoc(dark bool) string {
 	var pattern string
 	if dark {
-		pattern = fmt.Sprintf("*%s*.dark.msg", m.commandFilter)
+		pattern = fmt.Sprintf("*%s*.dark.msg", m.recipeFilter)
 	} else {
-		pattern = fmt.Sprintf("*%s*.light.msg", m.commandFilter)
+		pattern = fmt.Sprintf("*%s*.light.msg", m.recipeFilter)
 	}
 
 	var result strings.Builder
 
-	if err := fs.WalkDir(commandsFS, "content/commands", func(filePath string, dirEntry fs.DirEntry, err error) error {
+	if err := fs.WalkDir(recipesFS, "content/cookbook", func(filePath string, dirEntry fs.DirEntry, err error) error {
 		if err != nil {
 			return err
 		}
-		name := dirEntry.Name()
+		name := strings.ToLower(dirEntry.Name())
 		if ok, err := path.Match(pattern, name); err != nil {
 			return err
 		} else if !ok {
 			return nil
 		}
-		src, err := commandsFS.Open("content/commands/" + name)
+		src, err := recipesFS.Open("content/cookbook/" + name)
 		if err != nil {
 			return err
 		}

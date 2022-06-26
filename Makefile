@@ -2,6 +2,9 @@ default:
 	CGO_ENABLED=0 go build -ldflags "-s -w" -o quickonf cmd/*.go
 	upx -9 quickonf
 
+quick:
+	CGO_ENABLED=0 go build -o quickonf cmd/*.go
+
 all: x86 x64
 
 x64:

@@ -1,25 +1,21 @@
 package main
 
+//go:generate go run .
 import (
 	"bytes"
-	_ "embed"
 	"os"
 	"regexp"
 	"text/template"
 
 	"github.com/charmbracelet/glamour"
+	"github.com/gosimple/slug"
 	"github.com/muesli/ansi/compressor"
 	"github.com/tiramiseb/quickonf/commands"
+	"github.com/tiramiseb/quickonf/embeddedcookbook"
+	"github.com/tiramiseb/quickonf/instructions"
 )
 
 var (
-	//go:embed content/intro.md
-	intro []byte
-	//go:embed content/language.md
-	language []byte
-	//go:embed content/ui.md
-	ui []byte
-
 	darkStyle  = glamour.DarkStyleConfig
 	lightStyle = glamour.LightStyleConfig
 
@@ -27,16 +23,58 @@ var (
 	frontmatterRe = regexp.MustCompile("(?s)---\n.*\n---")
 )
 
-func init() {
+func main() {
 	darkStyle.Document.Margin = nil
 	lightStyle.Document.Margin = nil
-}
 
-func makeUIFiles() {
-	makeUIFile("intro", intro)
-	makeUIFile("language", language)
-	makeUIFile("ui", ui)
-	makeHelpCommands()
+	// Static content pages
+	md, err := os.ReadFile("../../../docs/content/intro.md")
+	if err != nil {
+		panic(err)
+	}
+	makeUIFile("intro", md)
+
+	md, err = os.ReadFile("../../../docs/content/language.md")
+	if err != nil {
+		panic(err)
+	}
+	makeUIFile("language", md)
+
+	md, err = os.ReadFile("../../../docs/content/ui.md")
+	if err != nil {
+		panic(err)
+	}
+	makeUIFile("ui", md)
+
+	// Commands
+	tmpl, err := template.ParseFiles("command.md.tmpl")
+	if err != nil {
+		panic(err)
+	}
+	var buf bytes.Buffer
+	for _, cmd := range commands.GetAll() {
+		buf.Reset()
+		if err := tmpl.Execute(&buf, cmd); err != nil {
+			panic(err)
+		}
+		makeUIFile("commands/"+cmd.Name, buf.Bytes())
+	}
+
+	// Cookbook
+	tmpl, err = template.ParseFiles("recipe.md.tmpl")
+	if err != nil {
+		panic(err)
+	}
+	if err := embeddedcookbook.ForEach(func(recipe *instructions.Group) error {
+		buf.Reset()
+		if err := tmpl.Execute(&buf, recipe); err != nil {
+			return err
+		}
+		makeUIFile("cookbook/"+slug.Make(recipe.Name), buf.Bytes())
+		return nil
+	}); err != nil {
+		panic(err)
+	}
 }
 
 func makeUIFile(name string, content []byte) {
@@ -58,7 +96,6 @@ func makeUIFile(name string, content []byte) {
 	if err != nil {
 		panic(err)
 	}
-
 	resp, err := darkRender.RenderBytes(content)
 	if err != nil {
 		panic(err)
@@ -83,19 +120,4 @@ func maxWidth(content []byte) int {
 		}
 	}
 	return max
-}
-
-func makeHelpCommands() {
-	tmpl, err := template.ParseFiles("command.md.tmpl")
-	if err != nil {
-		panic(err)
-	}
-	var buf bytes.Buffer
-	for _, cmd := range commands.GetAll() {
-		buf.Reset()
-		if err := tmpl.Execute(&buf, cmd); err != nil {
-			panic(err)
-		}
-		makeUIFile("commands/"+cmd.Name, buf.Bytes())
-	}
 }

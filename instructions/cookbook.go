@@ -11,7 +11,13 @@ import (
 	"github.com/tiramiseb/quickonf/commands"
 )
 
-var recipes = map[string][]Instruction{}
+type CookbookRecipe struct {
+	Doc          string
+	VarsDoc      map[string]string
+	Instructions []Instruction
+}
+
+var recipes = map[string]CookbookRecipe{}
 
 type Cookbook struct {
 	URI    string
@@ -89,7 +95,7 @@ func (c *Cookbook) RunCheck(vars Variables, signalTarget chan bool) ([]*CheckRep
 				signalTarget: signalTarget,
 			})
 		}
-		recipes[recipe.Name] = recipe.Instructions
+		recipes[recipe.Name] = CookbookRecipe{Instructions: recipe.Instructions}
 	}
 	reports = append(reports, &CheckReport{
 		Name:         "cookbook",

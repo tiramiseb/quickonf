@@ -1,0 +1,8 @@
+# {{ .Name }}
+
+{{ .RecipeDoc }}
+
+{{ if .RecipeVarsDoc }}## Variables
+
+{{ range $k, $v := .RecipeVarsDoc }}- {{ $k }}: {{ $v }}
+{{ end }}{{ end }}

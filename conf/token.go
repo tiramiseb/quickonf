@@ -19,6 +19,8 @@ const (
 	tokenPriority
 	tokenCookbook
 	tokenRecipe
+	tokenDoc
+	TokenVardoc
 	tokenRepeat
 )
 
@@ -46,6 +48,10 @@ func identifyToken(line int, column int, content string) *token {
 		typ = tokenPriority
 	case "recipe":
 		typ = tokenRecipe
+	case "doc":
+		typ = tokenDoc
+	case "vardoc":
+		typ = TokenVardoc
 	case "repeat":
 		typ = tokenRepeat
 	}
