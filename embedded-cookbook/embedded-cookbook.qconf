@@ -1,10 +1,13 @@
 apt sources.list
+	doc "Change the sources list file for APT from a file"
+	vardoc src "Path of the file to use as sources.list"
 	aptsrc = file.read <src>
 	expand aptsrc
 	file.content /etc/apt/sources.list <aptsrc>
 	apt.upgrade
 
 no automatic apt updates
+	doc "Disable periodic apt update, upgrade, autoclean"
 	file.content /etc/apt/apt.conf.d/10periodic "# Placed by Quickonf
 APT::Periodic::Update-Package-Lists "0";
 APT::Periodic::Download-Upgradeable-Packages "0";

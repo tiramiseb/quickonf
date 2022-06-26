@@ -144,6 +144,10 @@ func (p *parser) parseInstructions(prefixAllWith, line tokens, group *instructio
 			ins, line = p.priority(toks, group)
 		case tokenRecipe:
 			ins, line = p.recipe(toks, group, currentIndent)
+		case tokenDoc:
+			ins, line = p.recipeDoc(toks, group)
+		case TokenVardoc:
+			ins, line = p.recipeVarDoc(toks, group)
 		case tokenRepeat:
 			ins, line = p.repeat(toks, group, currentIndent)
 		default:

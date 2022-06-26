@@ -34,8 +34,8 @@ func (r *Recipe) RunCheck(vars Variables, signalTarget chan bool) ([]*CheckRepor
 		signalTarget: signalTarget,
 	}}
 
-	r.instructions = make([]Instruction, len(rec))
-	copy(r.instructions, rec)
+	r.instructions = make([]Instruction, len(rec.Instructions))
+	copy(r.instructions, rec.Instructions)
 
 	thisVars := vars.clone()
 	for key, value := range r.Variables {
