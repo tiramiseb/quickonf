@@ -13,5 +13,5 @@
 [0m[38;5;252m                                                                                                                                              [0m
 [38;5;251m[0m[38;5;252m  [0m[38;5;251mTemporarily clone git repository[38;5;252m [0m[38;5;252m                                                                                                           [0m
 [0m[38;5;252m  [0m[38;5;251m  tmp = temppath[38;5;252m [0m[38;5;252m                                                                                                                           [0m
-[0m[38;5;252m  [0m[38;5;251m  git.clone https://www.example.com/foobar.git <tmp>[38;5;252m [0m[38;5;252m                                                                                       [0m
+[0m[38;5;252m  [0m[38;5;251m  git.clone https://www.example.com/foobar.git <tmp> main[38;5;252m [0m[38;5;252m                                                                                  [0m
 [0m
