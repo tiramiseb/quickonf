@@ -74,7 +74,7 @@ var gitClone = &Command{
 		if err := helper.Exec(nil, &out, "git", "-C", dest, "remote", "--verbose"); err != nil {
 			return nil, fmt.Sprintf("Could not list remotes of %s: %s", dest, err), nil, StatusError, "", ""
 		}
-		if !strings.Contains(out.String(), " "+ref+" ") {
+		if !strings.Contains(out.String(), "\t"+uri+" ") {
 			return nil, fmt.Sprintf("%s is not a clone of %s", dest, uri), nil, StatusError, "", ""
 		}
 
