@@ -14,7 +14,7 @@ func init() {
 	register(userFileDirectory)
 }
 
-var userFileDirectory = Command{
+var userFileDirectory = &Command{
 	"user.file.directory",
 	"Create a directory belonging to the given user (if path is relative, it is relative to the user's home directory",
 	[]string{

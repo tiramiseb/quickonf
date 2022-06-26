@@ -12,7 +12,7 @@ func init() {
 	register(file)
 }
 
-var file = Command{
+var file = &Command{
 	"file.content",
 	"Create a file owned by root",
 	[]string{

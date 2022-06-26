@@ -55,7 +55,7 @@ func init() {
 	register(githubLatest)
 }
 
-var githubLatest = Command{
+var githubLatest = &Command{
 	"github.latest",
 	"Check the latest release from a GitHub repository",
 	[]string{

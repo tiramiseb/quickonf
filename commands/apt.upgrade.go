@@ -9,7 +9,7 @@ func init() {
 	register(aptUpgrade)
 }
 
-var aptUpgrade = Command{
+var aptUpgrade = &Command{
 	"apt.upgrade",
 	"Upgrade packages from apt repositories",
 	nil,

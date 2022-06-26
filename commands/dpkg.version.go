@@ -10,7 +10,7 @@ func init() {
 	register(dpkgVersion)
 }
 
-var dpkgVersion = Command{
+var dpkgVersion = &Command{
 	"dpkg.version",
 	"Get the version of an installed dpkg package",
 	[]string{

@@ -15,7 +15,7 @@ func init() {
 	register(userFileContent)
 }
 
-var userFileContent = Command{
+var userFileContent = &Command{
 	"user.file.content",
 	"Create a file owned by a user (if path is relative, it is relative to the user's home directory)",
 	[]string{

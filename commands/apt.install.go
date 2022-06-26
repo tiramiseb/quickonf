@@ -11,7 +11,7 @@ func init() {
 	register(apt)
 }
 
-var apt = Command{
+var apt = &Command{
 	"apt.install",
 	"Install a package using apt",
 	[]string{"Name of the package to install"},

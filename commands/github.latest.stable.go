@@ -10,7 +10,7 @@ func init() {
 	register(githubLatestStable)
 }
 
-var githubLatestStable = Command{
+var githubLatestStable = &Command{
 	"github.latest.stable",
 	"Check the latest stable release from a GitHub repository",
 	[]string{

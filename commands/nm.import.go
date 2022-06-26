@@ -13,7 +13,7 @@ func init() {
 	register(nmImport)
 }
 
-var nmImport = Command{
+var nmImport = &Command{
 	"nm.import",
 	"Import a VPN configuration in NetworkManager",
 	[]string{

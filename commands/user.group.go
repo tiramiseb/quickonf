@@ -11,7 +11,7 @@ func init() {
 	register(userGroup)
 }
 
-var userGroup = Command{
+var userGroup = &Command{
 	"user.group",
 	"Add the user to the group (if the group does not exist, it is created)",
 	[]string{

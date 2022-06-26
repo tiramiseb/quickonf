@@ -10,7 +10,7 @@ func init() {
 	register(makefile)
 }
 
-var makefile = Command{
+var makefile = &Command{
 	"make",
 	"Execute the make command",
 	[]string{

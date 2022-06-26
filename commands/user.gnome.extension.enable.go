@@ -11,7 +11,7 @@ func init() {
 	register(gnomeExtensionEnable)
 }
 
-var gnomeExtensionEnable = Command{
+var gnomeExtensionEnable = &Command{
 	"user.gnome.extension.enable",
 	"Enable a GNOME Shell extension",
 	[]string{

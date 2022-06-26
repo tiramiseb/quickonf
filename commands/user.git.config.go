@@ -11,7 +11,7 @@ func init() {
 	register(userGitConfig)
 }
 
-var userGitConfig = Command{
+var userGitConfig = &Command{
 	"user.git.config",
 	"Set a git configuration parameter for a user",
 	[]string{

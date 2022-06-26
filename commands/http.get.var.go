@@ -11,7 +11,7 @@ func init() {
 	register(httpGetVar)
 }
 
-var httpGetVar = Command{
+var httpGetVar = &Command{
 	"http.get.var",
 	"Download content with a HTTP GET request (URI is downloaded when checking)",
 	[]string{

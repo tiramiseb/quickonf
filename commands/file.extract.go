@@ -23,7 +23,7 @@ func init() {
 	register(fileExtract)
 }
 
-var fileExtract = Command{
+var fileExtract = &Command{
 	"file.extract",
 	"Extract a (compressed) archive",
 	[]string{

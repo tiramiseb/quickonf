@@ -58,27 +58,27 @@ type Command struct {
 // Apply is the process to apply a given instance of a command on the system
 type Apply func(Output) (success bool)
 
-var registry = map[string]Command{}
+var registry = map[string]*Command{}
 
-func register(cmd Command) {
+func register(cmd *Command) {
 	registry[cmd.Name] = cmd
 }
 
 // Get returns the named command and a boolean, which is false if the
 // command does not exist.
-func Get(name string) (Command, bool) {
+func Get(name string) (*Command, bool) {
 	instr, ok := registry[name]
 	return instr, ok
 }
 
 // UGet returns the named command
-func UGet(name string) Command {
+func UGet(name string) *Command {
 	return registry[name]
 }
 
 // GetAll returns all registered commands, sorted alphabetically
-func GetAll() []Command {
-	all := make([]Command, len(registry))
+func GetAll() []*Command {
+	all := make([]*Command, len(registry))
 	i := 0
 	for _, ins := range registry {
 		all[i] = ins

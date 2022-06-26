@@ -11,7 +11,7 @@ func init() {
 	register(gitHash)
 }
 
-var gitHash = Command{
+var gitHash = &Command{
 	"git.hash",
 	"Get the latest hash for a reference (generally branch or tag) in a git repository",
 	[]string{

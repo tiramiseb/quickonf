@@ -12,7 +12,7 @@ func init() {
 	register(fileSymlink)
 }
 
-var fileSymlink = Command{
+var fileSymlink = &Command{
 	"file.symlink",
 	"Create a symlink",
 	[]string{

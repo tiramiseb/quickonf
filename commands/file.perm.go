@@ -16,7 +16,7 @@ func init() {
 
 var filePermRe = regexp.MustCompile("^[0-7][0-7][0-7]$")
 
-var filePerm = Command{
+var filePerm = &Command{
 	"file.perm",
 	"Change a file permissions",
 	[]string{

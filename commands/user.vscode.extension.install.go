@@ -11,7 +11,7 @@ func init() {
 	register(userVscodeExtensionInstall)
 }
 
-var userVscodeExtensionInstall = Command{
+var userVscodeExtensionInstall = &Command{
 	"user.vscode.extension.install",
 	"Install a VSCode extension",
 	[]string{

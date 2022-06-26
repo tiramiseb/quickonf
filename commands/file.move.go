@@ -12,7 +12,7 @@ func init() {
 	register(fileDirectoryMove)
 }
 
-var fileDirectoryMove = Command{
+var fileDirectoryMove = &Command{
 	"file.move",
 	"Move a file or directory to another place (does not fail if the source does not exist)",
 	[]string{

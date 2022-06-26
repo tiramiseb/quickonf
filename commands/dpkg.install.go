@@ -12,7 +12,7 @@ func init() {
 	register(dpkgInstall)
 }
 
-var dpkgInstall = Command{
+var dpkgInstall = &Command{
 	"dpkg.install",
 	"Install a package using dpkg (does not check the file exists first)",
 	[]string{"Absolute path to the package file"},

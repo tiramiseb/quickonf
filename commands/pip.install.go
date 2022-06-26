@@ -11,7 +11,7 @@ func init() {
 	register(pipInstall)
 }
 
-var pipInstall = Command{
+var pipInstall = &Command{
 	"pip.install",
 	"Install a Python package using pip3",
 	[]string{"Name of the package to install"},

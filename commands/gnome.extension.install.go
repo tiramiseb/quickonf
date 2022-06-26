@@ -21,7 +21,7 @@ func init() {
 	register(gnomeExtensionInstall)
 }
 
-var gnomeExtensionInstall = Command{
+var gnomeExtensionInstall = &Command{
 	"gnome.extension.install",
 	"Install a GNOME Shell extension from extensions.gnome.org",
 	[]string{

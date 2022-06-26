@@ -13,7 +13,7 @@ func init() {
 	register(userDconfSet)
 }
 
-var userDconfSet = Command{
+var userDconfSet = &Command{
 	"user.dconf.set",
 	"Set a dconf parameter",
 	[]string{

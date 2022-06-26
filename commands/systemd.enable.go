@@ -12,7 +12,7 @@ func init() {
 	register(systemdEnable)
 }
 
-var systemdEnable = Command{
+var systemdEnable = &Command{
 	"systemd.enable",
 	"Enable and start a systemd service",
 	[]string{

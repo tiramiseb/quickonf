@@ -10,7 +10,7 @@ func init() {
 	register(snapVersion)
 }
 
-var snapVersion = Command{
+var snapVersion = &Command{
 	"snap.version",
 	"Get the version of an installed snap package",
 	[]string{

@@ -13,7 +13,7 @@ func init() {
 	register(httpGetFile)
 }
 
-var httpGetFile = Command{
+var httpGetFile = &Command{
 	"http.get.file",
 	"Download a file with a HTTP GET request (URI is downloaded when applying)",
 	[]string{

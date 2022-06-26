@@ -5,7 +5,7 @@ import (
 )
 
 type Command struct {
-	Command   commands.Command
+	Command   *commands.Command
 	Arguments []string
 	Targets   []string
 }

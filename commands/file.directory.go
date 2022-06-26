@@ -12,7 +12,7 @@ func init() {
 	register(fileDirectory)
 }
 
-var fileDirectory = Command{
+var fileDirectory = &Command{
 	"file.directory",
 	"Create a directory (path must be absolute)",
 	[]string{

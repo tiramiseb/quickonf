@@ -14,7 +14,7 @@ func init() {
 }
 
 // TODO Change autoconnect (needs changes in nm datastore)
-var nmHotspot = Command{
+var nmHotspot = &Command{
 	"nm.hotspot",
 	"Setup a wifi access point (hotspot) - only one can be configured",
 	[]string{

@@ -11,7 +11,7 @@ func init() {
 	register(alternativesSet)
 }
 
-var alternativesSet = Command{
+var alternativesSet = &Command{
 	"alternatives.set",
 	"Set an alternative",
 	[]string{

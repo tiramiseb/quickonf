@@ -11,7 +11,7 @@ func init() {
 	register(flatpakInstall)
 }
 
-var flatpakInstall = Command{
+var flatpakInstall = &Command{
 	"flatpak.install",
 	"Install a package using flatpak",
 	[]string{"Application ID of the package to install"},

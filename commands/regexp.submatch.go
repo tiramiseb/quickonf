@@ -10,7 +10,7 @@ func init() {
 	register(regexpSubstring)
 }
 
-var regexpSubstring = Command{
+var regexpSubstring = &Command{
 	"regexp.submatch",
 	"Find submatches using a regexp",
 	[]string{

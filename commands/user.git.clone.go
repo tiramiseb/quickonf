@@ -16,7 +16,7 @@ func init() {
 	register(userGitClone)
 }
 
-var userGitClone = Command{
+var userGitClone = &Command{
 	"user.git.clone",
 	"Clone a git repository as provided user (if the repository already exists locally, pull the last commit) and switch to the requested reference (branch, tag...)",
 	[]string{

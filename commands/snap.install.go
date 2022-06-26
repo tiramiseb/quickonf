@@ -13,7 +13,7 @@ func init() {
 	register(snapInstall)
 }
 
-var snapInstall = Command{
+var snapInstall = &Command{
 	"snap.install",
 	"Install a package using snap",
 	[]string{

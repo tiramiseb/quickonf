@@ -10,7 +10,7 @@ func init() {
 	register(stackInstall)
 }
 
-var stackInstall = Command{
+var stackInstall = &Command{
 	"stack.install",
 	"Execute the stack command (from Haskell)",
 	[]string{

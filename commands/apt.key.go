@@ -15,7 +15,7 @@ func init() {
 	register(aptKey)
 }
 
-var aptKey = Command{
+var aptKey = &Command{
 	"apt.key",
 	"Add apt key",
 	[]string{

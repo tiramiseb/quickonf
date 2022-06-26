@@ -12,7 +12,7 @@ func init() {
 	register(httpPostVar)
 }
 
-var httpPostVar = Command{
+var httpPostVar = &Command{
 	"http.post.var",
 	"Send content with a HTTP POST request (data is sent when checking)",
 	[]string{

@@ -11,7 +11,7 @@ func init() {
 	register(gitConfig)
 }
 
-var gitConfig = Command{
+var gitConfig = &Command{
 	"git.config",
 	"Set a git configuration parameter in the system",
 	[]string{

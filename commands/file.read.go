@@ -11,7 +11,7 @@ func init() {
 	register(fileRead)
 }
 
-var fileRead = Command{
+var fileRead = &Command{
 	"file.read",
 	"Read the content of a file",
 	[]string{

@@ -12,7 +12,7 @@ func init() {
 	register(fileAbsent)
 }
 
-var fileAbsent = Command{
+var fileAbsent = &Command{
 	"file.absent",
 	"Make sure a file is absent",
 	[]string{

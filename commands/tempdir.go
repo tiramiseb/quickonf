@@ -11,7 +11,7 @@ func init() {
 	register(tempdir)
 }
 
-var tempdir = Command{
+var tempdir = &Command{
 	"tempdir",
 	"Create a temporary directory (directory is automatically deleted when closing the application)",
 	nil,

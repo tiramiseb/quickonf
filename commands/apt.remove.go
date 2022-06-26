@@ -11,7 +11,7 @@ func init() {
 	register(aptRemove)
 }
 
-var aptRemove = Command{
+var aptRemove = &Command{
 	"apt.remove",
 	"Remove a package using apt",
 	[]string{"Name of the package to remove"},

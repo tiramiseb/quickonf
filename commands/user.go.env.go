@@ -12,7 +12,7 @@ func init() {
 	register(userGoEnv)
 }
 
-var userGoEnv = Command{
+var userGoEnv = &Command{
 	"user.go.env",
 	"Set a Go environment variable",
 	[]string{

@@ -11,7 +11,7 @@ func init() {
 	register(nmWifi)
 }
 
-var nmWifi = Command{
+var nmWifi = &Command{
 	"nm.wifi",
 	"Have knowledge of a wifi network",
 	[]string{

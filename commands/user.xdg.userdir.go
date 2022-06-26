@@ -64,7 +64,7 @@ func init() {
 	register(userXdgUserdir)
 }
 
-var userXdgUserdir = Command{
+var userXdgUserdir = &Command{
 	"user.xdg.userdir",
 	"Set a XDG user dir",
 	[]string{

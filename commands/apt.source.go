@@ -17,7 +17,7 @@ func init() {
 	register(aptSource)
 }
 
-var aptSource = Command{
+var aptSource = &Command{
 	"apt.source",
 	"Add apt source repository(ies), and update the available packages list if needed",
 	[]string{

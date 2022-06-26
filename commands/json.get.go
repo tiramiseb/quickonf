@@ -8,7 +8,7 @@ func init() {
 	register(jsonGet)
 }
 
-var jsonGet = Command{
+var jsonGet = &Command{
 	"json.get",
 	"Get a JSON value from a variable",
 	[]string{

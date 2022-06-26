@@ -12,7 +12,7 @@ func init() {
 	register(debconfSet)
 }
 
-var debconfSet = Command{
+var debconfSet = &Command{
 	"debconf.set",
 	"Set a debconf parameter",
 	[]string{
