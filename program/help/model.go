@@ -29,6 +29,10 @@ type Model struct {
 	commandsTitleWithFocus string
 	commandsStart          int
 	commandsEnd            int
+	recipesTitle           string
+	recipesTitleWithFocus  string
+	recipesStart           int
+	recipesEnd             int
 	uiTitle                string
 	uiTitleWithFocus       string
 	uiStart                int
@@ -37,6 +41,7 @@ type Model struct {
 
 	activeSection int
 	commandFilter string
+	recipeFilter  string
 }
 
 func New() *Model {
@@ -60,7 +65,7 @@ func (m *Model) Update(msg tea.Msg) (*Model, tea.Cmd) {
 				m.setContent()
 			}
 		case "right":
-			if m.activeSection < 3 {
+			if m.activeSection < 4 {
 				m.activeSection++
 				m.setContent()
 			}
@@ -73,13 +78,21 @@ func (m *Model) Update(msg tea.Msg) (*Model, tea.Cmd) {
 			"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M",
 			"N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z",
 			".":
-			if m.activeSection == 2 && len(m.commandFilter) < filterMaxLength {
+			switch {
+			case m.activeSection == 2 && len(m.commandFilter) < filterMaxLength:
 				m.commandFilter += strings.ToLower(key)
+				m.setContent()
+			case m.activeSection == 3 && len(m.recipeFilter) < filterMaxLength:
+				m.recipeFilter += strings.ToLower(key)
 				m.setContent()
 			}
 		case "backspace":
-			if m.activeSection == 2 && m.commandFilter != "" {
+			switch {
+			case m.activeSection == 2 && m.commandFilter != "":
 				m.commandFilter = m.commandFilter[:len(m.commandFilter)-1]
+				m.setContent()
+			case m.activeSection == 3 && m.recipeFilter != "":
+				m.recipeFilter = m.recipeFilter[:len(m.recipeFilter)-1]
 				m.setContent()
 			}
 		default:
@@ -97,8 +110,11 @@ func (m *Model) Update(msg tea.Msg) (*Model, tea.Cmd) {
 			case msg.X >= m.commandsStart && msg.X <= m.commandsEnd && m.activeSection != 2:
 				m.activeSection = 2
 				m.setContent()
-			case msg.X >= m.uiStart && msg.X <= m.uiEnd && m.activeSection != 3:
+			case msg.X >= m.recipesStart && msg.X <= m.recipesEnd && m.activeSection != 3:
 				m.activeSection = 3
+				m.setContent()
+			case msg.X >= m.uiStart && msg.X <= m.uiEnd && m.activeSection != 4:
+				m.activeSection = 4
 				m.setContent()
 			}
 		} else {
@@ -123,6 +139,9 @@ func (m *Model) setContent() {
 			m.viewport.Height = m.height - 4
 			text = m.commandsDoc(true)
 		case 3:
+			m.viewport.Height = m.height - 4
+			text = m.recipesDoc(true)
+		case 4:
 			text = uiDark
 			m.viewport.Height = m.height - 2
 		}
@@ -138,6 +157,9 @@ func (m *Model) setContent() {
 			m.viewport.Height = m.height - 4
 			text = m.commandsDoc(false)
 		case 3:
+			m.viewport.Height = m.height - 4
+			text = m.recipesDoc(false)
+		case 4:
 			text = uiLight
 			m.viewport.Height = m.height - 2
 		}

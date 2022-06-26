@@ -25,4 +25,7 @@ var (
 
 	//go:embed content/commands
 	commandsFS embed.FS
+
+	//go:embed content/cookbook
+	recipesFS embed.FS
 )
