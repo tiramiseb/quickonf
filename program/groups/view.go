@@ -16,7 +16,7 @@ func (m *Model) View() string {
 	var view string
 	for i = 0; i < m.height; i++ {
 		if grp == m.selectedGroup {
-			view += styles.SelectedStyles[grp.Status()].Render(styles.MakeWidth(grp.Name, m.width)) + "\n"
+			view += styles.SelectedStyles[grp.Status()].Render(styles.MakeWidth(grp.Name, m.width, true)) + "\n"
 		} else {
 			view += styles.Styles[grp.Status()].Render(styles.MakeWidth(grp.Name, m.width)) + "\n"
 		}
