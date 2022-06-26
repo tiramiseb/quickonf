@@ -1,3 +1,4 @@
+slug: no-automatic-apt-updates
 name: no automatic apt updates
 doc: Disable periodic apt update, upgrade, autoclean
 varsdoc: {}

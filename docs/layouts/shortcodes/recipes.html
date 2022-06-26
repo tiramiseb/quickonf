@@ -1,0 +1,81 @@
+<div class="commands">
+	<div class="cmdsnav">
+		<div class="filter">
+			<input id="filterinput" name="filter" type="text" placeholder="Filter...">
+		</div>
+		<aside>
+			<nav class>
+				<ul id="cmdsnav">
+					{{ range $.Site.Data.cookbook }}
+						<li id="link-{{ .slug }}"><a href="#{{ .slug }}">{{ .name }}</a></li>
+					{{ end }}
+				</ul>
+			</nav>
+		</aside>
+	</div>
+	<div class="cmdscontent">
+		{{ range $.Site.Data.cookbook }}
+			<article id="{{ .slug }}">
+				<h2>{{ .name }}</h2>
+				<p>{{ .doc }}</p>
+				{{ if .varsdoc }}
+					<p>Variables:</p>
+					<ul>
+						{{ range $k, $v := .varsdoc }}
+							<li>
+								{{ $k }}: {{ $v }}
+							</li>
+						{{ end }}
+					</ul>
+				{{ else }}
+					<p>No variables</p>
+				{{ end }}
+			</article>
+		{{ end }}
+	</div>
+</div>
+<script>
+	(() => {
+		document.getElementById("filterinput").addEventListener("input", ev => {
+			for (let item of document.getElementById("cmdsnav").children) {
+				item.classList.toggle(
+					"hide",
+					!item.id.substring(5).includes(ev.target.value)
+				)
+			}
+		})
+		let ticking = false;
+		document.addEventListener("scroll", (e) => {
+			if (!ticking) {
+				window.requestAnimationFrame(function() {
+					let viewportHeight = window.visualViewport.height;
+					let winner = null;
+
+					let commands = document.querySelectorAll(".cmdscontent > article")
+					for (let cmd of commands) {
+						let rect = cmd.getElementsByTagName("h2")[0].getBoundingClientRect();
+						if (rect.bottom > viewportHeight) { break }
+						winner = cmd.id
+						if (rect.bottom > 0) { break }
+					}
+					if (winner != null) {
+						document.querySelectorAll(".cmdsnav .active").forEach(e => e.classList.remove("active"))
+						const active = document.getElementById(`link-${winner}`)
+						active.classList.add("active")
+						const list = document.querySelector(".cmdsnav aside")
+						const listRect = list.getBoundingClientRect()
+						const activeRect = active.getBoundingClientRect()
+
+						if (activeRect.top < listRect.top) {
+							list.scrollBy(0, activeRect.top-listRect.top)
+						} else if (activeRect.bottom > listRect.bottom) {
+							list.scrollBy(0, activeRect.bottom-listRect.bottom)
+						}
+					}
+					ticking = false;
+				});
+				ticking = true;
+			}
+		})
+	})()
+</script>

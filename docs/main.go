@@ -14,6 +14,7 @@ import (
 )
 
 type shortRecipe struct {
+	Slug    string
 	Name    string
 	Doc     string
 	VarsDoc map[string]string
@@ -27,7 +28,7 @@ func main() {
 		if err != nil {
 			panic(err)
 		}
-		if err := os.WriteFile("commands/"+cmd.Name+".yaml", cmdYAML, 0o644); err != nil {
+		if err := os.WriteFile("data/commands/"+cmd.Name+".yaml", cmdYAML, 0o644); err != nil {
 			panic(err)
 		}
 	}
@@ -35,6 +36,7 @@ func main() {
 	// Cookbook
 	if err := embeddedcookbook.ForEach(func(recipe *instructions.Group) error {
 		short := shortRecipe{
+			Slug:    slug.Make(recipe.Name),
 			Name:    recipe.Name,
 			Doc:     recipe.RecipeDoc,
 			VarsDoc: recipe.RecipeVarsDoc,
@@ -43,7 +45,7 @@ func main() {
 		if err != nil {
 			panic(err)
 		}
-		if err := os.WriteFile("cookbook/"+slug.Make(short.Name)+".yaml", cmdYAML, 0o644); err != nil {
+		if err := os.WriteFile("data/cookbook/"+slug.Make(short.Name)+".yaml", cmdYAML, 0o644); err != nil {
 			panic(err)
 		}
 		return nil

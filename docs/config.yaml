@@ -9,6 +9,7 @@ params:
     - intro
     - language
     - commands
+    - recipes
     - ui
 
 markup:
