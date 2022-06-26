@@ -5,6 +5,53 @@ package instructions
 import "github.com/tiramiseb/quickonf/commands"
 
 func init() {
+	recipes["all ubuntu repo"] = CookbookRecipe{
+		Doc: `Configure apt sources.list with all sections from an Ubuntu mirror (see https://launchpad.net/ubuntu/+archivemirrors)`,
+		VarsDoc: map[string]string{
+			`mirror`: `URL of the mirror (eg "http://archive.ubuntu.com/ubuntu/")`,
+		},
+		Instructions: []Instruction{
+			&Command{
+				Command: commands.UGet("http.get.var"),
+				Arguments: []string{
+					`<mirror>/dists/<oscodename>/Release`,
+				},
+				Targets: []string{
+					`m_rel`,
+				},
+			},
+			&Command{
+				Command: commands.UGet("regexp.submatch"),
+				Arguments: []string{
+					`Codename: (.*)`,
+					`<m_rel>`,
+				},
+				Targets: []string{
+					`m_cn`,
+				},
+			},
+			&If{
+				Operation: &Equal{Left: "<m_cn>", Right: "<oscodename>"},
+				Instructions: []Instruction{
+					&Command{
+						Command: commands.UGet("file.content"),
+						Arguments: []string{
+							`/etc/apt/sources.list`,
+							`# Sources from Quickonf
+deb <mirror> <oscodename> main restricted universe multiverse
+deb <mirror> <oscodename>-updates main restricted universe multiverse
+deb <mirror> <oscodename>-backports main restricted universe multiverse
+deb http://security.ubuntu.com/ubuntu/ <oscodename>-security main restricted universe multiverse
+`,
+						},
+					},
+					&Command{
+						Command: commands.UGet("apt.upgrade"),
+					},
+				},
+			},
+		},
+	}
 	recipes["apt sources.list"] = CookbookRecipe{
 		Doc: `Change the sources list file for APT from a file`,
 		VarsDoc: map[string]string{

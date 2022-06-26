@@ -1,0 +1,5 @@
+slug: all-ubuntu-repo
+name: all ubuntu repo
+doc: Configure apt sources.list with all sections from an Ubuntu mirror (see https://launchpad.net/ubuntu/+archivemirrors)
+varsdoc:
+    mirror: URL of the mirror (eg "http://archive.ubuntu.com/ubuntu/")
