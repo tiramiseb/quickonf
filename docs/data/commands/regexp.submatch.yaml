@@ -10,5 +10,5 @@ outputs:
 example: |-
     Find src
       webpage = http.get.var http://www.example.com
-      src = regexp.substring "<script .*src=(.*)>" <webpage>
+      src = regexp.submatch "<script .*src=(.*)>" <webpage>
       ...
