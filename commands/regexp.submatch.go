@@ -36,7 +36,7 @@ var regexpSubmatch = &Command{
 		if results == nil {
 			return nil, fmt.Sprintf("No match for regexp %s", reg), nil, StatusError, "", ""
 		}
-		return results[1:], fmt.Sprint("Matched regexp"), nil, StatusSuccess, "", `"` + strings.Join(results[1:], `", "`) + `"`
+		return results[1:], "Matched regexp", nil, StatusSuccess, "", `"` + strings.Join(results[1:], `", "`) + `"`
 	},
 	nil,
 }
