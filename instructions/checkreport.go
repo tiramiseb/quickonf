@@ -10,6 +10,7 @@ import (
 // CheckReport is a single report after checking is something must be applied
 type CheckReport struct {
 	Name         string
+	level        int
 	status       commands.Status
 	message      string
 	apply        commands.Apply
@@ -28,10 +29,10 @@ func (c *CheckReport) Apply() bool {
 	return c.apply(c)
 }
 
-func (c *CheckReport) GetStatusAndMessage() (commands.Status, string) {
+func (c *CheckReport) GetStatusAndMessage() (commands.Status, string, int) {
 	c.mu.Lock()
 	defer c.mu.Unlock()
-	return c.status, c.message
+	return c.status, c.message, c.level
 }
 
 func (c *CheckReport) setStatusAndMessage(status commands.Status, message string) {

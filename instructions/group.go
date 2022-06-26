@@ -38,7 +38,7 @@ func (g *Group) Check(signalTarget chan bool, reset bool) {
 		if reset {
 			ins.Reset()
 		}
-		r, ok := ins.RunCheck(vars, signalTarget)
+		r, ok := ins.RunCheck(vars, signalTarget, 0)
 		g.Reports = append(g.Reports, r...)
 		if !ok {
 			return
@@ -50,7 +50,7 @@ func (g *Group) Check(signalTarget chan bool, reset bool) {
 func (g *Group) Status() commands.Status {
 	var hasInfo, hasRunning, hasSuccess bool
 	for _, r := range g.Reports {
-		status, _ := r.GetStatusAndMessage()
+		status, _, _ := r.GetStatusAndMessage()
 		switch status {
 		case commands.StatusInfo:
 			hasInfo = true

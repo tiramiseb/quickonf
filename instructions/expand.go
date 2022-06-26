@@ -14,12 +14,13 @@ func (e *Expand) Name() string {
 	return "expand"
 }
 
-func (e *Expand) RunCheck(vars Variables, signalTarget chan bool) ([]*CheckReport, bool) {
+func (e *Expand) RunCheck(vars Variables, signalTarget chan bool, level int) ([]*CheckReport, bool) {
 	contentOfVar := vars.TranslateVariables("<" + e.Variable + ">")
 	expanded := vars.TranslateVariables(contentOfVar)
 	vars.define(e.Variable, expanded)
 	return []*CheckReport{{
 		Name:         "expand",
+		level:        level,
 		status:       commands.StatusSuccess,
 		message:      fmt.Sprintf("Expanded content of variable %s", e.Variable),
 		signalTarget: signalTarget,

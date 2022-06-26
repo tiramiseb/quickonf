@@ -17,11 +17,12 @@ func (r *Recipe) Name() string {
 	return "recipe"
 }
 
-func (r *Recipe) RunCheck(vars Variables, signalTarget chan bool) ([]*CheckReport, bool) {
+func (r *Recipe) RunCheck(vars Variables, signalTarget chan bool, level int) ([]*CheckReport, bool) {
 	rec, ok := recipes[r.RecipeName]
 	if !ok {
 		return []*CheckReport{{
 			Name:         "recipe",
+			level:        level,
 			status:       commands.StatusError,
 			message:      fmt.Sprintf(`"Recipe "%s"`, r.RecipeName),
 			signalTarget: signalTarget,
@@ -29,6 +30,7 @@ func (r *Recipe) RunCheck(vars Variables, signalTarget chan bool) ([]*CheckRepor
 	}
 	reports := []*CheckReport{{
 		Name:         "recipe",
+		level:        level,
 		status:       commands.StatusSuccess,
 		message:      fmt.Sprintf(`Running recipe "%s"...`, r.RecipeName),
 		signalTarget: signalTarget,
@@ -44,7 +46,7 @@ func (r *Recipe) RunCheck(vars Variables, signalTarget chan bool) ([]*CheckRepor
 	}
 
 	for _, ins := range r.instructions {
-		thisReports, ok := ins.RunCheck(thisVars, signalTarget)
+		thisReports, ok := ins.RunCheck(thisVars, signalTarget, level+1)
 		if thisReports != nil {
 			reports = append(reports, thisReports...)
 		}

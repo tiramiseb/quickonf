@@ -28,7 +28,7 @@ func (c *Cookbook) Name() string {
 	return "cookbook"
 }
 
-func (c *Cookbook) RunCheck(vars Variables, signalTarget chan bool) ([]*CheckReport, bool) {
+func (c *Cookbook) RunCheck(vars Variables, signalTarget chan bool, level int) ([]*CheckReport, bool) {
 	uri := vars.TranslateVariables(c.URI)
 	var reader io.Reader
 	switch {
@@ -37,6 +37,7 @@ func (c *Cookbook) RunCheck(vars Variables, signalTarget chan bool) ([]*CheckRep
 		if err != nil {
 			return []*CheckReport{{
 				Name:         "cookbook",
+				level:        level,
 				status:       commands.StatusError,
 				message:      fmt.Sprintf("Cannot download %s", uri),
 				signalTarget: signalTarget,
@@ -46,6 +47,7 @@ func (c *Cookbook) RunCheck(vars Variables, signalTarget chan bool) ([]*CheckRep
 		if response.StatusCode != 200 {
 			return []*CheckReport{{
 				Name:         "cookbook",
+				level:        level,
 				status:       commands.StatusError,
 				message:      fmt.Sprintf(`Cannot download %s: %s`, uri, response.Status),
 				signalTarget: signalTarget,
@@ -57,6 +59,7 @@ func (c *Cookbook) RunCheck(vars Variables, signalTarget chan bool) ([]*CheckRep
 		if err != nil {
 			return []*CheckReport{{
 				Name:         "cookbook",
+				level:        level,
 				status:       commands.StatusError,
 				message:      fmt.Sprintf("Cannot download open file %s: %s", uri, err.Error()),
 				signalTarget: signalTarget,
@@ -67,6 +70,7 @@ func (c *Cookbook) RunCheck(vars Variables, signalTarget chan bool) ([]*CheckRep
 	default:
 		return []*CheckReport{{
 			Name:         "cookbook",
+			level:        level,
 			status:       commands.StatusError,
 			message:      fmt.Sprintf(`Cannot understand URI "%s" (supports local files (absolute path), HTTP and HTTPS)`, uri),
 			signalTarget: signalTarget,
@@ -78,6 +82,7 @@ func (c *Cookbook) RunCheck(vars Variables, signalTarget chan bool) ([]*CheckRep
 		for _, err := range errs {
 			reports = append(reports, &CheckReport{
 				Name:         "cookbook",
+				level:        level,
 				status:       commands.StatusError,
 				message:      fmt.Sprintf("Error in cookbook %s: %s", uri, err.Error()),
 				signalTarget: signalTarget,
@@ -90,6 +95,7 @@ func (c *Cookbook) RunCheck(vars Variables, signalTarget chan bool) ([]*CheckRep
 		if _, ok := recipes[recipe.Name]; ok {
 			reports = append(reports, &CheckReport{
 				Name:         "cookbook",
+				level:        level,
 				status:       commands.StatusError,
 				message:      fmt.Sprintf(`Recipe "%s" is already defined`, recipe.Name),
 				signalTarget: signalTarget,
@@ -99,6 +105,7 @@ func (c *Cookbook) RunCheck(vars Variables, signalTarget chan bool) ([]*CheckRep
 	}
 	reports = append(reports, &CheckReport{
 		Name:         "cookbook",
+		level:        level,
 		status:       commands.StatusSuccess,
 		message:      fmt.Sprintf("Successfully read cookbook %s", uri),
 		signalTarget: signalTarget,

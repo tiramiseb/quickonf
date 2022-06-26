@@ -14,10 +14,11 @@ func (c *Command) Name() string {
 	return c.Command.Name
 }
 
-func (c *Command) RunCheck(vars Variables, signalTarget chan bool) ([]*CheckReport, bool) {
+func (c *Command) RunCheck(vars Variables, signalTarget chan bool, level int) ([]*CheckReport, bool) {
 	if len(c.Arguments) != len(c.Command.Arguments) {
 		return []*CheckReport{{
 			Name:         c.Command.Name,
+			level:        level,
 			status:       commands.StatusError,
 			message:      "wrong number of arguments",
 			signalTarget: signalTarget,
@@ -41,6 +42,7 @@ func (c *Command) RunCheck(vars Variables, signalTarget chan bool) ([]*CheckRepo
 	}
 	return []*CheckReport{{
 		Name:         c.Command.Name,
+		level:        level,
 		status:       status,
 		message:      out,
 		apply:        apply,

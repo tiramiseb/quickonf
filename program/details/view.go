@@ -2,6 +2,7 @@ package details
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/charmbracelet/lipgloss"
 	"github.com/tiramiseb/quickonf/commands"
@@ -29,10 +30,11 @@ func (m *Model) View() string {
 }
 
 func (m *Model) reportView(rep *instructions.CheckReport) string {
-	status, message := rep.GetStatusAndMessage()
+	status, message, level := rep.GetStatusAndMessage()
+	indent := m.width / 20 * level
 	content := fmt.Sprintf("[%s] %s", rep.Name, message)
-	result := styles.Styles[status].Render(
-		styles.MakeWidth(content, m.width),
+	result := strings.Repeat(" ", indent) + styles.Styles[status].Render(
+		styles.MakeWidth(content, m.width-indent),
 	) + "\n"
 	if status == commands.StatusInfo && m.showDetails {
 		result += m.detailsView(rep)
