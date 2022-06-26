@@ -54,7 +54,6 @@ func newModel(g *instructions.Groups) *model {
 }
 
 func (m *model) Init() tea.Cmd {
-	tea.LogToFile("/tmp/tmplog", "")
 	return tea.Batch(
 		m.listenSignal,
 		func() tea.Msg {
