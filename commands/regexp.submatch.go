@@ -7,10 +7,10 @@ import (
 )
 
 func init() {
-	register(regexpSubstring)
+	register(regexpSubmatch)
 }
 
-var regexpSubstring = &Command{
+var regexpSubmatch = &Command{
 	"regexp.submatch",
 	"Find submatches using a regexp",
 	[]string{
@@ -22,7 +22,7 @@ var regexpSubstring = &Command{
 		"Second submatch",
 		"...",
 	},
-	"Find src\n  webpage = http.get.var http://www.example.com\n  src = regexp.substring \"<script .*src=(.*)>\" <webpage>\n  ...",
+	"Find src\n  webpage = http.get.var http://www.example.com\n  src = regexp.submatch \"<script .*src=(.*)>\" <webpage>\n  ...",
 	func(args []string) (result []string, msg string, apply Apply, status Status, before, after string) {
 		reg := args[0]
 		source := args[1]
@@ -33,7 +33,10 @@ var regexpSubstring = &Command{
 		}
 
 		results := re.FindStringSubmatch(source)
-		return results[1:], fmt.Sprintf("Matched regexp"), nil, StatusSuccess, "", `"` + strings.Join(results[1:], `", "`) + `"`
+		if results == nil {
+			return nil, fmt.Sprintf("No match for regexp %s", reg), nil, StatusError, "", ""
+		}
+		return results[1:], fmt.Sprint("Matched regexp"), nil, StatusSuccess, "", `"` + strings.Join(results[1:], `", "`) + `"`
 	},
 	nil,
 }
