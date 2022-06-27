@@ -1,0 +1,8 @@
+slug: no-apport
+name: no apport
+doc: Disable Apport alerts
+varsdoc: {}
+instructions: |4-
+    file.content /etc/default/apport "# Disabled by Quickonf
+    enabled=0
+    "

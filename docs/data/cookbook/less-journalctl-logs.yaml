@@ -1,0 +1,5 @@
+slug: less-journalctl-logs
+name: less journalctl logs
+doc: Limit journalctl logs to 100 MB
+varsdoc: {}
+instructions: ""

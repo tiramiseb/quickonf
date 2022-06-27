@@ -82,6 +82,25 @@ deb http://security.ubuntu.com/ubuntu/ <oscodename>-security main restricted uni
 			},
 		},
 	}
+	recipes["less journalctl logs"] = CookbookRecipe{
+		Doc: `Limit journalctl logs to 100 MB`,
+		Instructions: []Instruction{
+		},
+	}
+	recipes["no apport"] = CookbookRecipe{
+		Doc: `Disable Apport alerts`,
+		Instructions: []Instruction{
+			&Command{
+				Command: commands.UGet("file.content"),
+				Arguments: []string{
+					`/etc/default/apport`,
+					`# Disabled by Quickonf
+enabled=0
+`,
+				},
+			},
+		},
+	}
 	recipes["no automatic apt updates"] = CookbookRecipe{
 		Doc: `Disable periodic apt update, upgrade, autoclean`,
 		Instructions: []Instruction{
