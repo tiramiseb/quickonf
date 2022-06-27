@@ -13,11 +13,12 @@ import (
 	"github.com/tiramiseb/quickonf/instructions"
 )
 
-type shortRecipe struct {
-	Slug    string
-	Name    string
-	Doc     string
-	VarsDoc map[string]string
+type docRecipe struct {
+	Slug         string
+	Name         string
+	Doc          string
+	VarsDoc      map[string]string
+	Instructions string
 }
 
 func main() {
@@ -35,11 +36,17 @@ func main() {
 
 	// Cookbook
 	if err := embeddedcookbook.ForEach(func(recipe *instructions.Group) error {
-		short := shortRecipe{
-			Slug:    slug.Make(recipe.Name),
-			Name:    recipe.Name,
-			Doc:     recipe.RecipeDoc,
-			VarsDoc: recipe.RecipeVarsDoc,
+		var instructions string
+
+		for _, instr := range recipe.Instructions {
+			instructions = instructions + "\n" + instr.String()
+		}
+		short := docRecipe{
+			Slug:         slug.Make(recipe.Name),
+			Name:         recipe.Name,
+			Doc:          recipe.RecipeDoc,
+			VarsDoc:      recipe.RecipeVarsDoc,
+			Instructions: instructions,
 		}
 		cmdYAML, err := yaml.Marshal(short)
 		if err != nil {

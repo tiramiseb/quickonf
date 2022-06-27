@@ -3,3 +3,8 @@ name: apt sources.list
 doc: Change the sources list file for APT from a file
 varsdoc:
     src: Path of the file to use as sources.list
+instructions: |4-
+    aptsrc = file.read <src>
+    expand aptsrc
+    file.content /etc/apt/sources.list <aptsrc>
+    apt.upgrade

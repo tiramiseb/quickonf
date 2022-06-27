@@ -30,6 +30,10 @@
 				{{ else }}
 					<p>No variables</p>
 				{{ end }}
+				<details>
+					<summary><i class="las la-angle-down"></i> Instructions:</summary>
+					<pre><code>{{ .instructions }}</code></pre>
+				</details>
 			</article>
 		{{ end }}
 	</div>

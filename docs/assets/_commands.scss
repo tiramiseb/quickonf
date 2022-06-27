@@ -48,6 +48,10 @@
 			font-weight: 600;
 		}
 	}
+
+	* {
+		min-width: 0;
+	}
 }
 
 article {

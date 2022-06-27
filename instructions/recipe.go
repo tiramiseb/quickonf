@@ -2,6 +2,7 @@ package instructions
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/tiramiseb/quickonf/commands"
 )
@@ -62,4 +63,24 @@ func (r *Recipe) Reset() {
 	for _, ins := range r.instructions {
 		ins.Reset()
 	}
+}
+
+func (r *Recipe) String() string {
+	return r.indentedString(0)
+}
+
+func (r *Recipe) indentedString(level int) string {
+	var result []string
+	var content stringBuilder
+	content.add("recipe")
+	content.add(r.RecipeName)
+	result = append(result, content.string(level))
+	for key, value := range r.Variables {
+		var content stringBuilder
+		content.add(key)
+		content.add("=")
+		content.add(value)
+		result = append(result, content.string(level+1))
+	}
+	return strings.Join(result, "\n")
 }

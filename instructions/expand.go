@@ -28,3 +28,15 @@ func (e *Expand) RunCheck(vars Variables, signalTarget chan bool, level int) ([]
 }
 
 func (e *Expand) Reset() {}
+
+func (e *Expand) String() string {
+	return e.indentedString(0)
+}
+
+func (e *Expand) indentedString(level int) string {
+	var content stringBuilder
+	content.add("expand")
+	content.add(e.Variable)
+	return content.string(level)
+
+}

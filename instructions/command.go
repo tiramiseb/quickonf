@@ -57,3 +57,23 @@ func (c *Command) Reset() {
 		c.Command.Reset()
 	}
 }
+
+func (c *Command) String() string {
+	return c.indentedString(0)
+}
+
+func (c *Command) indentedString(level int) string {
+	var content stringBuilder
+	if len(c.Targets) > 0 {
+		for _, t := range c.Targets {
+			content.add(t)
+		}
+		content.add("=")
+	}
+	content.add(c.Command.Name)
+	for _, a := range c.Arguments {
+		content.add(a)
+	}
+	return content.string(level)
+
+}

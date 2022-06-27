@@ -114,3 +114,14 @@ func (c *Cookbook) RunCheck(vars Variables, signalTarget chan bool, level int) (
 }
 
 func (c *Cookbook) Reset() {}
+
+func (c *Cookbook) String() string {
+	return c.indentedString(0)
+}
+
+func (c *Cookbook) indentedString(level int) string {
+	var content stringBuilder
+	content.add("cookbook")
+	content.add(c.URI)
+	return content.string(level)
+}

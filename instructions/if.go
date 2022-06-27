@@ -2,6 +2,7 @@ package instructions
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/tiramiseb/quickonf/commands"
 )
@@ -49,4 +50,21 @@ func (i *If) Reset() {
 	for _, ins := range i.Instructions {
 		ins.Reset()
 	}
+}
+
+func (i *If) String() string {
+	return i.indentedString(0)
+
+}
+
+func (i *If) indentedString(level int) string {
+	var result []string
+	var content stringBuilder
+	content.add("if")
+	content.add(i.Operation.String())
+	result = append(result, content.string(level))
+	for _, instr := range i.Instructions {
+		result = append(result, instr.indentedString(level+1))
+	}
+	return strings.Join(result, "\n")
 }

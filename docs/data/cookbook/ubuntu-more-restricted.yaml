@@ -2,3 +2,11 @@ slug: ubuntu-more-restricted
 name: ubuntu more restricted
 doc: 'Install Ubuntu "Restricted" packages, and more: gstreamer-plugins-bad'
 varsdoc: {}
+instructions: |4-
+    debconf.set ttf-mscorefonts-installer msttcorefonts/accepted-mscorefonts-eula true
+    debconf.set libdvd-pkg libdvd-pkg/first-install .
+    debconf.set libdvd-pkg libdvd-pkg/post-invoke_hook-install true
+    apt.install gstreamer1.0-plugins-bad
+    apt.install ubuntu-restricted-extras
+    apt.install libdvd-pkg
+    dpkg.reconfigure libdvd-pkg

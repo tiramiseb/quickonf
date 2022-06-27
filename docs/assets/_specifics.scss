@@ -48,6 +48,14 @@ article {
 	> :last-child {
 		margin-bottom: 0;
 	}
+
+	> details:last-child {
+		padding-bottom: 0;
+
+		> :last-child {
+			margin-bottom: 0;
+		}
+	}
 }
 
 
