@@ -17,7 +17,11 @@ deb http://security.ubuntu.com/ubuntu/ &lt;oscodename&gt;-security main restrict
   apt.upgrade</code></pre></details></article><article id=apt-sources-list><h2>apt sources.list</h2><p>Change the sources list file for APT from a file</p><p>Variables:</p><ul><li>src: Path of the file to use as sources.list</li></ul><details><summary><i class="las la-angle-down"></i> Instructions:</summary><pre><code>aptsrc = file.read &lt;src&gt;
 expand aptsrc
 file.content /etc/apt/sources.list &lt;aptsrc&gt;
-apt.upgrade</code></pre></details></article><article id=less-journalctl-logs><h2>less journalctl logs</h2><p>Limit journalctl logs to 100 MB</p><p>No variables</p><details><summary><i class="las la-angle-down"></i> Instructions:</summary><pre><code></code></pre></details></article><article id=no-apport><h2>no apport</h2><p>Disable Apport alerts</p><p>No variables</p><details><summary><i class="las la-angle-down"></i> Instructions:</summary><pre><code>file.content /etc/default/apport &#34;# Disabled by Quickonf
+apt.upgrade</code></pre></details></article><article id=less-journalctl-logs><h2>less journalctl logs</h2><p>Limit journalctl logs to 100 MB</p><p>No variables</p><details><summary><i class="las la-angle-down"></i> Instructions:</summary><pre><code>file.content /etc/systemd/journald.conf &#34;# Configured by Quickonf
+[Journal]
+SystemMaxUse=100M
+SystemMaxFileSize=10M
+&#34;</code></pre></details></article><article id=no-apport><h2>no apport</h2><p>Disable Apport alerts</p><p>No variables</p><details><summary><i class="las la-angle-down"></i> Instructions:</summary><pre><code>file.content /etc/default/apport &#34;# Disabled by Quickonf
 enabled=0
 &#34;</code></pre></details></article><article id=no-automatic-apt-updates><h2>no automatic apt updates</h2><p>Disable periodic apt update, upgrade, autoclean</p><p>No variables</p><details><summary><i class="las la-angle-down"></i> Instructions:</summary><pre><code>file.content /etc/apt/apt.conf.d/10periodic &#34;# Placed by Quickonf
 APT::Periodic::Update-Package-Lists 0;
