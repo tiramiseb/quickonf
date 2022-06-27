@@ -1,0 +1,11 @@
+name: dpkg.reconfigure
+action: Reconfigure an installed dpkg package
+arguments:
+    - Name of the package
+outputs: []
+example: |-
+    libdvd-pkg
+      debconf.set libdvd-pkg libdvd-pkg/first-install .
+      debconf.set libdvd-pkg libdvd-pkg/post-invoke_hook-install true
+      apt.install libdvd-pkg
+      dpkg.reconfigure libdvd-pkg
