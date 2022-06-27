@@ -98,4 +98,57 @@ APT::Periodic::AutocleanInterval 0;
 			},
 		},
 	}
+	recipes["ubuntu more restricted"] = CookbookRecipe{
+		Doc: `Install Ubuntu "Restricted" packages, and more: gstreamer-plugins-bad`,
+		Instructions: []Instruction{
+			&Command{
+				Command: commands.UGet("debconf.set"),
+				Arguments: []string{
+					`ttf-mscorefonts-installer`,
+					`msttcorefonts/accepted-mscorefonts-eula`,
+					`true`,
+				},
+			},
+			&Command{
+				Command: commands.UGet("debconf.set"),
+				Arguments: []string{
+					`libdvd-pkg`,
+					`libdvd-pkg/first-install`,
+					`.`,
+				},
+			},
+			&Command{
+				Command: commands.UGet("debconf.set"),
+				Arguments: []string{
+					`libdvd-pkg`,
+					`libdvd-pkg/post-invoke_hook-install`,
+					`true`,
+				},
+			},
+			&Command{
+				Command: commands.UGet("apt.install"),
+				Arguments: []string{
+					`gstreamer1.0-plugins-bad`,
+				},
+			},
+			&Command{
+				Command: commands.UGet("apt.install"),
+				Arguments: []string{
+					`ubuntu-restricted-extras`,
+				},
+			},
+			&Command{
+				Command: commands.UGet("apt.install"),
+				Arguments: []string{
+					`libdvd-pkg`,
+				},
+			},
+			&Command{
+				Command: commands.UGet("dpkg.reconfigure"),
+				Arguments: []string{
+					`libdvd-pkg`,
+				},
+			},
+		},
+	}
 }

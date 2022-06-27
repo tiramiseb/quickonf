@@ -27,3 +27,14 @@ APT::Periodic::Update-Package-Lists "0";
 APT::Periodic::Download-Upgradeable-Packages "0";
 APT::Periodic::AutocleanInterval "0";
 "
+
+ubuntu more restricted
+	doc "Install Ubuntu \"Restricted\" packages, and more: gstreamer-plugins-bad"
+	debconf.set ttf-mscorefonts-installer msttcorefonts/accepted-mscorefonts-eula true
+	debconf.set libdvd-pkg libdvd-pkg/first-install .
+	debconf.set libdvd-pkg libdvd-pkg/post-invoke_hook-install true
+	repeat apt.install
+		gstreamer1.0-plugins-bad
+		ubuntu-restricted-extras
+		libdvd-pkg
+	dpkg.reconfigure libdvd-pkg

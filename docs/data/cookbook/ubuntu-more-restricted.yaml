@@ -1,0 +1,4 @@
+slug: ubuntu-more-restricted
+name: ubuntu more restricted
+doc: 'Install Ubuntu "Restricted" packages, and more: gstreamer-plugins-bad'
+varsdoc: {}
