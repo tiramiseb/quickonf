@@ -22,7 +22,7 @@ apt sources.list
 
 less journalctl logs
 	doc "Limit journalctl logs to 100 MB"
-file.content /etc/systemd/journald.conf "# Configured by Quickonf
+	file.content /etc/systemd/journald.conf "# Configured by Quickonf
 [Journal]
 SystemMaxUse=100M
 SystemMaxFileSize=10M

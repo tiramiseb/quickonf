@@ -85,6 +85,17 @@ deb http://security.ubuntu.com/ubuntu/ <oscodename>-security main restricted uni
 	recipes["less journalctl logs"] = CookbookRecipe{
 		Doc: `Limit journalctl logs to 100 MB`,
 		Instructions: []Instruction{
+			&Command{
+				Command: commands.UGet("file.content"),
+				Arguments: []string{
+					`/etc/systemd/journald.conf`,
+					`# Configured by Quickonf
+[Journal]
+SystemMaxUse=100M
+SystemMaxFileSize=10M
+`,
+				},
+			},
 		},
 	}
 	recipes["no apport"] = CookbookRecipe{
