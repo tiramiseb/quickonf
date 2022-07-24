@@ -13,5 +13,5 @@ func (p *parser) repeat(toks tokens, group *instructions.Group, currentIndent in
 		p.errs = append(p.errs, toks[0].error(`expected arguments in the repeat clause`))
 		return nil, next
 	}
-	return p.parseInstructions(toks[1:], next, group, indent)
+	return p.instructions(toks[1:], next, group, indent)
 }
