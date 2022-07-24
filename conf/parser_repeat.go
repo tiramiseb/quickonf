@@ -11,6 +11,7 @@ func (p *parser) repeat(toks tokens, group *instructions.Group, currentIndent in
 	indent, _ := next.indentation()
 	if indent <= currentIndent {
 		p.errs = append(p.errs, toks[0].error(`expected arguments in the repeat clause`))
+		return nil, next
 	}
 	return p.parseInstructions(toks[1:], next, group, indent)
 }
