@@ -9,7 +9,7 @@ type FilePresent struct {
 	Path string
 }
 
-func (f *FilePresent) Compare(vars Variables) bool {
+func (f *FilePresent) Compare(vars *Variables) bool {
 	path := vars.TranslateVariables(f.Path)
 	_, err := os.Stat(path)
 	return err == nil

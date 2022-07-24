@@ -20,6 +20,16 @@ func main() {
 		config = os.Args[1]
 	}
 
+	if config == "--check-stdin" {
+		instructions.NewGlobalVar("confdir", "-")
+		err := conf.Check(os.Stdin)
+		if err != nil {
+			fmt.Printf(`{"error": "Could not check input data: %s"}\n`, err)
+			os.Exit(1)
+		}
+		os.Exit(0)
+	}
+
 	r, err := os.Open(config)
 	if err != nil {
 		fmt.Println("Could not open configuration file", config)

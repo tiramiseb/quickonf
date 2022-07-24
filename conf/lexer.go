@@ -13,12 +13,16 @@ type lexer struct {
 
 	tokens tokens
 
-	curLine int
-	curCol  int
+	curLine   int
+	curIndent int
+	curCol    int
 
-	currentWord []byte
-	curWordLine int
-	curWordCol  int
+	currentWord   []byte
+	currentRaw    []byte
+	curWordLine   int
+	curWordCol    int
+	curWordLength int
+	curRawLength  int
 }
 
 type lexerContext int
@@ -65,19 +69,91 @@ func (l *lexer) scan() (tokens, error) {
 		}
 	}
 	if errors.Is(err, io.EOF) {
-		l.tokens = append(l.tokens, &token{l.curLine, l.curCol, tokenEOL, ""})
+		l.tokens = append(l.tokens, l.eolToken())
 		err = nil
 	}
 	return l.tokens, err
 }
 
 func (l *lexer) next() (byte, error) {
+	l.curIndent++
 	l.curCol++
 	return l.r.ReadByte()
 }
 
+func (l *lexer) resetWord() {
+	l.curWordLine = l.curLine
+	l.curWordCol = l.curCol
+	l.curWordLength = 0
+	l.curRawLength = 0
+	l.currentWord = l.currentWord[:0]
+	l.currentRaw = l.currentRaw[:0]
+}
+
+func (l *lexer) resetWordWith(b byte) {
+	l.curWordLine = l.curLine
+	l.curWordCol = l.curCol
+	l.curWordLength = 1
+	l.curRawLength = 1
+	l.currentWord = l.currentWord[:0]
+	l.currentRaw = l.currentRaw[:0]
+	l.currentWord = append(l.currentWord, b)
+	l.currentRaw = append(l.currentRaw, b)
+}
+
+func (l *lexer) resetWordWithQuote() {
+	l.curWordLine = l.curLine
+	l.curWordCol = l.curCol
+	l.curWordLength = 1
+	l.curRawLength = 1
+	l.currentWord = l.currentWord[:0]
+	l.currentRaw = l.currentRaw[:0]
+	l.currentRaw = append(l.currentRaw, '"')
+}
+
+func (l *lexer) resetWordWithEscape() {
+	l.curWordLine = l.curLine
+	l.curWordCol = l.curCol
+	l.curWordLength = 1
+	l.curRawLength = 1
+	l.currentWord = l.currentWord[:0]
+	l.currentRaw = l.currentRaw[:0]
+	l.currentRaw = append(l.currentRaw, '\\')
+}
+
+func (l *lexer) appendToWord(b byte) {
+	l.curWordLength++
+	l.curRawLength++
+	l.currentWord = append(l.currentWord, b)
+	l.currentRaw = append(l.currentRaw, b)
+}
+
+func (l *lexer) appendEscapeToRaw() {
+	l.curRawLength++
+	l.currentRaw = append(l.currentRaw, '\\')
+}
+
+func (l *lexer) eolToken() *token {
+	return &token{l.curLine, l.curCol, 0, 0, tokenEOL, "", ""}
+}
+
+func (l *lexer) identifyToken() *token {
+	return identifyToken(l.curWordLine, l.curWordCol, l.curWordLength, l.curRawLength, string(l.currentWord), string(l.currentRaw))
+}
+
+func (l *lexer) indentToken() *token {
+	buf := make([]byte, binary.MaxVarintLen64)
+	binary.PutUvarint(buf, uint64(l.curIndent-1))
+	return &token{l.curLine, 1, l.curCol - 1, l.curCol - 1, tokenIndentation, string(buf), string(buf)}
+}
+
+func (l *lexer) defaultToken() *token {
+	return &token{l.curWordLine, l.curWordCol, l.curWordLength, l.curRawLength, tokenDefault, strings.TrimSpace(string(l.currentWord)), string(l.currentRaw)}
+}
+
 func (l *lexer) startOfLine() (lexerContext, error) {
 	l.curLine++
+	l.curIndent = 0
 	l.curCol = 0
 	b, err := l.next()
 	if err != nil {
@@ -86,19 +162,21 @@ func (l *lexer) startOfLine() (lexerContext, error) {
 	switch b {
 	case ' ':
 	case '\t':
-		l.curCol = 8
+		l.curIndent = 8
 	case '\n':
 		return contextStartOfLine, nil
 	case '\\':
-		l.curWordLine = l.curLine
-		l.curWordCol = l.curCol
+		l.resetWordWithEscape()
+		b, err := l.next()
+		if err != nil {
+			return contextStartOfLine, err
+		}
+		l.appendToWord(b)
 		return contextGroupName, nil
 	case '#':
 		return contextComment, nil
 	default:
-		l.curWordLine = l.curLine
-		l.curWordCol = l.curCol
-		l.currentWord = []byte{b}
+		l.resetWordWith(b)
 		return contextGroupName, nil
 	}
 	return contextIndentation, nil
@@ -113,33 +191,27 @@ func (l *lexer) indentation() (lexerContext, error) {
 		switch b {
 		case ' ':
 		case '\t':
-			l.curCol = l.curCol + 8 - (l.curCol % 8)
+			l.curIndent = l.curIndent + 7 - (l.curIndent % 8)
 		case '\n':
 			return contextStartOfLine, nil
 		case '#':
 			return contextComment, nil
 		case '"':
-			buf := make([]byte, binary.MaxVarintLen64)
-			binary.PutUvarint(buf, uint64(l.curCol-1))
-			l.tokens = append(l.tokens, &token{l.curLine, 1, tokenIndentation, string(buf)})
-			l.curWordLine = l.curLine
-			l.curWordCol = l.curCol
-			l.currentWord = l.currentWord[:0]
+			l.tokens = append(l.tokens, l.indentToken())
+			l.resetWordWithQuote()
 			return contextQuotes, nil
 		case '\\':
-			buf := make([]byte, binary.MaxVarintLen64)
-			binary.PutUvarint(buf, uint64(l.curCol-1))
-			l.tokens = append(l.tokens, &token{l.curLine, 1, tokenIndentation, string(buf)})
-			l.curWordLine = l.curLine
-			l.curWordCol = l.curCol
+			l.tokens = append(l.tokens, l.indentToken())
+			l.resetWordWithEscape()
+			b, err := l.next()
+			if err != nil {
+				return contextStartOfLine, err
+			}
+			l.appendToWord(b)
 			return contextDefault, nil
 		default:
-			buf := make([]byte, binary.MaxVarintLen64)
-			binary.PutUvarint(buf, uint64(l.curCol-1))
-			l.tokens = append(l.tokens, &token{l.curLine, 1, tokenIndentation, string(buf)})
-			l.currentWord = []byte{b}
-			l.curWordLine = l.curLine
-			l.curWordCol = l.curCol
+			l.tokens = append(l.tokens, l.indentToken())
+			l.resetWordWith(b)
 			return contextDefault, nil
 		}
 	}
@@ -158,50 +230,46 @@ func (l *lexer) comment() (lexerContext, error) {
 }
 
 func (l *lexer) groupName() (lexerContext, error) {
-	b, err := l.next()
-	if err != nil {
-		return contextGroupName, err
-	}
-	l.currentWord = append(l.currentWord, b)
 	for {
 		b, err := l.next()
 		if err != nil {
 			return contextGroupName, err
 		}
 		switch b {
-		case ' ':
+		case ' ', '\t':
 			// At the first space, check if it is something else than a group name
 			switch string(l.currentWord) {
 			case "cookbook":
 				// Prepare to get the cookbook URI
-				l.curWordLine = l.curLine
-				l.curWordCol = l.curCol + 1
-				l.currentWord = l.currentWord[:0]
+				l.tokens = append(l.tokens,
+					&token{l.curWordLine, l.curWordCol, l.curWordLength, l.curRawLength, tokenCookbook, "cookbook", "cookbook"},
+				)
+				l.resetWord()
+				l.curWordCol++
 				return contextCookbookURI, nil
 			}
-			l.currentWord = append(l.currentWord, b)
+			l.appendToWord(b)
 		case '\n':
-			l.tokens = append(l.tokens, &token{
-				l.curLine, 1, tokenGroupName,
-				strings.TrimSpace(string(l.currentWord)),
-			})
-			l.tokens = append(l.tokens, &token{l.curLine, l.curCol, tokenEOL, ""})
+			l.tokens = append(l.tokens,
+				&token{l.curLine, 1, l.curWordLength, l.curRawLength, tokenGroupName, strings.TrimSpace(string(l.currentWord)), string(l.currentRaw)},
+				l.eolToken(),
+			)
 			return contextStartOfLine, nil
 		case '#':
-			l.tokens = append(l.tokens, &token{
-				l.curLine, 1, tokenGroupName,
-				strings.TrimSpace(string(l.currentWord)),
-			})
-			l.tokens = append(l.tokens, &token{l.curLine, l.curCol, tokenEOL, ""})
+			l.tokens = append(l.tokens,
+				&token{l.curLine, 1, l.curWordLength, l.curRawLength, tokenGroupName, strings.TrimSpace(string(l.currentWord)), string(l.currentRaw)},
+				l.eolToken(),
+			)
 			return contextComment, nil
 		case '\\':
+			l.appendEscapeToRaw()
 			b, err := l.next()
 			if err != nil {
 				return contextGroupName, err
 			}
-			l.currentWord = append(l.currentWord, b)
+			l.appendToWord(b)
 		default:
-			l.currentWord = append(l.currentWord, b)
+			l.appendToWord(b)
 		}
 	}
 }
@@ -211,32 +279,31 @@ func (l *lexer) defaut() (lexerContext, error) {
 		b, err := l.next()
 		if err != nil {
 			if errors.Is(err, io.EOF) {
-				l.tokens = append(l.tokens, identifyToken(l.curWordLine, l.curWordCol, string(l.currentWord)))
+				l.tokens = append(l.tokens, l.identifyToken())
 			}
 			return contextDefault, err
 		}
 		switch b {
 		case '\n':
-			l.tokens = append(l.tokens, identifyToken(l.curWordLine, l.curWordCol, string(l.currentWord)))
-			l.tokens = append(l.tokens, &token{l.curLine, l.curCol, tokenEOL, ""})
+			l.tokens = append(l.tokens, l.identifyToken(), l.eolToken())
 			return contextStartOfLine, nil
 		case ' ', '\t':
-			l.tokens = append(l.tokens, identifyToken(l.curWordLine, l.curWordCol, string(l.currentWord)))
+			l.tokens = append(l.tokens, l.identifyToken())
 			return contextSpace, nil
 		case '#':
-			l.tokens = append(l.tokens, identifyToken(l.curWordLine, l.curWordCol, string(l.currentWord)))
-			l.tokens = append(l.tokens, &token{l.curLine, l.curCol, tokenEOL, ""})
+			l.tokens = append(l.tokens, l.identifyToken(), l.eolToken())
 			return contextComment, nil
 		case '"':
 			return contextQuotes, nil
 		case '\\':
+			l.appendEscapeToRaw()
 			b, err := l.next()
 			if err != nil {
 				return contextDefault, err
 			}
-			l.currentWord = append(l.currentWord, b)
+			l.appendToWord(b)
 		default:
-			l.currentWord = append(l.currentWord, b)
+			l.appendToWord(b)
 		}
 	}
 }
@@ -256,8 +323,9 @@ func (l *lexer) quotes() (lexerContext, error) {
 		case '\n':
 			l.curLine++
 			l.curCol = 0
-			l.currentWord = append(l.currentWord, b)
+			l.appendToWord(b)
 		case '\\':
+			l.appendEscapeToRaw()
 			b, err := l.next()
 			if err != nil {
 				return contextQuotes, err
@@ -266,9 +334,9 @@ func (l *lexer) quotes() (lexerContext, error) {
 				l.curLine++
 				l.curCol = 0
 			}
-			l.currentWord = append(l.currentWord, b)
+			l.appendToWord(b)
 		default:
-			l.currentWord = append(l.currentWord, b)
+			l.appendToWord(b)
 		}
 	}
 }
@@ -281,36 +349,32 @@ func (l *lexer) space() (lexerContext, error) {
 		}
 		switch b {
 		case ' ', '\t':
+			// Nothing to do, it is a space
 		case '\n':
-			l.tokens = append(l.tokens, &token{l.curLine, l.curCol, tokenEOL, ""})
+			l.tokens = append(l.tokens, l.eolToken())
 			return contextStartOfLine, nil
 		case '#':
-			l.tokens = append(l.tokens, &token{l.curLine, l.curCol, tokenEOL, ""})
+			l.tokens = append(l.tokens, l.eolToken())
 			return contextComment, nil
 		case '"':
-			l.curWordLine = l.curLine
-			l.curWordCol = l.curCol
-			l.currentWord = l.currentWord[:0]
+			l.resetWordWithQuote()
 			return contextQuotes, nil
 		case '\\':
-			l.curWordLine = l.curLine
-			l.curWordCol = l.curCol
+			l.resetWordWithEscape()
+			b, err := l.next()
+			if err != nil {
+				return contextSpace, err
+			}
+			l.appendToWord(b)
 			return contextDefault, nil
 		default:
-			l.currentWord = []byte{b}
-			l.curWordLine = l.curLine
-			l.curWordCol = l.curCol
+			l.resetWordWith(b)
 			return contextDefault, nil
 		}
 	}
 }
 
 func (l *lexer) cookbook() (lexerContext, error) {
-	b, err := l.next()
-	if err != nil {
-		return contextCookbookURI, err
-	}
-	l.currentWord = append(l.currentWord, b)
 	for {
 		b, err := l.next()
 		if err != nil {
@@ -318,27 +382,19 @@ func (l *lexer) cookbook() (lexerContext, error) {
 		}
 		switch b {
 		case '\n':
-			l.tokens = append(l.tokens, &token{
-				l.curWordLine, l.curWordCol, tokenCookbook,
-				strings.TrimSpace(string(l.currentWord)),
-			})
-			l.tokens = append(l.tokens, &token{l.curLine, l.curCol, tokenEOL, ""})
+			l.tokens = append(l.tokens, l.defaultToken(), l.eolToken())
 			return contextStartOfLine, nil
 		case '#':
-			l.tokens = append(l.tokens, &token{
-				l.curWordLine, l.curWordCol, tokenCookbook,
-				strings.TrimSpace(string(l.currentWord)),
-			})
-			l.tokens = append(l.tokens, &token{l.curLine, l.curCol, tokenEOL, ""})
+			l.tokens = append(l.tokens, l.defaultToken(), l.eolToken())
 			return contextComment, nil
 		case '\\':
 			b, err := l.next()
 			if err != nil {
 				return contextCookbookURI, err
 			}
-			l.currentWord = append(l.currentWord, b)
+			l.appendToWord(b)
 		default:
-			l.currentWord = append(l.currentWord, b)
+			l.appendToWord(b)
 		}
 	}
 }

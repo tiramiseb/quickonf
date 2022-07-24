@@ -14,7 +14,7 @@ func (c *Command) Name() string {
 	return c.Command.Name
 }
 
-func (c *Command) RunCheck(vars Variables, signalTarget chan bool, level int) ([]*CheckReport, bool) {
+func (c *Command) RunCheck(vars *Variables, signalTarget chan bool, level int) ([]*CheckReport, bool) {
 	if len(c.Arguments) != len(c.Command.Arguments) {
 		return []*CheckReport{{
 			Name:         c.Command.Name,

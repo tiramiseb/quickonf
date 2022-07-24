@@ -28,7 +28,7 @@ func (c *Cookbook) Name() string {
 	return "cookbook"
 }
 
-func (c *Cookbook) RunCheck(vars Variables, signalTarget chan bool, level int) ([]*CheckReport, bool) {
+func (c *Cookbook) RunCheck(vars *Variables, signalTarget chan bool, level int) ([]*CheckReport, bool) {
 	uri := vars.TranslateVariables(c.URI)
 	var reader io.Reader
 	switch {

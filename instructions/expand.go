@@ -14,7 +14,7 @@ func (e *Expand) Name() string {
 	return "expand"
 }
 
-func (e *Expand) RunCheck(vars Variables, signalTarget chan bool, level int) ([]*CheckReport, bool) {
+func (e *Expand) RunCheck(vars *Variables, signalTarget chan bool, level int) ([]*CheckReport, bool) {
 	contentOfVar := vars.TranslateVariables("<" + e.Variable + ">")
 	expanded := vars.TranslateVariables(contentOfVar)
 	vars.define(e.Variable, expanded)

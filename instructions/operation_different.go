@@ -9,12 +9,10 @@ type Different struct {
 	Right string
 }
 
-func (d *Different) Compare(vars Variables) bool {
+func (d *Different) Compare(vars *Variables) bool {
 	left := vars.TranslateVariables(d.Left)
 	right := vars.TranslateVariables(d.Right)
-
 	return left != right
-
 }
 
 func (d *Different) String() string {

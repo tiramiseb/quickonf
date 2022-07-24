@@ -46,13 +46,13 @@ type run func(args []string) (result []string, message string, apply Apply, stat
 
 // Command is a single command definition
 type Command struct {
-	Name      string   // The name of the command
-	Action    string   // [used for doc] Action description
-	Arguments []string // [used for doc & counting args] Arguments description
-	Outputs   []string // [used for doc & counting outputs] Outputs description
-	Example   string   // [used for doc] Example(s)
-	Run       run      `yaml:"-"` // The function to run the command
-	Reset     func()   `yaml:"-"` // The function to reset data in order to cleanly re-run the command
+	Name      string   `json:"name"`       // The name of the command
+	Action    string   `json:"action"`     // [used for doc] Action description
+	Arguments []string `json:"arguments"`  // [used for doc & counting args] Arguments description
+	Outputs   []string `json:"outputs"`    // [used for doc & counting outputs] Outputs description
+	Example   string   `json:"example"`    // [used for doc] Example(s)
+	Run       run      `yaml:"-" json:"-"` // The function to run the command
+	Reset     func()   `yaml:"-" json:"-"` // The function to reset data in order to cleanly re-run the command
 }
 
 // Apply is the process to apply a given instance of a command on the system
@@ -80,12 +80,63 @@ func UGet(name string) *Command {
 func GetAll() []*Command {
 	all := make([]*Command, len(registry))
 	i := 0
-	for _, ins := range registry {
-		all[i] = ins
+	for _, cmd := range registry {
+		all[i] = cmd
 		i++
 	}
 	sort.Slice(all, func(i, j int) bool {
 		return strings.Compare(all[i].Name, all[j].Name) <= 0
 	})
 	return all
+}
+
+func ListStartWith(prefix string) []*Command {
+	var commands []*Command
+	for _, cmd := range registry {
+		if strings.HasPrefix(cmd.Name, prefix) {
+			commands = append(commands, cmd)
+		}
+	}
+	sort.Slice(commands, func(i, j int) bool {
+		return strings.Compare(commands[i].Name, commands[j].Name) <= 0
+	})
+	return commands
+}
+
+func (c *Command) MarkdownHelp() string {
+	var result strings.Builder
+
+	result.WriteString("**")
+	result.WriteString(c.Name)
+	result.WriteString("**: ")
+	result.WriteString(c.Action)
+	result.WriteString("\n\n")
+
+	if len(c.Arguments) > 0 {
+		result.WriteString("Arguments:\n\n")
+		for _, arg := range c.Arguments {
+			result.WriteString("- ")
+			result.WriteString(arg)
+			result.WriteString("\n")
+		}
+		result.WriteString("\n")
+	}
+
+	if len(c.Outputs) > 0 {
+		result.WriteString("Outputs:\n\n")
+		for _, out := range c.Outputs {
+			result.WriteString("- ")
+			result.WriteString(out)
+			result.WriteString("\n")
+		}
+		result.WriteString("\n")
+	}
+
+	if c.Example != "" {
+		result.WriteString("Example:\n\n```\n")
+		result.WriteString(c.Example)
+		result.WriteString("\n```\n")
+	}
+
+	return result.String()
 }
