@@ -105,7 +105,7 @@ func (r *CheckResult) addCommandToken(tok *token, cmd *commands.Command) {
 	})
 }
 
-func (r *CheckResult) addUnknownCommandToken(tok *token, cmd *commands.Command) {
+func (r *CheckResult) addUnknownCommandToken(tok *token) {
 	cmds := commands.ListStartWith(tok.content)
 	completion := make([]checkCompletionItem, len(cmds))
 	for i, cmd := range cmds {

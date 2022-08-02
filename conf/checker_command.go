@@ -30,7 +30,7 @@ func (c *checker) command(toks tokens, knownVars []string) (next tokens, newVars
 	command, ok := commands.Get(commandName)
 	if !ok {
 		c.result.addErrorf(commandToken, CheckSeverityError, `No command named "%s"`, commandName)
-		c.result.addUnknownCommandToken(toks[0], command)
+		c.result.addUnknownCommandToken(toks[0])
 		return c.nextLine(), nil
 	}
 	if targetsCount > len(command.Outputs) {
