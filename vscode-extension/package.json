@@ -1,0 +1,52 @@
+{
+	"name": "quickonf",
+	"displayName": "Quickonf",
+	"description": "Support for Quickonf configuration language",
+	"version": "0.0.1",
+	"engines": {
+		"vscode": "^1.68.0"
+	},
+	"categories": [
+		"Programming Languages"
+	],
+	"activationEvents": [
+		"onLanguage:quickonf"
+	],
+	"main": "src/main.js",
+	"contributes": {
+		"configuration": {
+			"title": "Quickonf",
+			"properties": {
+				"quickonf.executablePath": {
+					"type": "string",
+					"default": "/usr/local/bin/quickonf",
+					"description": "Path to the quickonf executable."
+				}
+			}
+		},
+		"languages": [{
+			"id": "quickonf",
+			"aliases": ["Quickonf", "quickonf"],
+			"extensions": [".qconf"],
+			"configuration": "./language-configuration.json"
+		}],
+		"grammars": [{
+			"language": "quickonf",
+			"scopeName": "source.quickonf",
+			"path": "./syntaxes/quickonf.tmLanguage.json"
+		}],
+		"semanticTokenTypes": [
+		{
+			"id": "invalid",
+			"description": "Invalid instruction"
+		}
+		],
+		"semanticTokenScopes": [
+		{
+			"scopes": {
+			"invalid": ["invalid.illegal"]
+			}
+		}
+		]
+	}
+}

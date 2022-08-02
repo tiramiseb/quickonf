@@ -1,0 +1,18 @@
+{
+	"$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+	"name": "Quickonf",
+	"patterns": [
+		{ "match": "#.*$", "name": "comment.line.number-sign.quickonf" },
+		{ "match": "^cookbook\\b", "name": "keyword.control.quickonf" },
+		{ "match": "^\\S.*$", "name": "entity.name.function.quickonf" },
+		{ "match": "\\b(=|!=)\\b", "name": "keyword.operator.comparison.quickonf" },
+		{ "match": "^\\s+(if|priority|recipe|repeat)\\b", "name": "keyword.control.quickonf" },
+		{ "match": "^\\s+(expand)\\s+(\\S+)\\s+", "captures": { "1": { "name": "keyword.control.quickonf" }, "2" : { "name": "variable.parameter.quickonf" } } },
+		{ "match": "<(confdir|hostname|oscodename)>", "name": "support.variable.quickonf"},
+		{ "begin": "\"", "end": "\"", "name": "string.quoted.double.quickonf", "patterns": [
+			{ "match": "\\\\.", "name": "constant.character.escape.quickonf" }
+		]},
+		{ "match": "^\\s+(.*)\\s+=\\s+", "captures": { "1" : { "name": "variable.parameter.quickonf" } } }
+	],
+	"scopeName": "source.quickonf"
+}
