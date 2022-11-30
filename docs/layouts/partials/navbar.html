@@ -2,6 +2,8 @@
 	<ul>
 		<li>
 			<a href="{{ .Site.BaseURL }}" alt="{{ .Site.Title }}">
+				{{ $logo := resources.Get "logo.svg" }}
+				<img src="{{ $logo.RelPermalink }}" />
 				{{ .Site.Title }}
 			</a>
 		</li>

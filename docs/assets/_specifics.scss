@@ -8,6 +8,12 @@ nav.head {
 	padding-right: calc(var(--nav-element-spacing-horizontal) * 2);
 }
 
+nav.head img {
+	height: 1.5rem;
+	position: relative;
+	top: 0;
+}
+
 code {
   padding: 0.15rem 0.25rem;
 }
