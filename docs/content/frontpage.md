@@ -1,4 +1,4 @@
-With _Quickonf_, you are able to configure your Linux computers, and keep the configuration you want, using a simgle configuration file.
+With _Quickonf_, you are able to configure your Linux computers, and keep the configuration you want, using a single configuration file.
 
 You may execute it whenever you want, to check your system is configured as needed or to fix some configuration you should not have changed.
 

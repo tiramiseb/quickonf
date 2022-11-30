@@ -7,7 +7,7 @@ short_title: Intro
 
 _Quickonf_ is a semi-automatic configuration tool for Linux desktop computers, allowing you to reinstall your Linux system and quickly get your favorite environment back.
 
-It is especially useful if you reinstall _Ubuntu_ every now and then and do not want to use the same user environment over and over (because sometimes, when keeping older configuration files, some app may disfunction).
+It could for instance be useful if you reinstall _Ubuntu_ every now and then and do not want to use the same user environment over and over (because sometimes, when keeping older configuration files, some app may dysfunction).
 
 Think Ansible, but as a single binary command tailored for local desktop usage.
 
