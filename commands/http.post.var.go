@@ -18,15 +18,16 @@ var httpPostVar = &Command{
 	[]string{
 		"URI of the content to download",
 		"Body (payload)",
+		"Content type",
 	},
 	[]string{
 		"Downloaded content",
 	},
-	"Download example\n  foobar = http.post.var http://www.example.com \"example data\"",
+	"Download example\n  foobar = http.post.var http://www.example.com \"example data\" \"application/octet-stream\"",
 	func(args []string) (result []string, msg string, apply Apply, status Status, before, after string) {
 		uri := args[0]
 		payload := []byte(args[1])
-		contentType := "application/octet-stream"
+		contentType := args[2]
 
 		resp, err := http.Post(uri, contentType, bytes.NewReader(payload))
 		if err != nil {
