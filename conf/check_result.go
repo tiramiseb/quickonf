@@ -57,8 +57,13 @@ const (
 )
 
 type checkCompletionItem struct {
-	Label string         `json:"label"`
-	Kind  completionKind `json:"kind"`
+	Label checkCompletionItemLabel `json:"label"`
+	Kind  completionKind           `json:"kind"`
+}
+
+type checkCompletionItemLabel struct {
+	Label       string `json:"label"`
+	Description string `json:"description"`
 }
 
 type CheckResult struct {
@@ -89,7 +94,7 @@ func (r *CheckResult) addCommandToken(tok *token, cmd *commands.Command) {
 	completion := make([]checkCompletionItem, len(cmds))
 	for i, cmd := range cmds {
 		completion[i] = checkCompletionItem{
-			Label: cmd.Name,
+			Label: checkCompletionItemLabel{Label: cmd.Name},
 			Kind:  completionKindCommand,
 		}
 	}
@@ -110,7 +115,7 @@ func (r *CheckResult) addUnknownCommandToken(tok *token) {
 	completion := make([]checkCompletionItem, len(cmds))
 	for i, cmd := range cmds {
 		completion[i] = checkCompletionItem{
-			Label: cmd.Name,
+			Label: checkCompletionItemLabel{Label: cmd.Name},
 			Kind:  completionKindCommand,
 		}
 	}
@@ -125,18 +130,21 @@ func (r *CheckResult) addUnknownCommandToken(tok *token) {
 	})
 }
 
-func (r *CheckResult) addVariableToken(tok *token, knownVars []string) {
+func (r *CheckResult) addVariableToken(tok *token, knownVars map[string]string) {
 	var completion []checkCompletionItem
-	for _, variable := range knownVars {
-		if strings.HasPrefix(variable, tok.content) {
+	for key, instruction := range knownVars {
+		if strings.HasPrefix(key, tok.content) {
 			completion = append(completion, checkCompletionItem{
-				Label: fmt.Sprintf("<%s>", variable),
-				Kind:  completionKindVariable,
+				Label: checkCompletionItemLabel{
+					Label:       fmt.Sprintf("<%s>", key),
+					Description: instruction,
+				},
+				Kind: completionKindVariable,
 			})
 		}
 	}
 	sort.Slice(completion, func(i, j int) bool {
-		return strings.Compare(completion[i].Label, completion[j].Label) <= 0
+		return completion[i].Label.Label < completion[j].Label.Label
 	})
 	r.Tokens = append(r.Tokens, CheckToken{
 		Content:    tok.raw,
@@ -149,18 +157,21 @@ func (r *CheckResult) addVariableToken(tok *token, knownVars []string) {
 	})
 }
 
-func (r *CheckResult) addUnfinishedVariableToken(tok *token, knownVars []string) {
+func (r *CheckResult) addUnfinishedVariableToken(tok *token, knownVars map[string]string) {
 	var completion []checkCompletionItem
-	for _, variable := range knownVars {
-		if strings.HasPrefix(variable, tok.content) {
+	for key, instruction := range knownVars {
+		if strings.HasPrefix(key, tok.content) {
 			completion = append(completion, checkCompletionItem{
-				Label: fmt.Sprintf("<%s>", variable),
-				Kind:  completionKindVariable,
+				Label: checkCompletionItemLabel{
+					Label:       fmt.Sprintf("<%s>", key),
+					Description: instruction,
+				},
+				Kind: completionKindVariable,
 			})
 		}
 	}
 	sort.Slice(completion, func(i, j int) bool {
-		return strings.Compare(completion[i].Label, completion[j].Label) <= 0
+		return completion[i].Label.Label < completion[j].Label.Label
 	})
 	r.Tokens = append(r.Tokens, CheckToken{
 		Content:    tok.raw,

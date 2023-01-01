@@ -4,7 +4,7 @@ import (
 	"strconv"
 )
 
-func (c *checker) priority(toks tokens) (next tokens, newVars []string) {
+func (c *checker) priority(toks tokens) (next tokens, newVars map[string]string) {
 	c.result.addToken(toks[0], CheckTypeKeyword)
 	if len(toks) != 2 {
 		c.result.addError(toks[0], CheckSeverityError, "Expected a priority value, as an integer")

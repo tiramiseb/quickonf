@@ -1,6 +1,6 @@
 package conf
 
-func (c *checker) ifThen(toks tokens, currentIndent int, knownVars []string) (next tokens, newVars []string) {
+func (c *checker) ifThen(toks tokens, currentIndent int, knownVars map[string]string) (next tokens, newVars map[string]string) {
 	c.result.addToken(toks[0], CheckTypeKeyword)
 	if len(toks) < 2 {
 		c.result.addError(toks[0], CheckSeverityError, "Expected an operation")
@@ -23,7 +23,7 @@ func (c *checker) ifThen(toks tokens, currentIndent int, knownVars []string) (ne
 	return c.instructions(nil, next, nextIndent, knownVars)
 }
 
-func (c *checker) findConditionsWithOneArgument(input []tokenOrOperation, knownVars []string) (output []tokenOrOperation) {
+func (c *checker) findConditionsWithOneArgument(input []tokenOrOperation, knownVars map[string]string) (output []tokenOrOperation) {
 	i := 0
 	for i < len(input) {
 		x := input[i]
@@ -59,7 +59,7 @@ func (c *checker) findConditionsWithOneArgument(input []tokenOrOperation, knownV
 	return output
 }
 
-func (c *checker) findConditionsComparison(input []tokenOrOperation, knownVars []string) (output []tokenOrOperation) {
+func (c *checker) findConditionsComparison(input []tokenOrOperation, knownVars map[string]string) (output []tokenOrOperation) {
 	i := 0
 	for i < len(input) {
 		x := input[i]

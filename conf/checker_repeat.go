@@ -1,6 +1,6 @@
 package conf
 
-func (c *checker) repeat(toks tokens, currentIndent int, knownVars []string) (next tokens, newVars []string) {
+func (c *checker) repeat(toks tokens, currentIndent int, knownVars map[string]string) (next tokens, newVars map[string]string) {
 	if len(toks) < 2 {
 		c.result.addError(toks[0], CheckSeverityError, "expected something to repeat")
 		return c.nextLine(), nil

@@ -9,11 +9,12 @@ import (
 )
 
 type Variables struct {
-	names   []string
+	names   map[string]string
 	mapping map[string]string
 }
 
 var globalVars = &Variables{
+	names:   map[string]string{},
 	mapping: map[string]string{},
 }
 
@@ -37,7 +38,7 @@ func NewGlobalVar(key, value string) {
 	globalVars.define(key, value)
 }
 
-func GlobalVars() []string {
+func GlobalVars() map[string]string {
 	return globalVars.names
 }
 
@@ -47,10 +48,12 @@ func newVariablesSet() *Variables {
 
 func (v *Variables) clone() *Variables {
 	newVars := &Variables{
-		names:   make([]string, len(v.names)),
+		names:   map[string]string{},
 		mapping: map[string]string{},
 	}
-	copy(newVars.names, v.names)
+	for k, v := range v.names {
+		newVars.names[k] = v
+	}
 	for k, v := range v.mapping {
 		newVars.mapping[k] = v
 	}
@@ -59,7 +62,7 @@ func (v *Variables) clone() *Variables {
 
 func (v *Variables) define(key, val string) {
 	v.mapping["<"+key+">"] = val
-	v.names = append(v.names, key)
+	v.names[key] = ""
 }
 
 func (v *Variables) TranslateVariables(src string) string {

@@ -39,7 +39,7 @@ func (c *checker) check() *CheckResult {
 }
 
 // makeVarsTokens adds tokens for vars inside a given token
-func (c *checker) makeVarsTokens(tok *token, knownVars []string) {
+func (c *checker) makeVarsTokens(tok *token, knownVars map[string]string) {
 	var (
 		currentVar    string
 		currentVarLen int
@@ -91,16 +91,19 @@ func (c *checker) makeVarsTokens(tok *token, knownVars []string) {
 	}
 }
 
-func (c *checker) addUnfinishedVarToken(tok *token, knownVars []string) {
+func (c *checker) addUnfinishedVarToken(tok *token, knownVars map[string]string) {
 	c.result.addUnfinishedVariableToken(tok, knownVars)
 }
 
-func (c *checker) addVarToken(tok *token, knownVars []string) {
+func (c *checker) addVarToken(tok *token, knownVars map[string]string) {
 	c.result.addVariableToken(tok, knownVars)
-	for _, known := range knownVars {
-		if tok.raw == known {
+	for key, instruction := range knownVars {
+		if tok.raw == key {
+			if instruction != "" {
+				c.result.addError(tok, CheckSeverityInformation, instruction)
+			}
 			return
 		}
 	}
-	c.result.addError(tok, CheckSeverityInformation, "variable undefined, will not be translated")
+	c.result.addError(tok, CheckSeverityWarning, "variable undefined, will not be translated")
 }

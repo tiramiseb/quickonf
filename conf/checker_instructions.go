@@ -1,6 +1,7 @@
 package conf
 
-func (c *checker) instructions(prefixAllWith, line tokens, currentIndent int, knownVars []string) (next tokens, newVars []string) {
+func (c *checker) instructions(prefixAllWith, line tokens, currentIndent int, knownVars map[string]string) (next tokens, newVars map[string]string) {
+	newVars = map[string]string{}
 	// Read a list of instructions...
 	for {
 		if len(line) == 0 {
@@ -22,7 +23,7 @@ func (c *checker) instructions(prefixAllWith, line tokens, currentIndent int, kn
 		// Add prefix to instruction if needed
 		toks = addPrefix(prefixAllWith, toks)
 
-		var thisNewVars []string
+		var thisNewVars map[string]string
 		// Parse the tokens for this instruction!
 		switch toks[0].typ {
 		case tokenExpand:
@@ -42,7 +43,11 @@ func (c *checker) instructions(prefixAllWith, line tokens, currentIndent int, kn
 		default:
 			line, thisNewVars = c.command(toks, knownVars)
 		}
-		newVars = append(newVars, thisNewVars...)
-		knownVars = append(knownVars, thisNewVars...)
+		for k, v := range thisNewVars {
+			newVars[k] = v
+		}
+		for k, v := range thisNewVars {
+			knownVars[k] = v
+		}
 	}
 }

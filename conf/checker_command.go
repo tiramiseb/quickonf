@@ -1,17 +1,25 @@
 package conf
 
 import (
+	"strings"
+
 	"github.com/tiramiseb/quickonf/commands"
 )
 
-func (c *checker) command(toks tokens, knownVars []string) (next tokens, newVars []string) {
+func (c *checker) command(toks tokens, knownVars map[string]string) (next tokens, newVars map[string]string) {
+	newVars = map[string]string{}
 	var targetsCount int
 	for pos, tok := range toks {
 		if tok.typ == tokenEqual {
+			assignmentInstructionSlice := make([]string, 0, len(toks)-pos-1)
+			for i := pos + 1; i < len(toks); i++ {
+				assignmentInstructionSlice = append(assignmentInstructionSlice, toks[i].content)
+			}
+			assignmentInstruction := strings.Join(assignmentInstructionSlice, " ")
 			targetsCount = pos
 			for i := 0; i < pos; i++ {
 				c.result.addToken(toks[i], CheckTypeVariable)
-				newVars = append(newVars, toks[i].content)
+				newVars[toks[i].content] = assignmentInstruction
 			}
 			if pos == len(toks)-1 {
 				c.result.addError(tok, CheckSeverityError, "Missing command")

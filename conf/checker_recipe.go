@@ -1,6 +1,6 @@
 package conf
 
-func (c *checker) recipe(toks tokens, currentIndent int, knownVars []string) (next tokens, newVars []string) {
+func (c *checker) recipe(toks tokens, currentIndent int, knownVars map[string]string) (next tokens, newVars map[string]string) {
 	c.result.addToken(toks[0], CheckTypeKeyword)
 	if len(toks) < 2 {
 		c.result.addError(toks[0], CheckSeverityError, "expected a recipe name")

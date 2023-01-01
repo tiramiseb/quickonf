@@ -1,6 +1,6 @@
 package conf
 
-func (c *checker) expand(tokens tokens, knownVars []string) (next tokens, newVars []string) {
+func (c *checker) expand(tokens tokens, knownVars map[string]string) (next tokens, newVars map[string]string) {
 	c.result.addToken(tokens[0], CheckTypeKeyword)
 	switch {
 	case len(tokens) == 1:
