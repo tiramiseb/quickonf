@@ -1,7 +1,7 @@
-const completion = require('modules/completion')
-const diagnostic = require('modules/diagnostic')
-const hover = require('modules/hover')
-const semantictokens = require('modules/semantictokens')
+const completion = require('./modules/completion')
+const diagnostic = require('./modules/diagnostic')
+const hover = require('./modules/hover')
+const semantictokens = require('./modules/semantictokens')
 
 function activate(ctx) {
 	completion()
