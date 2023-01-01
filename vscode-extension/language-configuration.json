@@ -9,5 +9,15 @@
 	"surroundingPairs": [
 		["\"", "\""],
 		["<", ">"]
+	],
+	"onEnterRules": [
+		{
+		  "beforeText": "^\\S.*$",
+		  "action": { "indent": "indent" }
+		},
+		{
+		  "beforeText": "^\\s+(if|recipe|repeat)\\b",
+		  "action": { "indent": "indent" }
+		},
 	]
 }
