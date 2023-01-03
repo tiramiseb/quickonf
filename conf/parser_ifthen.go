@@ -55,7 +55,7 @@ func (p *parser) ifThen(toks tokens, group *instructions.Group, currentIndent in
 	if nextIndent <= currentIndent {
 		p.errs = append(p.errs, toks[0].error(`expected commands in the if clause`))
 	}
-	inss, next := p.parseInstructions(nil, next, group, nextIndent)
+	inss, next := p.instructions(nil, next, group, nextIndent)
 	ins := &instructions.If{Operation: values[0].operation, Instructions: inss}
 	return []instructions.Instruction{ins}, next
 }

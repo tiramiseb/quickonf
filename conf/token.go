@@ -20,22 +20,25 @@ const (
 	tokenCookbook
 	tokenRecipe
 	tokenDoc
-	TokenVardoc
+	tokenVardoc
 	tokenRepeat
 )
 
 type token struct {
 	// Position of the first character of the token (for debugging)
-	line   int
-	column int
+	line      int
+	column    int
+	length    int
+	rawLength int
 
 	typ     tokenType
 	content string
+	raw     string
 }
 
 type tokens []*token
 
-func identifyToken(line int, column int, content string) *token {
+func identifyToken(line, column, length, rawLength int, content, raw string) *token {
 	typ := tokenDefault
 	switch content {
 	case "=":
@@ -51,11 +54,13 @@ func identifyToken(line int, column int, content string) *token {
 	case "doc":
 		typ = tokenDoc
 	case "vardoc":
-		typ = TokenVardoc
+		typ = tokenVardoc
 	case "repeat":
 		typ = tokenRepeat
+	default:
+		typ = tokenDefault
 	}
-	return &token{line, column, typ, content}
+	return &token{line, column, length, rawLength, typ, content, raw}
 }
 
 func (t *token) error(msg string) error {

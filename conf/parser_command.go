@@ -9,6 +9,10 @@ func (p *parser) command(toks tokens) (instrs []instructions.Instruction, next t
 	var targets []string
 	for equalPos, tok := range toks {
 		if tok.typ == tokenEqual {
+			if equalPos == len(toks)-1 {
+				p.errs = append(p.errs, toks[equalPos].error("missing command"))
+				return nil, p.nextLine()
+			}
 			targets = make([]string, equalPos)
 			for i := 0; i < equalPos; i++ {
 				targets[i] = toks[i].content

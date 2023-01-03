@@ -1,0 +1,75 @@
+{
+	"name": "quickonf",
+	"version": "0.0.1",
+	"displayName": "Quickonf",
+	"description": "Support for the Quickonf configuration language",
+	"publisher": "sebmacc",
+	"license": "MIT",
+	"qna": "https://github.com/tiramiseb/quickonf/discussions/categories/q-a",
+	"bugs": {
+		"url": "https://github.com/tiramiseb/quickonf/issues"
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/tiramiseb/quickonf.git"
+	},
+	"homepage": "https://tiramiseb.github.io/quickonf/",
+	"icon": "icon.png",
+	"engines": {
+		"vscode": "^1.68.0"
+	},
+	"categories": [
+		"Programming Languages"
+	],
+	"activationEvents": [
+		"onLanguage:quickonf"
+	],
+	"main": "extension",
+	"contributes": {
+		"configuration": {
+			"title": "Quickonf",
+			"properties": {
+				"quickonf.executablePath": {
+					"type": "string",
+					"default": "/usr/local/bin/quickonf",
+					"description": "Path to the quickonf executable."
+				}
+			}
+		},
+		"languages": [
+			{
+				"id": "quickonf",
+				"aliases": [
+					"Quickonf",
+					"quickonf"
+				],
+				"extensions": [
+					".qconf"
+				],
+				"configuration": "./language-configuration.json"
+			}
+		],
+		"grammars": [
+			{
+				"language": "quickonf",
+				"scopeName": "source.quickonf",
+				"path": "./syntaxes/quickonf.tmLanguage.json"
+			}
+		],
+		"semanticTokenTypes": [
+			{
+				"id": "invalid",
+				"description": "Invalid instruction"
+			}
+		],
+		"semanticTokenScopes": [
+			{
+				"scopes": {
+					"invalid": [
+						"invalid.illegal"
+					]
+				}
+			}
+		]
+	}
+}

@@ -16,7 +16,7 @@ func (i *If) Name() string {
 	return "if"
 }
 
-func (i *If) RunCheck(vars Variables, signalTarget chan bool, level int) ([]*CheckReport, bool) {
+func (i *If) RunCheck(vars *Variables, signalTarget chan bool, level int) ([]*CheckReport, bool) {
 	success := i.Operation.Compare(vars)
 	if !success {
 		return []*CheckReport{{

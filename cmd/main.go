@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"math/rand"
 	"os"
@@ -15,9 +16,31 @@ import (
 
 func main() {
 	rand.Seed(time.Now().Unix())
+
 	config := "quickonf.qconf"
-	if len(os.Args) > 1 {
-		config = os.Args[1]
+	var configFromFlag string
+	flag.StringVar(&configFromFlag, "config", "", "path to the configuration file")
+	flag.StringVar(&configFromFlag, "c", "", "path to the configuration file (shorthand)")
+	checkStdin := flag.Bool("check-stdin", false, "check configuration on stdin")
+	flag.Parse()
+
+	if *checkStdin {
+		instructions.NewGlobalVar("confdir", "-")
+		err := conf.Check(os.Stdin)
+		if err != nil {
+			fmt.Printf(`{"error": "Could not check input data: %s"}\n`, err)
+			os.Exit(1)
+		}
+		os.Exit(0)
+	}
+
+	if configFromFlag == "" {
+		args := flag.Args()
+		if len(args) > 0 {
+			config = args[0]
+		}
+	} else {
+		config = configFromFlag
 	}
 
 	r, err := os.Open(config)

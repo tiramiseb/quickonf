@@ -18,7 +18,7 @@ func (r *Recipe) Name() string {
 	return "recipe"
 }
 
-func (r *Recipe) RunCheck(vars Variables, signalTarget chan bool, level int) ([]*CheckReport, bool) {
+func (r *Recipe) RunCheck(vars *Variables, signalTarget chan bool, level int) ([]*CheckReport, bool) {
 	rec, ok := recipes[r.RecipeName]
 	if !ok {
 		return []*CheckReport{{
