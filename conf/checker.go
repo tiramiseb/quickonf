@@ -96,14 +96,12 @@ func (c *checker) addUnfinishedVarToken(tok *token, knownVars map[string]string)
 }
 
 func (c *checker) addVarToken(tok *token, knownVars map[string]string) {
-	c.result.addVariableToken(tok, knownVars)
 	for key, instruction := range knownVars {
 		if tok.raw == key {
-			if instruction != "" {
-				c.result.addError(tok, CheckSeverityInformation, instruction)
-			}
+			c.result.addVariableToken(tok, knownVars, instruction)
 			return
 		}
 	}
-	c.result.addError(tok, CheckSeverityWarning, "variable undefined, will not be translated")
+	c.result.addVariableToken(tok, knownVars, "")
+	c.result.addError(tok, CheckSeverityInformation, "variable undefined, will not be translated")
 }

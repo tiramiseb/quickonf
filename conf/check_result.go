@@ -130,7 +130,7 @@ func (r *CheckResult) addUnknownCommandToken(tok *token) {
 	})
 }
 
-func (r *CheckResult) addVariableToken(tok *token, knownVars map[string]string) {
+func (r *CheckResult) addVariableToken(tok *token, knownVars map[string]string, help string) {
 	var completion []checkCompletionItem
 	for key, instruction := range knownVars {
 		if strings.HasPrefix(key, tok.content) {
@@ -148,6 +148,7 @@ func (r *CheckResult) addVariableToken(tok *token, knownVars map[string]string) 
 	})
 	r.Tokens = append(r.Tokens, CheckToken{
 		Content:    tok.raw,
+		Help:       help,
 		Completion: completion,
 		Line:       tok.line - 1,
 		Start:      tok.column - 1,
