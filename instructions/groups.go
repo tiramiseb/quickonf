@@ -42,6 +42,9 @@ func NewGroups(groups []*Group) *Groups {
 }
 
 func (g *Groups) InitialChecks(signalTarget chan bool) {
+	if g == nil {
+		return
+	}
 	g.initialChecksOnce.Do(func() {
 		// Groups are already ordered by priority, just take them one after another, and wait when priority changes.
 		if len(g.groups) == 0 {
@@ -67,6 +70,9 @@ func (g *Groups) InitialChecks(signalTarget chan bool) {
 }
 
 func (g *Groups) ApplyAll() {
+	if g == nil {
+		return
+	}
 	currentPriority := g.groups[0].Priority
 	var wg sync.WaitGroup
 	for _, g := range g.groups {
@@ -89,16 +95,22 @@ func (g *Groups) ApplyAll() {
 }
 
 func (g *Groups) FirstGroup() *Group {
-	if len(g.groups) == 0 {
+	if g == nil || len(g.groups) == 0 {
 		return nil
 	}
 	return g.groups[0]
 }
 
 func (g *Groups) MaxNameLength() int {
+	if g == nil {
+		return 0
+	}
 	return g.maxNameLength
 }
 
 func (g *Groups) Count() int {
+	if g == nil {
+		return 0
+	}
 	return g.count
 }
