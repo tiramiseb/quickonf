@@ -30,9 +30,11 @@ func (m *model) refreshSize() {
 	m.leftTitle = subtitleStyle.Width(left.Width).Render("Groups")
 	m.rightTitle = subtitleStyle.Width(right.Width).Render("Details")
 	m.reallyApplyRightTitle = subtitleStyle.Width(right.Width).Render("Really apply all?")
+	m.reallyReloadRightTitle = subtitleStyle.Width(right.Width).Render("Really reload config?")
 	m.leftTitleWithFocus = subtitleWithFocusStyle.Width(left.Width).Render("Groups")
 	m.rightTitleWithFocus = subtitleWithFocusStyle.Width(right.Width).Render("Details")
 	m.reallyApplyRightTitleWithFocus = subtitleWithFocusStyle.Width(right.Width).Render("Really apply all?")
+	m.reallyReloadRightTitleWithFocus = subtitleWithFocusStyle.Width(right.Width).Render("Really reload config?")
 
 	m.subtitlesSeparator = strings.Repeat("─", left.Width) + "┼" + strings.Repeat("─", right.Width)
 
@@ -47,6 +49,7 @@ func (m *model) refreshSize() {
 	m.groupsview = m.groupsview.Resize(left)
 	m.details = m.details.Resize(right)
 	m.reallyApplyAll = m.reallyApplyAll.Resize(right)
+	m.reallyReloadConfig = m.reallyReloadConfig.Resize(right)
 	m.help = m.help.Resize(tea.WindowSizeMsg{
 		Width:  m.size.Width,
 		Height: m.size.Height - 1,

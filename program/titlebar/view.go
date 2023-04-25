@@ -35,6 +35,9 @@ func (m *Model) drawRegular(width int) {
 	neededWidth += m.recheck.Width + 1
 	m.showRecheck = availableWidth >= neededWidth
 
+	neededWidth += m.reloadConfig.Width + 1
+	m.showReloadConfig = availableWidth >= neededWidth
+
 	rightBorder := width
 
 	if m.showQuit {
@@ -44,6 +47,15 @@ func (m *Model) drawRegular(width int) {
 	} else {
 		m.quitEnd = -1
 		m.quitStart = -1
+	}
+
+	if m.showReloadConfig {
+		m.reloadConfigEnd = rightBorder - 2
+		m.reloadConfigStart = m.reloadConfigEnd - m.reloadConfig.Width + 1
+		rightBorder = m.reloadConfigStart
+	} else {
+		m.reloadConfigEnd = -1
+		m.reloadConfigStart = -1
 	}
 
 	if m.showHelp {
@@ -129,6 +141,10 @@ func (m *Model) View() string {
 	}
 	if m.showHelp {
 		title.WriteString(m.help.View)
+		title.WriteString(space)
+	}
+	if m.showReloadConfig {
+		title.WriteString(m.reloadConfig.View())
 		title.WriteString(space)
 	}
 	if m.showQuit {

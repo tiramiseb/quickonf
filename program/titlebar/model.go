@@ -48,6 +48,11 @@ type Model struct {
 	helpEnd   int
 	showHelp  bool
 
+	reloadConfig      *button.Toggle
+	reloadConfigStart int
+	reloadConfigEnd   int
+	showReloadConfig  bool
+
 	quit      *button.Button
 	quitStart int
 	quitEnd   int
@@ -62,19 +67,24 @@ type Model struct {
 
 func New() *Model {
 	return &Model{
-		title:    " Quickonf ",
-		apply:    button.NewButton("Apply", 0, apply),
-		applyAll: button.NewToggle("Apply all", 7, applyAll, false),
-		recheck:  button.NewButton("Recheck", 0, recheck),
-		filter:   button.NewToggle("Filter checks", 0, filter, true),
-		details:  button.NewToggle("More details", 5, details, false),
-		help:     button.NewButton("Help", 0, help),
-		quit:     button.NewButton("Quit", 0, tea.Quit),
+		title:        " Quickonf ",
+		apply:        button.NewButton("Apply", 0, apply),
+		applyAll:     button.NewToggle("Apply all", 7, applyAll, false),
+		recheck:      button.NewButton("Recheck", 0, recheck),
+		filter:       button.NewToggle("Filter checks", 0, filter, false),
+		details:      button.NewToggle("More details", 5, details, false),
+		help:         button.NewButton("Help", 0, help),
+		reloadConfig: button.NewToggle("Reload config", 7, reloadConfig, false),
+		quit:         button.NewButton("Quit", 0, tea.Quit),
 
 		helpBack: button.NewButton("Back (esc)", -2, help),
 
 		HelpView: func() string { return "" },
 	}
+}
+
+func reloadConfig() tea.Msg {
+	return messages.ReloadConfig{}
 }
 
 func help() tea.Msg {
@@ -125,6 +135,8 @@ func (m *Model) Update(msg tea.Msg) (*Model, tea.Cmd) {
 				cmd = m.details.Click
 			case msg.X >= m.helpStart && msg.X <= m.helpEnd:
 				cmd = m.help.Click
+			case msg.X >= m.reloadConfigStart && msg.X <= m.reloadConfigEnd:
+				cmd = m.reloadConfig.Click
 			case msg.X >= m.quitStart && msg.X <= m.quitEnd:
 				cmd = m.quit.Click
 			}
@@ -133,12 +145,13 @@ func (m *Model) Update(msg tea.Msg) (*Model, tea.Cmd) {
 		switch msg.Name {
 		case "applyall":
 			m.applyAll = m.applyAll.ChangeStatus(msg.Status)
-		case "filter":
-			m.filter = m.filter.ChangeStatus(msg.Status)
 		case "details":
 			m.details = m.details.ChangeStatus(msg.Status)
+		case "filter":
+			m.filter = m.filter.ChangeStatus(msg.Status)
+		case "reloadconfig":
+			m.reloadConfig = m.reloadConfig.ChangeStatus(msg.Status)
 		}
-
 	}
 	return m, cmd
 }

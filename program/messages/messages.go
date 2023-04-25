@@ -16,6 +16,10 @@ type NewSignal struct{}
 
 type Recheck struct{}
 
+type ReloadConfig struct{}
+
+type ConfirmReloadConfig struct{}
+
 type ToggleStatus struct {
 	Name   string
 	Status bool

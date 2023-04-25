@@ -97,3 +97,28 @@ func (m *Model) RecheckSelected(signalTarget chan bool) tea.Cmd {
 		return nil
 	}
 }
+
+func (m *Model) ReplaceGroups(g *instructions.Groups) {
+	if m.selectedGroup != nil {
+		// Try to keep the same group selected
+		grp := g.FirstGroup()
+		for {
+			if grp.Name == m.selectedGroup.Name {
+				// Selected group found, select it
+				m.selectedGroup = grp
+				break
+			}
+			newGrp := grp.Next(1, m.showSuccessful)
+			if newGrp == grp {
+				// Selected group disappeared, select the first one
+				m.selectedGroup = g.FirstGroup()
+				break
+			}
+			grp = newGrp
+		}
+	} else {
+		// No group was selected, select the first one
+		m.selectedGroup = g.FirstGroup()
+	}
+	m.groups = g
+}

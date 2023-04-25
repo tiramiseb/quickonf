@@ -11,6 +11,7 @@ import (
 	"github.com/tiramiseb/quickonf/program/help"
 	"github.com/tiramiseb/quickonf/program/messages"
 	"github.com/tiramiseb/quickonf/program/reallyapplyall"
+	"github.com/tiramiseb/quickonf/program/reallyreloadconfig"
 	"github.com/tiramiseb/quickonf/program/titlebar"
 )
 
@@ -18,25 +19,29 @@ type model struct {
 	config string
 	groups *instructions.Groups
 
-	titlebar       *titlebar.Model
-	groupsview     *groups.Model
-	details        *details.Model
-	reallyApplyAll *reallyapplyall.Model
-	help           *help.Model
+	titlebar           *titlebar.Model
+	groupsview         *groups.Model
+	details            *details.Model
+	reallyApplyAll     *reallyapplyall.Model
+	reallyReloadConfig *reallyreloadconfig.Model
+	help               *help.Model
 
-	leftTitle                      string
-	leftTitleWithFocus             string
-	rightTitle                     string
-	rightTitleWithFocus            string
-	reallyApplyRightTitle          string
-	reallyApplyRightTitleWithFocus string
-	verticalSeparator              string
-	subtitlesSeparator             string
-	separatorXPos                  int
+	leftTitle                       string
+	leftTitleWithFocus              string
+	rightTitle                      string
+	rightTitleWithFocus             string
+	reallyApplyRightTitle           string
+	reallyApplyRightTitleWithFocus  string
+	reallyReloadRightTitle          string
+	reallyReloadRightTitleWithFocus string
+	verticalSeparator               string
+	subtitlesSeparator              string
+	separatorXPos                   int
 
-	askIfReallyApplyAll bool
-	isHelpDisplayed     bool
-	focusOnDetails      bool
+	askIfReallyApplyAll     bool
+	askIfReallyReloadConfig bool
+	isHelpDisplayed         bool
+	focusOnDetails          bool
 
 	size tea.WindowSizeMsg
 
@@ -46,12 +51,13 @@ type model struct {
 func newModel(config string) *model {
 	d := details.New()
 	return &model{
-		config:         config,
-		titlebar:       titlebar.New(),
-		groupsview:     groups.New(d),
-		details:        d,
-		reallyApplyAll: reallyapplyall.New(),
-		help:           help.New(),
+		config:             config,
+		titlebar:           titlebar.New(),
+		groupsview:         groups.New(d),
+		details:            d,
+		reallyApplyAll:     reallyapplyall.New(),
+		reallyReloadConfig: reallyreloadconfig.New(),
+		help:               help.New(),
 
 		signalTarget: make(chan bool),
 	}
@@ -60,6 +66,7 @@ func newModel(config string) *model {
 func (m *model) Init() tea.Cmd {
 	return tea.Batch(
 		m.listenSignal,
+		m.doReloadConfig,
 	)
 }
 
@@ -93,6 +100,11 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				if msg.Type == tea.MouseRelease {
 					m.focusOnDetails = true
 				}
+			} else if m.askIfReallyReloadConfig {
+				m.reallyReloadConfig, cmd = m.reallyReloadConfig.Update(msg)
+				if msg.Type == tea.MouseRelease {
+					m.focusOnDetails = true
+				}
 			} else {
 				m.details, cmd = m.details.Update(msg)
 				if msg.Type == tea.MouseRelease {
@@ -122,11 +134,23 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			case "n", "N", "l", "L":
 				cmd = m.toggleApplyAll
 			}
-
+		case m.askIfReallyReloadConfig:
+			switch msg.String() {
+			case "ctrl+c", "q", "Q":
+				cmd = tea.Quit
+			case "esc":
+				cmd = m.toggleReloadConfig
+			case "enter", "y", "Y":
+				cmd = m.doReloadConfig
+			case "n", "N", "l", "L":
+				cmd = m.toggleReloadConfig
+			}
 		default:
 			switch msg.String() {
 			case "ctrl+c", "esc", "q", "Q":
 				cmd = tea.Quit
+			case "c", "C":
+				cmd = m.toggleReloadConfig
 			case "f", "F":
 				cmd = m.groupsview.ToggleShowSuccessful
 			case "d", "D":
@@ -168,6 +192,10 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		m.isHelpDisplayed = !m.isHelpDisplayed
 	case messages.Recheck:
 		cmd = m.groupsview.RecheckSelected(m.signalTarget)
+	case messages.ReloadConfig:
+		cmd = m.toggleReloadConfig
+	case messages.ConfirmReloadConfig:
+		cmd = m.doReloadConfig
 	case messages.ToggleStatus:
 		m.titlebar, cmd = m.titlebar.Update(msg)
 	}
@@ -189,6 +217,8 @@ func (m *model) view() string {
 		leftTitle = m.leftTitle
 		if m.askIfReallyApplyAll {
 			rightTitle = m.reallyApplyRightTitleWithFocus
+		} else if m.askIfReallyReloadConfig {
+			rightTitle = m.reallyReloadRightTitleWithFocus
 		} else {
 			rightTitle = m.rightTitleWithFocus
 		}
@@ -196,12 +226,16 @@ func (m *model) view() string {
 		leftTitle = m.leftTitleWithFocus
 		if m.askIfReallyApplyAll {
 			rightTitle = m.reallyApplyRightTitle
+		} else if m.askIfReallyReloadConfig {
+			rightTitle = m.reallyReloadRightTitle
 		} else {
 			rightTitle = m.rightTitle
 		}
 	}
 	if m.askIfReallyApplyAll {
 		rightView = m.reallyApplyAll.View()
+	} else if m.askIfReallyReloadConfig {
+		rightView = m.reallyReloadConfig.View()
 	} else {
 		rightView = m.details.View()
 	}
@@ -217,4 +251,22 @@ func (m *model) doApplyAll() tea.Msg {
 	m.groups.ApplyAll()
 	m.askIfReallyApplyAll = false
 	return messages.ToggleStatus{Name: "applyall", Status: false}
+}
+
+func (m *model) toggleReloadConfig() tea.Msg {
+	m.askIfReallyReloadConfig = !m.askIfReallyReloadConfig
+	return messages.ToggleStatus{Name: "reloadconfig", Status: m.askIfReallyReloadConfig}
+}
+
+func (m *model) doReloadConfig() tea.Msg {
+	g, errs := conf.ReadFile(m.config)
+	if errs != nil {
+		return tea.Quit
+	}
+	m.groups = g
+	m.groupsview.ReplaceGroups(g)
+	m.refreshSize()
+	m.askIfReallyReloadConfig = false
+	go m.groups.InitialChecks(m.signalTarget)
+	return messages.ToggleStatus{Name: "reloadconfig", Status: false}
 }
