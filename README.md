@@ -20,12 +20,6 @@ Then you execute `quickonf` or `quickonf your-file.qconf`. _Quickonf_ reads this
 ---
 
 [![License](https://img.shields.io/github/license/tiramiseb/quickonf)](https://github.com/tiramiseb/quickonf/blob/main/LICENSE)
-
-[![Version](https://img.shields.io/github/v/release/tiramiseb/quickonf?display_name=tag&sort=semver&label=Download&style=for-the-badge)](https://github.com/tiramiseb/quickonf/releases)
-
 ![Issues](https://img.shields.io/github/issues/tiramiseb/quickonf)
 ![Commits](https://img.shields.io/github/commits-since/tiramiseb/quickonf/latest/main?sort=semver)
 ![Last commit](https://img.shields.io/github/last-commit/tiramiseb/quickonf/main)
-
-![GitHub Workflow for release](https://img.shields.io/github/workflow/status/tiramiseb/quickonf/Release)
-![GitHub Workflow for website](https://img.shields.io/github/workflow/status/tiramiseb/quickonf/Website%20with%20Hugo?label=website)
