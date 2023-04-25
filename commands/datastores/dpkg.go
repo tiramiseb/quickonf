@@ -56,10 +56,14 @@ func (d *dpkgPackagesList) init() error {
 	defer f.Close()
 	scanner := bufio.NewScanner(f)
 	pkg := DpkgPackage{}
+	statusInstalled := false
 	for scanner.Scan() {
 		line := strings.TrimSpace(scanner.Text())
 		if line == "" {
-			d.packages = append(d.packages, pkg)
+			if statusInstalled {
+				d.packages = append(d.packages, pkg)
+			}
+			statusInstalled = false
 			pkg = DpkgPackage{}
 		}
 		info := strings.SplitN(line, ": ", 2)
@@ -71,6 +75,10 @@ func (d *dpkgPackagesList) init() error {
 			pkg.Name = info[1]
 		case "Version":
 			pkg.Version = info[1]
+		case "Status":
+			if info[1] == "install ok installed" {
+				statusInstalled = true
+			}
 		}
 	}
 	d.packages = append(d.packages, pkg)
