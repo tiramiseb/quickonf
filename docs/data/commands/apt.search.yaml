@@ -1,0 +1,10 @@
+name: apt.search
+action: Search for a package according to a regexp
+arguments:
+    - Regexp to match the package name
+outputs:
+    - Name of the found package (last one in aphabetical order, if there are multiple matching packages)
+example: |-
+    Install the latest NVidia driver
+      pkg = apt.search ^nvidia-driver-.*-open$
+      apt.install <pkg>

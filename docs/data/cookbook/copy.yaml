@@ -1,0 +1,9 @@
+slug: copy
+name: copy
+doc: Copy the content of a file to another file owned by root
+varsdoc:
+    dst: Destination file
+    src: Source file
+instructions: |4-
+    content = file.read <src>
+    file.content <dst> <content>
