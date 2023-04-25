@@ -181,4 +181,24 @@ APT::Periodic::AutocleanInterval 0;
 			},
 		},
 	}
+	recipes["copy"] = CookbookRecipe{
+		Instructions: []Instruction{
+			&Command{
+				Command: commands.UGet("file.read"),
+				Arguments: []string{
+					`<src>`,
+				},
+				Targets: []string{
+					`content`,
+				},
+			},
+			&Command{
+				Command: commands.UGet("file.content"),
+				Arguments: []string{
+					`<dst>`,
+					`<content>`,
+				},
+			},
+		},
+	}
 }

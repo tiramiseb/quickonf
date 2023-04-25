@@ -52,3 +52,7 @@ ubuntu more restricted
 		ubuntu-restricted-extras
 		libdvd-pkg
 	dpkg.reconfigure libdvd-pkg
+
+copy
+	content = file.read <src>
+	file.content <dst> <content>
