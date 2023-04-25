@@ -59,3 +59,12 @@ copy
 	vardoc dst "Destination file"
 	content = file.read <src>
 	file.content <dst> <content>
+
+
+user copy
+	doc "Copy the content of a file to another file owned by a user"
+	vardoc user "Username for the destination file owner"
+	vardoc src "Source file"
+	vardoc dst "Destination file"
+	content = file.read <src>
+	user.file.content <user> <dst> <content>

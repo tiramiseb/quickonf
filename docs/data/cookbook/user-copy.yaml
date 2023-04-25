@@ -1,0 +1,10 @@
+slug: user-copy
+name: user copy
+doc: Copy the content of a file to another file owned by a user
+varsdoc:
+    dst: Destination file
+    src: Source file
+    user: Username for the destination file owner
+instructions: |4-
+    content = file.read <src>
+    user.file.content <user> <dst> <content>

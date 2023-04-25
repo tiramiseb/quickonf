@@ -182,6 +182,11 @@ APT::Periodic::AutocleanInterval 0;
 		},
 	}
 	recipes["copy"] = CookbookRecipe{
+		Doc: `Copy the content of a file to another file owned by root`,
+		VarsDoc: map[string]string{
+			`src`: `Source file`,
+			`dst`: `Destination file`,
+		},
 		Instructions: []Instruction{
 			&Command{
 				Command: commands.UGet("file.read"),
@@ -195,6 +200,33 @@ APT::Periodic::AutocleanInterval 0;
 			&Command{
 				Command: commands.UGet("file.content"),
 				Arguments: []string{
+					`<dst>`,
+					`<content>`,
+				},
+			},
+		},
+	}
+	recipes["user copy"] = CookbookRecipe{
+		Doc: `Copy the content of a file to another file owned by a user`,
+		VarsDoc: map[string]string{
+			`user`: `Username for the destination file owner`,
+			`src`: `Source file`,
+			`dst`: `Destination file`,
+		},
+		Instructions: []Instruction{
+			&Command{
+				Command: commands.UGet("file.read"),
+				Arguments: []string{
+					`<src>`,
+				},
+				Targets: []string{
+					`content`,
+				},
+			},
+			&Command{
+				Command: commands.UGet("user.file.content"),
+				Arguments: []string{
+					`<user>`,
 					`<dst>`,
 					`<content>`,
 				},
