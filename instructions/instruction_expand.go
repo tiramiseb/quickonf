@@ -27,6 +27,16 @@ func (e *Expand) RunCheck(vars *Variables, signalTarget chan bool, level int) ([
 	}}, true
 }
 
+func (e *Expand) NotRunReports(level int) []*CheckReport {
+	msg := e.description()
+	return []*CheckReport{{
+		Name:    "expand",
+		level:   level,
+		status:  commands.StatusNotRun,
+		message: msg.string(0),
+	}}
+}
+
 func (e *Expand) Reset() {}
 
 func (e *Expand) String() string {
@@ -34,9 +44,19 @@ func (e *Expand) String() string {
 }
 
 func (e *Expand) indentedString(level int) string {
+	content := e.description()
+	return content.string(level)
+
+}
+
+func (e *Expand) description() stringBuilder {
 	var content stringBuilder
 	content.add("expand")
 	content.add(e.Variable)
-	return content.string(level)
+	return content
 
+}
+
+func (e *Expand) hasConfigError() bool {
+	return false
 }

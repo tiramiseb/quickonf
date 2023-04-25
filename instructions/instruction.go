@@ -1,6 +1,8 @@
 package instructions
 
-import "strings"
+import (
+	"strings"
+)
 
 // Instruction is a single instruction
 type Instruction interface {
@@ -8,12 +10,17 @@ type Instruction interface {
 	Name() string
 	// RunCheck runs the instruction's check part and return the check reports
 	RunCheck(vars *Variables, signalTarget chan bool, level int) ([]*CheckReport, bool)
+	// NotRunReports returns reports with the status "not run"
+	NotRunReports(level int) []*CheckReport
 	// Reset everything, to have it as it has never run
 	Reset()
 
 	// Return a textual representation of the instruction
 	String() string
 	indentedString(level int) string
+
+	// hasConfigError returns true if the instruction is an error or contains an error
+	hasConfigError() bool
 }
 
 type stringBuilder struct {

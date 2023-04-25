@@ -17,13 +17,14 @@ func (m *Model) View() string {
 	}
 	if len(m.group.Reports) == 0 {
 		for _, ins := range m.group.Instructions {
-			view += styles.Styles[commands.StatusNotRun].Render(
-				styles.MakeWidth(ins.Name(), m.width),
-			) + "\n"
+			for _, rep := range ins.NotRunReports(0) {
+				view += m.reportView(rep)
+			}
 		}
-	}
-	for _, rep := range m.group.Reports {
-		view += m.reportView(rep)
+	} else {
+		for _, rep := range m.group.Reports {
+			view += m.reportView(rep)
+		}
 	}
 	m.viewport.SetContent(view)
 	return m.viewport.View()

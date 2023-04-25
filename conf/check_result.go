@@ -130,7 +130,68 @@ func (r *CheckResult) addUnknownCommandToken(tok *token) {
 	})
 }
 
-func (r *CheckResult) addVariableToken(tok *token, knownVars map[string]string, help string) {
+// makeVarsTokens adds tokens for vars inside a given token
+func (r *CheckResult) makeVarsTokens(tok *token, knownVars map[string]string) {
+	var (
+		currentVar    string
+		currentVarLen int
+		readingVar    bool
+		columnOffset  int
+		lineOffset    int
+	)
+	for i, char := range tok.raw {
+		switch char {
+		case '\n':
+			lineOffset++
+			columnOffset = 0 - tok.column
+		case '<':
+			if readingVar {
+				r.addUnfinishedVariableToken(&token{
+					line:      tok.line + lineOffset,
+					column:    tok.column + columnOffset,
+					rawLength: currentVarLen + 1,
+					raw:       currentVar,
+				}, knownVars)
+			}
+			currentVar = ""
+			columnOffset = i
+			currentVarLen = 1
+			readingVar = true
+		case '>':
+			if readingVar {
+				r.addVariableToken(&token{
+					line:      tok.line + lineOffset,
+					column:    tok.column + columnOffset,
+					rawLength: currentVarLen + 1,
+					raw:       currentVar,
+				}, knownVars)
+				readingVar = false
+			}
+		}
+		if readingVar && char != '<' {
+			currentVarLen++
+			currentVar += string(char)
+		}
+	}
+	if readingVar {
+		r.addUnfinishedVariableToken(&token{
+			line:      tok.line + lineOffset,
+			column:    tok.column + columnOffset,
+			rawLength: currentVarLen + 1,
+			raw:       currentVar,
+		}, knownVars)
+	}
+}
+
+func (r *CheckResult) addVariableToken(tok *token, knownVars map[string]string) {
+	help := ""
+	var found bool
+	for key, instruction := range knownVars {
+		if tok.raw == key {
+			help = instruction
+			found = true
+		}
+	}
 	var completion []checkCompletionItem
 	for key, instruction := range knownVars {
 		if strings.HasPrefix(key, tok.content) {
@@ -156,6 +217,9 @@ func (r *CheckResult) addVariableToken(tok *token, knownVars map[string]string, 
 		Length:     tok.rawLength,
 		Type:       CheckTypeVariable,
 	})
+	if !found {
+		r.addError(tok, CheckSeverityInformation, "variable undefined, will not be translated")
+	}
 }
 
 func (r *CheckResult) addUnfinishedVariableToken(tok *token, knownVars map[string]string) {

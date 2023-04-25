@@ -3,6 +3,8 @@ package conf
 import (
 	"encoding/binary"
 	"fmt"
+
+	"github.com/tiramiseb/quickonf/instructions"
 )
 
 type tokenType int
@@ -63,13 +65,20 @@ func identifyToken(line, column, length, rawLength int, content, raw string) *to
 	return &token{line, column, length, rawLength, typ, content, raw}
 }
 
-func (t *token) error(msg string) error {
-	return fmt.Errorf("[%d:%d] %s", t.line, t.column, msg)
+func (t *token) error(msg string) *instructions.Error {
+	return &instructions.Error{
+		Line:    t.line,
+		Column:  t.column,
+		Message: msg,
+	}
 }
 
-func (t *token) errorf(format string, a ...interface{}) error {
-	a = append([]interface{}{t.line, t.column}, a...)
-	return fmt.Errorf("[%d:%d] "+format, a...)
+func (t *token) errorf(format string, a ...interface{}) *instructions.Error {
+	return &instructions.Error{
+		Line:    t.line,
+		Column:  t.column,
+		Message: fmt.Sprintf(format, a...),
+	}
 }
 
 // indentations returns the indentation size and the remaining token of the line

@@ -7,8 +7,13 @@ import (
 )
 
 func (m *model) resize(size tea.WindowSizeMsg) {
-	width := size.Width - 1
-	height := size.Height - 3
+	m.size = size
+	m.refreshSize()
+}
+
+func (m *model) refreshSize() {
+	width := m.size.Width - 1
+	height := m.size.Height - 3
 	left := tea.WindowSizeMsg{
 		Width:  width / 2,
 		Height: height,
@@ -38,12 +43,12 @@ func (m *model) resize(size tea.WindowSizeMsg) {
 	separator += "│"
 	m.verticalSeparator = separator
 
-	m.titlebar = m.titlebar.Resize(size)
+	m.titlebar = m.titlebar.Resize(m.size)
 	m.groupsview = m.groupsview.Resize(left)
 	m.details = m.details.Resize(right)
 	m.reallyApplyAll = m.reallyApplyAll.Resize(right)
 	m.help = m.help.Resize(tea.WindowSizeMsg{
-		Width:  size.Width,
-		Height: size.Height - 1,
+		Width:  m.size.Width,
+		Height: m.size.Height - 1,
 	})
 }

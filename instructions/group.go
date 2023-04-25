@@ -29,6 +29,9 @@ type Group struct {
 
 // Check runs the group checks
 func (g *Group) Check(signalTarget chan bool, reset bool) {
+	if g.hasConfigError() {
+		return
+	}
 	vars := newVariablesSet()
 	g.Reports = g.Reports[:0]
 	if signalTarget != nil {
@@ -48,6 +51,9 @@ func (g *Group) Check(signalTarget chan bool, reset bool) {
 
 // Status returns status of the group (according to statuses of its instructions)
 func (g *Group) Status() commands.Status {
+	if g.hasConfigError() {
+		return commands.StatusError
+	}
 	var hasInfo, hasRunning, hasSuccess bool
 	for _, r := range g.Reports {
 		status, _, _ := r.GetStatusAndMessage()
@@ -76,7 +82,7 @@ func (g *Group) Status() commands.Status {
 
 // Apply applies modifications for this group
 func (g *Group) Apply() {
-	if g.alreadyApplied {
+	if g.alreadyApplied || g.hasConfigError() {
 		return
 	}
 	g.alreadyApplied = true
@@ -153,4 +159,17 @@ func (g *Group) nextByDefault() *Group {
 	default:
 		return g.next.nextByDefault()
 	}
+}
+
+func (g *Group) hasConfigError() bool {
+	if g.alreadyApplied || len(g.Reports) > 0 {
+		// It has already run, therefore there is no configuration error
+		return false
+	}
+	for _, ins := range g.Instructions {
+		if ins.hasConfigError() {
+			return true
+		}
+	}
+	return false
 }

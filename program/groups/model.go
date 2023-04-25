@@ -20,13 +20,10 @@ type Model struct {
 	height int
 }
 
-func New(g *instructions.Groups, d *details.Model) *Model {
-	initialGroup := g.FirstGroup()
-	d.ShowGroup(initialGroup)
+func New(d *details.Model) *Model {
 	return &Model{
-		groups:        g,
-		details:       d,
-		selectedGroup: initialGroup,
+		details:        d,
+		showSuccessful: true,
 	}
 }
 

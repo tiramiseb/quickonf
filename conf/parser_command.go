@@ -1,17 +1,29 @@
 package conf
 
 import (
+	"strings"
+
 	"github.com/tiramiseb/quickonf/commands"
 	"github.com/tiramiseb/quickonf/instructions"
 )
 
-func (p *parser) command(toks tokens) (instrs []instructions.Instruction, next tokens) {
+func (p *parser) command(toks tokens, knownVars map[string]string) (instrs []instructions.Instruction, next tokens, newVars map[string]string) {
+	newVars = map[string]string{}
 	var targets []string
 	for equalPos, tok := range toks {
 		if tok.typ == tokenEqual {
+			assignmentInstructionSlice := make([]string, 0, len(toks)-equalPos-1)
+			for i := equalPos + 1; i < len(toks); i++ {
+				assignmentInstructionSlice = append(assignmentInstructionSlice, toks[i].content)
+			}
+			assignmentInstruction := strings.Join(assignmentInstructionSlice, " ")
+			for i := 0; i < equalPos; i++ {
+				p.checkResult.addToken(toks[i], CheckTypeVariable)
+				newVars[toks[i].content] = assignmentInstruction
+			}
 			if equalPos == len(toks)-1 {
-				p.errs = append(p.errs, toks[equalPos].error("missing command"))
-				return nil, p.nextLine()
+				p.checkResult.addError(tok, CheckSeverityError, "Missing command")
+				return []instructions.Instruction{toks[equalPos].error("missing command")}, p.nextLine(), newVars
 			}
 			targets = make([]string, equalPos)
 			for i := 0; i < equalPos; i++ {
@@ -20,28 +32,33 @@ func (p *parser) command(toks tokens) (instrs []instructions.Instruction, next t
 			toks = toks[equalPos+1:]
 		}
 	}
-	commandName := toks[0].content
+	commandToken := toks[0]
+	commandName := commandToken.content
 	args := make([]string, len(toks)-1)
 	for i, tok := range toks[1:] {
 		args[i] = tok.content
+		p.checkResult.makeVarsTokens(tok, knownVars)
 	}
 	command, ok := commands.Get(commandName)
 	if !ok {
-		p.errs = append(p.errs, toks[0].errorf(`no command named "%s"`, commandName))
-		return nil, p.nextLine()
+		p.checkResult.addErrorf(commandToken, CheckSeverityError, `No command named "%s"`, commandName)
+		p.checkResult.addUnknownCommandToken(toks[0])
+		return []instructions.Instruction{toks[0].errorf(`no command named "%s"`, commandName)}, p.nextLine(), newVars
 	}
 	if len(targets) > len(command.Outputs) {
-		p.errs = append(
-			p.errs,
+		instrs = append(
+			instrs,
 			toks[1].errorf("expected maximum %d targets, got %d", len(command.Outputs), len(targets)),
 		)
+		p.checkResult.addErrorf(commandToken, CheckSeverityError, "Expected maximum %d targets, got %d", len(command.Outputs), len(targets))
 	}
 	if len(args) != len(command.Arguments) {
-		p.errs = append(
-			p.errs,
+		instrs = append(
+			instrs,
 			toks[1].errorf("expected %d arguments, got %d", len(command.Arguments), len(args)),
 		)
-		return nil, p.nextLine()
+		p.checkResult.addErrorf(commandToken, CheckSeverityError, "Expected %d arguments, got %d", len(command.Arguments), len(args))
 	}
-	return []instructions.Instruction{&instructions.Command{Command: command, Arguments: args, Targets: targets}}, p.nextLine()
+	p.checkResult.addCommandToken(toks[0], command)
+	return append([]instructions.Instruction{&instructions.Command{Command: command, Arguments: args, Targets: targets}}, instrs...), p.nextLine(), newVars
 }

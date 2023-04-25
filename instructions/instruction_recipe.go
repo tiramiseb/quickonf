@@ -25,7 +25,7 @@ func (r *Recipe) RunCheck(vars *Variables, signalTarget chan bool, level int) ([
 			Name:         "recipe",
 			level:        level,
 			status:       commands.StatusError,
-			message:      fmt.Sprintf(`"Recipe "%s"`, r.RecipeName),
+			message:      fmt.Sprintf("Recipe %q does not exist", r.RecipeName),
 			signalTarget: signalTarget,
 		}}, false
 	}
@@ -33,7 +33,7 @@ func (r *Recipe) RunCheck(vars *Variables, signalTarget chan bool, level int) ([
 		Name:         "recipe",
 		level:        level,
 		status:       commands.StatusSuccess,
-		message:      fmt.Sprintf(`Running recipe "%s"...`, r.RecipeName),
+		message:      fmt.Sprintf("Running recipe %q...", r.RecipeName),
 		signalTarget: signalTarget,
 	}}
 
@@ -56,7 +56,30 @@ func (r *Recipe) RunCheck(vars *Variables, signalTarget chan bool, level int) ([
 		}
 	}
 	return reports, true
+}
 
+func (r *Recipe) NotRunReports(level int) []*CheckReport {
+	rec, ok := recipes[r.RecipeName]
+	if !ok {
+		return []*CheckReport{{
+			Name:    "recipe",
+			level:   level,
+			status:  commands.StatusNotRun,
+			message: fmt.Sprintf("Recipe %q does not exist", r.RecipeName),
+		}}
+	}
+	msg := r.description()
+	reports := []*CheckReport{{
+		Name:    "recipe",
+		level:   level,
+		status:  commands.StatusNotRun,
+		message: msg.string(0),
+	}}
+	for _, ins := range rec.Instructions {
+		thisReports := ins.NotRunReports(level + 1)
+		reports = append(reports, thisReports...)
+	}
+	return reports
 }
 
 func (r *Recipe) Reset() {
@@ -71,9 +94,7 @@ func (r *Recipe) String() string {
 
 func (r *Recipe) indentedString(level int) string {
 	var result []string
-	var content stringBuilder
-	content.add("recipe")
-	content.add(r.RecipeName)
+	content := r.description()
 	result = append(result, content.string(level))
 	for key, value := range r.Variables {
 		var content stringBuilder
@@ -83,4 +104,24 @@ func (r *Recipe) indentedString(level int) string {
 		result = append(result, content.string(level+1))
 	}
 	return strings.Join(result, "\n")
+}
+
+func (r *Recipe) description() stringBuilder {
+	var content stringBuilder
+	content.add("recipe")
+	content.add(r.RecipeName)
+	return content
+}
+
+func (r *Recipe) hasConfigError() bool {
+	rec, ok := recipes[r.RecipeName]
+	if !ok {
+		return true
+	}
+	for _, ins := range rec.Instructions {
+		if ins.hasConfigError() {
+			return true
+		}
+	}
+	return false
 }

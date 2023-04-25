@@ -2,9 +2,7 @@ package embeddedcookbook
 
 import (
 	"embed"
-	"errors"
 	"io"
-	"strings"
 
 	"github.com/tiramiseb/quickonf/conf"
 	"github.com/tiramiseb/quickonf/instructions"
@@ -31,15 +29,10 @@ func ForEach(fn func(*instructions.Group) error) error {
 }
 
 func forEach(r io.Reader, fn func(*instructions.Group) error) error {
-	groups, errs := conf.Read(r)
-	if len(errs) > 0 {
-		errmsg := make([]string, len(errs))
-		for i, err := range errs {
-			errmsg[i] = err.Error()
-		}
-		return errors.New(strings.Join(errmsg, "\n"))
+	groups, err := conf.Read(r)
+	if err != nil {
+		return err
 	}
-
 	group := groups.FirstGroup()
 	for {
 		if err := fn(group); err != nil {

@@ -5,18 +5,18 @@ import (
 )
 
 type parser struct {
-	groups    []*instructions.Group
-	cookbooks []string
+	checkResult *CheckResult
+	groups      []*instructions.Group
+	cookbooks   []string
 
 	tokens tokens
 	idx    int
-
-	errs []error
 }
 
 func newParser(tokens tokens) parser {
 	return parser{
-		tokens: tokens,
+		checkResult: newCheckResult(),
+		tokens:      tokens,
 	}
 }
 
@@ -35,7 +35,7 @@ func (p *parser) nextLine() (toks tokens) {
 // All functions called from this function receive the "next" line for
 // processing and return the "next" line for processing by another sub-parser.
 // It is necessary in order to know how to process next line
-func (p *parser) parse() (groups []*instructions.Group, err error) {
+func (p *parser) parse() []*instructions.Group {
 	next := p.nextLine()
 	for next != nil {
 		next = p.noIndentation(next)
@@ -56,5 +56,14 @@ func (p *parser) parse() (groups []*instructions.Group, err error) {
 		}
 		p.groups = append(p.groups, cookbooks)
 	}
-	return p.groups, nil
+	return p.groups
+}
+
+func (p *parser) check() *CheckResult {
+	next := p.nextLine()
+	for next != nil {
+		next = p.noIndentation(next)
+	}
+	p.checkResult.sort()
+	return p.checkResult
 }

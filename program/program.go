@@ -4,12 +4,11 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 
 	"github.com/tiramiseb/quickonf/commands"
-	"github.com/tiramiseb/quickonf/instructions"
 )
 
-func Run(g *instructions.Groups) {
+func Run(config string) {
 	program := tea.NewProgram(
-		newModel(g),
+		newModel(config),
 		tea.WithAltScreen(),
 		tea.WithMouseCellMotion(),
 	)

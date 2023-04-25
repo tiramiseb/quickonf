@@ -52,6 +52,16 @@ func (c *Command) RunCheck(vars *Variables, signalTarget chan bool, level int) (
 	}}, status != commands.StatusError
 }
 
+func (c *Command) NotRunReports(level int) []*CheckReport {
+	msg := c.description()
+	return []*CheckReport{{
+		Name:    c.Command.Name,
+		level:   level,
+		status:  commands.StatusNotRun,
+		message: msg.string(0),
+	}}
+}
+
 func (c *Command) Reset() {
 	if c.Command.Reset != nil {
 		c.Command.Reset()
@@ -63,6 +73,11 @@ func (c *Command) String() string {
 }
 
 func (c *Command) indentedString(level int) string {
+	msg := c.description()
+	return msg.string(level)
+}
+
+func (c *Command) description() stringBuilder {
 	var content stringBuilder
 	if len(c.Targets) > 0 {
 		for _, t := range c.Targets {
@@ -74,6 +89,9 @@ func (c *Command) indentedString(level int) string {
 	for _, a := range c.Arguments {
 		content.add(a)
 	}
-	return content.string(level)
+	return content
+}
 
+func (c *Command) hasConfigError() bool {
+	return false
 }

@@ -4,6 +4,7 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 
+	"github.com/tiramiseb/quickonf/conf"
 	"github.com/tiramiseb/quickonf/instructions"
 	"github.com/tiramiseb/quickonf/program/details"
 	"github.com/tiramiseb/quickonf/program/groups"
@@ -14,6 +15,7 @@ import (
 )
 
 type model struct {
+	config string
 	groups *instructions.Groups
 
 	titlebar       *titlebar.Model
@@ -36,15 +38,17 @@ type model struct {
 	isHelpDisplayed     bool
 	focusOnDetails      bool
 
+	size tea.WindowSizeMsg
+
 	signalTarget chan bool
 }
 
-func newModel(g *instructions.Groups) *model {
+func newModel(config string) *model {
 	d := details.New()
 	return &model{
-		groups:         g,
+		config:         config,
 		titlebar:       titlebar.New(),
-		groupsview:     groups.New(g, d),
+		groupsview:     groups.New(d),
 		details:        d,
 		reallyApplyAll: reallyapplyall.New(),
 		help:           help.New(),
@@ -56,10 +60,6 @@ func newModel(g *instructions.Groups) *model {
 func (m *model) Init() tea.Cmd {
 	return tea.Batch(
 		m.listenSignal,
-		func() tea.Msg {
-			m.groups.InitialChecks(m.signalTarget)
-			return nil
-		},
 	)
 }
 
@@ -117,7 +117,7 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				cmd = tea.Quit
 			case "esc":
 				cmd = m.toggleApplyAll
-			case "y", "Y":
+			case "enter", "y", "Y":
 				cmd = m.doApplyAll
 			case "n", "N", "l", "L":
 				cmd = m.toggleApplyAll

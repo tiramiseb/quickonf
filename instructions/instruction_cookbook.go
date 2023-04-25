@@ -21,7 +21,7 @@ var recipes = map[string]CookbookRecipe{}
 
 type Cookbook struct {
 	URI    string
-	ReadFn func(r io.Reader) (*Groups, []error)
+	ReadFn func(r io.Reader) (*Groups, error)
 }
 
 func (c *Cookbook) Name() string {
@@ -76,19 +76,18 @@ func (c *Cookbook) RunCheck(vars *Variables, signalTarget chan bool, level int) 
 			signalTarget: signalTarget,
 		}}, false
 	}
-	newRecipes, errs := c.ReadFn(reader)
+
+	newRecipes, err := c.ReadFn(reader)
+
 	reports := []*CheckReport{}
-	if len(errs) > 0 {
-		for _, err := range errs {
-			reports = append(reports, &CheckReport{
-				Name:         "cookbook",
-				level:        level,
-				status:       commands.StatusError,
-				message:      fmt.Sprintf("Error in cookbook %s: %s", uri, err.Error()),
-				signalTarget: signalTarget,
-			})
-		}
-		return reports, false
+	if err != nil {
+		reports = append(reports, &CheckReport{
+			Name:         "cookbook",
+			level:        level,
+			status:       commands.StatusError,
+			message:      fmt.Sprintf("Error in cookbook %s: %s", uri, err.Error()),
+			signalTarget: signalTarget,
+		})
 	}
 
 	for _, recipe := range newRecipes.groups {
@@ -97,12 +96,13 @@ func (c *Cookbook) RunCheck(vars *Variables, signalTarget chan bool, level int) 
 				Name:         "cookbook",
 				level:        level,
 				status:       commands.StatusError,
-				message:      fmt.Sprintf(`Recipe "%s" is already defined`, recipe.Name),
+				message:      fmt.Sprintf("Recipe %q is already defined", recipe.Name),
 				signalTarget: signalTarget,
 			})
 		}
 		recipes[recipe.Name] = CookbookRecipe{Instructions: recipe.Instructions}
 	}
+
 	reports = append(reports, &CheckReport{
 		Name:         "cookbook",
 		level:        level,
@@ -111,6 +111,15 @@ func (c *Cookbook) RunCheck(vars *Variables, signalTarget chan bool, level int) 
 		signalTarget: signalTarget,
 	})
 	return reports, true
+}
+
+func (c *Cookbook) NotRunReports(level int) []*CheckReport {
+	return []*CheckReport{{
+		Name:    "cookbook",
+		level:   level,
+		status:  commands.StatusNotRun,
+		message: "cookbook " + c.URI,
+	}}
 }
 
 func (c *Cookbook) Reset() {}
@@ -124,4 +133,8 @@ func (c *Cookbook) indentedString(level int) string {
 	content.add("cookbook")
 	content.add(c.URI)
 	return content.string(level)
+}
+
+func (c *Cookbook) hasConfigError() bool {
+	return false
 }
