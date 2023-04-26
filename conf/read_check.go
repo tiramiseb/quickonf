@@ -39,7 +39,6 @@ func Read(r io.Reader) (*instructions.Groups, error) {
 }
 
 func Check(r io.Reader) error {
-	Read(r)
 	lxr := newLexer(r)
 	tokens, err := lxr.scan()
 	if err != nil {
