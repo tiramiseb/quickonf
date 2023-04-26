@@ -25,5 +25,5 @@ func (p *parser) recipeVarDoc(toks tokens, group *instructions.Group) (instrs []
 		group.RecipeVarsDoc = map[string]string{}
 	}
 	group.RecipeVarsDoc[toks[1].content] = toks[2].content
-	return nil, p.nextLine(), nil
+	return instrs, p.nextLine(), nil
 }

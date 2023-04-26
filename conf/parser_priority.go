@@ -13,9 +13,9 @@ func (p *parser) priority(toks tokens, group *instructions.Group) (instrs []inst
 	}
 	priority, err := strconv.Atoi(toks[1].content)
 	if err != nil {
-		instrs = append(instrs, toks[1].errorf("%s is not a valid integer", toks[1]))
+		instrs = append(instrs, toks[1].errorf("%s is not a valid integer", toks[1].content))
 		p.checkResult.addErrorf(toks[0], CheckSeverityError, "%s is not a valid integer", toks[1].content)
 	}
 	group.Priority = priority
-	return nil, p.nextLine(), nil
+	return instrs, p.nextLine(), nil
 }
