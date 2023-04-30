@@ -13,6 +13,9 @@ func (m *model) resize(size tea.WindowSizeMsg) {
 
 func (m *model) refreshSize() {
 	width := m.size.Width - 1
+	if width < 0 {
+		width = 0
+	}
 	height := m.size.Height - 3
 	left := tea.WindowSizeMsg{
 		Width:  width / 2,

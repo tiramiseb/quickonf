@@ -21,7 +21,7 @@ func NewGroups(groups []*Group) *Groups {
 	sort.Slice(groups, func(i, j int) bool {
 		return groups[i].Priority > groups[j].Priority
 	})
-	var maxNameLength int
+	maxNameLength := 6
 	var prevGroup *Group
 	for _, g := range groups {
 		if prevGroup != nil {
