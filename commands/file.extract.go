@@ -3,6 +3,7 @@ package commands
 import (
 	"archive/tar"
 	"archive/zip"
+	"compress/gzip"
 	"errors"
 	"fmt"
 	"io"
@@ -15,6 +16,7 @@ import (
 )
 
 var fileExtractors = map[string]func(archive, dest string) error{
+	"tar.gz": extractTargz,
 	"tar.xz": extractTarxz,
 	"zip":    extractZip,
 }
@@ -27,7 +29,7 @@ var fileExtract = &Command{
 	"file.extract",
 	"Extract a (compressed) archive",
 	[]string{
-		"Archive format (one of zip, tar.xz)",
+		"Archive format (one of zip, tar.gz, tar.xz)",
 		"Archive absolute path",
 		"Target absolute path",
 	},
@@ -63,6 +65,56 @@ var fileExtract = &Command{
 		datastores.Dconf.Reset()
 		datastores.Users.Reset()
 	},
+}
+
+func extractTargz(archive, dest string) error {
+	fread, err := os.Open(archive)
+	if err != nil {
+		return err
+	}
+	defer fread.Close()
+
+	gzread, err := gzip.NewReader(fread)
+	if err != nil {
+		return err
+	}
+
+	tread := tar.NewReader(gzread)
+	for {
+		header, err := tread.Next()
+		if err != nil {
+			if errors.Is(err, io.EOF) {
+				break
+			}
+			return err
+		}
+
+		target := filepath.Join(dest, header.Name)
+
+		switch header.Typeflag {
+		case tar.TypeDir:
+			if _, err := os.Stat(target); err != nil {
+				if os.IsNotExist(err) {
+					if err := os.MkdirAll(target, header.FileInfo().Mode()); err != nil {
+						return err
+					}
+					continue
+				}
+				return err
+			}
+		case tar.TypeReg:
+			f, err := os.OpenFile(target, os.O_CREATE|os.O_RDWR, header.FileInfo().Mode())
+			if err != nil {
+				return err
+			}
+			_, err = io.Copy(f, tread)
+			f.Close()
+			if err != nil {
+				return err
+			}
+		}
+	}
+	return nil
 }
 
 func extractTarxz(archive, dest string) error {
