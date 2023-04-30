@@ -12,7 +12,7 @@ func init() {
 
 var regexpSubmatch = &Command{
 	"regexp.submatch",
-	"Find submatches using a regexp",
+	"Find submatches using a regexp (if there is no match, return an empty string)",
 	[]string{
 		"Regexp",
 		"Source string",
@@ -29,12 +29,12 @@ var regexpSubmatch = &Command{
 
 		re, err := regexp.Compile(reg)
 		if err != nil {
-			return nil, fmt.Sprintf("%s is not a valid regexp: %s", reg, err), nil, StatusError, "", ""
+			return nil, fmt.Sprintf("%q is not a valid regexp: %s", reg, err), nil, StatusError, "", ""
 		}
 
 		results := re.FindStringSubmatch(source)
 		if results == nil {
-			return nil, fmt.Sprintf("No match for regexp %s", reg), nil, StatusError, "", ""
+			return []string{""}, fmt.Sprintf("No match for regexp %q", reg), nil, StatusSuccess, "", ""
 		}
 		return results[1:], "Matched regexp", nil, StatusSuccess, "", `"` + strings.Join(results[1:], `", "`) + `"`
 	},
