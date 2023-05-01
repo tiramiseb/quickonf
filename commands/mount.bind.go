@@ -13,43 +13,37 @@ import (
 	"github.com/tiramiseb/quickonf/commands/helper"
 )
 
-const (
-	fstabPath  = "/etc/fstab"
-	mountsPath = "/proc/mounts"
-)
-
 func init() {
-	register(mount)
+	register(mountBind)
 }
 
-var mount = &Command{
-	"mount",
-	"Add a mountpoint it to the fstab file and immediately mount the partition (for bind mounts, use mount.bind)",
+var mountBind = &Command{
+	"mount.bind",
+	"Add a bind mountpoint it to the fstab file and immediately mount the partition",
 	[]string{
-		"Absolute path to the partition",
+		"Absolute path to the target",
 		"Mount point absolute path",
-		"Filesystem",
-		"Options",
 	},
 	nil,
-	"Mount data disk\n  file.directory /home/alice/data\n  mount /dev/sdb1 /home/alice/data ext4 defaults",
+	"Mount directory elsewhere\n  mount.bind /tmp /home/alice/temp",
 	func(args []string) (result []string, msg string, apply Apply, status Status, before, after string) {
-		partition := args[0]
+		target := args[0]
 		mountpoint := args[1]
-		filesystem := args[2]
-		options := args[3]
-		if !filepath.IsAbs(partition) {
-			return nil, fmt.Sprintf("%s is not an absolute path", partition), nil, StatusError, "", ""
+		if !filepath.IsAbs(target) {
+			return nil, fmt.Sprintf("%s is not an absolute path", target), nil, StatusError, "", ""
 		}
 		if !filepath.IsAbs(mountpoint) {
 			return nil, fmt.Sprintf("%s is not an absolute path", mountpoint), nil, StatusError, "", ""
 		}
-		if _, err := os.Lstat(partition); err != nil {
+		var mustCreateTarget bool
+		if _, err := os.Lstat(target); err != nil {
 			if errors.Is(err, fs.ErrNotExist) {
-				return nil, fmt.Sprintf("%s does not exist", partition), nil, StatusError, "", ""
+				mustCreateTarget = true
+			} else {
+				return nil, err.Error(), nil, StatusError, "", ""
 			}
-			return nil, err.Error(), nil, StatusError, "", ""
 		}
+
 		var mustCreateMountpoint bool
 		finfo, err := os.Lstat(mountpoint)
 		if err != nil {
@@ -78,8 +72,8 @@ var mount = &Command{
 			if strings.HasPrefix(fields[0], "#") {
 				continue
 			}
-			if fields[0] == partition && fields[1] == mountpoint {
-				if fields[2] == filesystem && fields[3] == options {
+			if fields[0] == target && fields[1] == mountpoint {
+				if fields[2] == "bind" && fields[3] == "defaults" {
 					inFstabAsExpected = true
 				} else {
 					inFstabDifferent = line
@@ -103,9 +97,10 @@ var mount = &Command{
 		for scanner.Scan() {
 			line := scanner.Text()
 			fields := strings.Fields(line)
-			if fields[0] == partition && fields[1] == mountpoint {
-				mounted = true
-				if fields[2] == filesystem && fields[3] == options {
+			if fields[0] == target && fields[1] == mountpoint {
+				if fields[2] == "bind" && fields[3] == "defaults" {
+					mounted = true
+				} else {
 					mountedAsExpected = true
 				}
 				break
@@ -113,11 +108,14 @@ var mount = &Command{
 		}
 
 		if inFstabAsExpected && mountedAsExpected {
-			return nil, fmt.Sprintf("%s is mounted on %s", partition, mountpoint), nil, StatusSuccess, "", ""
+			return nil, fmt.Sprintf("%s is mounted on %s", target, mountpoint), nil, StatusSuccess, "", ""
 		}
 
-		newLine := fmt.Sprintf("%s %s %s %s", partition, mountpoint, filesystem, options)
+		newLine := fmt.Sprintf("%s %s bind defaults", target, mountpoint)
 		msgParts := []string{}
+		if mustCreateTarget {
+			msgParts = append(msgParts, "create target "+target)
+		}
 		if mustCreateMountpoint {
 			msgParts = append(msgParts, "create mountpoint "+mountpoint)
 		}
@@ -133,6 +131,13 @@ var mount = &Command{
 		}
 
 		apply = func(out Output) bool {
+			if mustCreateTarget {
+				out.Runningf("Creating target %s", target)
+				if err := os.MkdirAll(target, 0o755); err != nil {
+					out.Errorf("Could not create target %s: %s", target, err)
+					return false
+				}
+			}
 			if mustCreateMountpoint {
 				out.Runningf("Creating mountpoint %s", mountpoint)
 				if err := os.MkdirAll(mountpoint, 0o755); err != nil {
@@ -164,7 +169,7 @@ var mount = &Command{
 					for scanner.Scan() {
 						line := scanner.Bytes()
 						fields := bytes.Fields(line)
-						if string(fields[0]) == partition && string(fields[1]) == mountpoint {
+						if string(fields[0]) == target && string(fields[1]) == mountpoint {
 							if !wroteIt {
 								buf.WriteString(newLine)
 								buf.WriteByte('\n')
@@ -185,22 +190,21 @@ var mount = &Command{
 						return false
 					}
 				}
-			}
-			if !mountedAsExpected {
-				out.Runningf("Unmounting %s", mountpoint)
-				if err := helper.Exec(nil, nil, "umount", mountpoint); err != nil {
-					out.Errorf("Could not unmount %s: %s", mountpoint, helper.ExecErr(err))
-					return false
+
+				if !mountedAsExpected {
+					if err := helper.Exec(nil, nil, "umount", mountpoint); err != nil {
+						out.Errorf("Could not unmount %s: %s", mountpoint, helper.ExecErr(err))
+						return false
+					}
+				}
+				if !mounted {
+					if err := helper.Exec(nil, nil, "mount", mountpoint); err != nil {
+						out.Errorf("Could not mount %s: %s", mountpoint, helper.ExecErr(err))
+						return false
+					}
 				}
 			}
-			if !mountedAsExpected || !mounted {
-				out.Runningf("Mounting %s", mountpoint)
-				if err := helper.Exec(nil, nil, "mount", mountpoint); err != nil {
-					out.Errorf("Could not mount %s: %s", mountpoint, helper.ExecErr(err))
-					return false
-				}
-			}
-			out.Successf("Mounted %s on %s", partition, mountpoint)
+			out.Successf("Mounted %s on %s", target, mountpoint)
 			return true
 		}
 
