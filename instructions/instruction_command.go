@@ -15,7 +15,13 @@ func (c *Command) Name() string {
 }
 
 func (c *Command) RunCheck(vars *Variables, signalTarget chan bool, level int) ([]*CheckReport, bool) {
-	if len(c.Arguments) != len(c.Command.Arguments) {
+	var wrongNumberOfArgs bool
+	if c.Command.LastArgumentIsVariadic() {
+		wrongNumberOfArgs = len(c.Arguments) < len(c.Command.Arguments)
+	} else {
+		wrongNumberOfArgs = len(c.Arguments) != len(c.Command.Arguments)
+	}
+	if wrongNumberOfArgs {
 		return []*CheckReport{{
 			Name:         c.Command.Name,
 			level:        level,

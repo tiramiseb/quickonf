@@ -103,6 +103,14 @@ func ListStartWith(prefix string) []*Command {
 	return commands
 }
 
+func (c *Command) LastArgumentIsVariadic() bool {
+	return len(c.Arguments) > 0 && strings.HasSuffix(c.Arguments[len(c.Arguments)-1], "...")
+}
+
+func (c *Command) LastOutputIsVariadic() bool {
+	return len(c.Outputs) > 0 && strings.HasSuffix(c.Outputs[len(c.Outputs)-1], "...")
+}
+
 func (c *Command) MarkdownHelp() string {
 	var result strings.Builder
 

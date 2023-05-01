@@ -18,9 +18,7 @@ var regexpSubmatch = &Command{
 		"Source string",
 	},
 	[]string{
-		"First submatch",
-		"Second submatch",
-		"...",
+		"Submatches...",
 	},
 	"Find src\n  webpage = http.get.var http://www.example.com\n  src = regexp.submatch \"<script .*src=(.*)>\" <webpage>\n  ...",
 	func(args []string) (result []string, msg string, apply Apply, status Status, before, after string) {
