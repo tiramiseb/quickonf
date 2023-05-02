@@ -50,8 +50,7 @@ var httpGetFile = &Command{
 				out.Errorf("%s is not found", uri)
 				return false
 			}
-			body := resp.Body
-			if _, err := io.Copy(f, body); err != nil {
+			if _, err := io.Copy(f, resp.Body); err != nil {
 				out.Errorf("Could not write content to %s: %s", path, err)
 				return false
 			}
