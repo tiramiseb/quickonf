@@ -49,7 +49,7 @@ var aptKey = &Command{
 				out.Errorf("Could not write requested content to %s: %s", keyFile, err)
 				return false
 			}
-			out.Successf("Apt key %s added", key)
+			out.Successf("Apt key %s added", name)
 			return true
 		}
 		return nil, fmt.Sprintf("Need to add apt key %s", name), apply, StatusInfo, "", key
