@@ -22,7 +22,7 @@ func ExecAs(usr *user.User, env []string, output io.Writer, cmd string, args ...
 
 func execCmd(env []string, output io.Writer, cmd string, args ...string) error {
 	c := exec.Command(cmd, args...)
-	c.Env = append(os.Environ(), "LANG=C")
+	c.Env = append(os.Environ(), "LANG=C.UTF-8")
 	c.Env = append(c.Env, env...)
 	var errBuf bytes.Buffer
 	if output == nil {
