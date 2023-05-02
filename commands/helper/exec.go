@@ -51,3 +51,14 @@ func ExecErr(err error) string {
 	}
 	return err.Error()
 }
+
+func ExecErrCode(err error) int {
+	if err == nil {
+		return 0
+	}
+	var exitErr *exec.ExitError
+	if errors.As(err, &exitErr) {
+		return exitErr.ExitCode()
+	}
+	return -1
+}
