@@ -10,6 +10,8 @@ type Output interface {
 	Infof(format string, a ...interface{})
 	Running(message string)
 	Runningf(format string, a ...interface{})
+	RunningPercent(message string) chan int
+	RunningPercentf(format string, a ...interface{}) chan int
 	Success(message string)
 	Successf(format string, a ...interface{})
 	Error(message string)

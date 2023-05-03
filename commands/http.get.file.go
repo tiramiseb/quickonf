@@ -7,6 +7,8 @@ import (
 	"io/fs"
 	"net/http"
 	"os"
+
+	"github.com/tiramiseb/quickonf/commands/helper"
 )
 
 func init() {
@@ -33,7 +35,7 @@ var httpGetFile = &Command{
 			return nil, fmt.Sprintf("Could not check if %s exists: %s", path, err), nil, StatusError, "", ""
 		}
 		apply = func(out Output) bool {
-			out.Runningf("Downloading %s to %s", uri, path)
+			percentChan := out.RunningPercentf("Downloading %s to %s", uri, path)
 			f, err := os.Create(path)
 			if err != nil {
 				out.Errorf("Could not create %s: %s", path, err)
@@ -46,11 +48,12 @@ var httpGetFile = &Command{
 				return false
 			}
 			defer resp.Body.Close()
+			body := helper.NewProgressReader(resp.Body, resp.ContentLength, percentChan)
 			if resp.StatusCode == http.StatusNotFound {
 				out.Errorf("%s is not found", uri)
 				return false
 			}
-			if _, err := io.Copy(f, resp.Body); err != nil {
+			if _, err := io.Copy(f, body); err != nil {
 				out.Errorf("Could not write content to %s: %s", path, err)
 				return false
 			}
