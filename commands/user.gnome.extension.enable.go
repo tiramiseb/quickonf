@@ -37,7 +37,8 @@ var gnomeExtensionEnable = &Command{
 
 		apply = func(out Output) (success bool) {
 			out.Runningf("Enabling %s", uuid)
-			if err := helper.Exec(nil, nil, "gnome-shell-extension-tool", "--enable-extension", uuid); err != nil {
+			env := []string{fmt.Sprintf("DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/%d/bus", user.Uid)}
+			if err := helper.ExecAs(user.User, env, nil, "gnome-extensions", "enable", uuid); err != nil {
 				out.Errorf("Could not enable %s: %s", uuid, err)
 				return false
 			}
@@ -45,7 +46,7 @@ var gnomeExtensionEnable = &Command{
 			return true
 		}
 
-		return nil, fmt.Sprintf("Need to enable %s", uuid), nil, StatusInfo, "", ""
+		return nil, fmt.Sprintf("Need to enable %s", uuid), apply, StatusInfo, "", ""
 	},
 	datastores.GnomeExtensions.Reset,
 }

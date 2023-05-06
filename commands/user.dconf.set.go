@@ -54,7 +54,8 @@ var userDconfSet = &Command{
 
 		apply = func(out Output) bool {
 			out.Runningf("Setting %s to %s", key, value)
-			if err := helper.ExecAs(user.User, nil, nil, "dconf", "write", key, value); err != nil {
+			env := []string{fmt.Sprintf("DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/%d/bus", user.Uid)}
+			if err := helper.ExecAs(user.User, env, nil, "dconf", "write", key, value); err != nil {
 				out.Errorf("Could not set %s: %s", key, helper.ExecErr(err))
 				return false
 			}
