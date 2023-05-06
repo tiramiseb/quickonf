@@ -32,6 +32,7 @@ func (g *Group) Check(signalTarget chan bool, reset bool) {
 	if g.hasConfigError() {
 		return
 	}
+	g.alreadyApplied = false
 	vars := newVariablesSet()
 	g.Reports = g.Reports[:0]
 	if signalTarget != nil {
