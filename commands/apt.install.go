@@ -28,7 +28,7 @@ var apt = &Command{
 		}
 
 		apply = func(out Output) bool {
-			out.Infof("Waiting for dpkg to be available to install %s", pkg)
+			out.Runningf("Waiting for dpkg to be available to install %s", pkg)
 			datastores.DpkgMutex.Lock()
 			defer datastores.DpkgMutex.Unlock()
 			out.Runningf("Installing %s", pkg)
