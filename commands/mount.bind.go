@@ -72,8 +72,11 @@ var mountBind = &Command{
 			if strings.HasPrefix(fields[0], "#") {
 				continue
 			}
+			if len(fields) < 2 {
+				continue
+			}
 			if fields[0] == target && fields[1] == mountpoint {
-				if fields[2] == "bind" && fields[3] == "defaults" {
+				if len(fields) == 4 && fields[2] == "bind" && fields[3] == "defaults" {
 					inFstabAsExpected = true
 				} else {
 					inFstabDifferent = line
