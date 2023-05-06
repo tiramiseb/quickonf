@@ -27,7 +27,7 @@ var jsonGet = &Command{
 		}
 		value := gjson.Get(data, path)
 		str := value.String()
-		return []string{str}, "Read value from JSON", nil, StatusInfo, "", str
+		return []string{str}, "Read value from JSON", nil, StatusSuccess, "", str
 	},
 	nil,
 }
