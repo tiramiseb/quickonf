@@ -61,9 +61,8 @@ func (u *userVSCodeExtensions) init() error {
 	u.mutex.Lock()
 	defer u.mutex.Unlock()
 	var out bytes.Buffer
-	if err := helper.ExecAs(u.user.User, nil, &out, "code", "--list-extensions"); err != nil {
-		return err
+	if err := helper.ExecAs(u.user.User, nil, &out, "code", "--list-extensions"); err == nil {
+		u.installedExtensions = strings.Split(strings.ToLower(out.String()), "\n")
 	}
-	u.installedExtensions = strings.Split(strings.ToLower(out.String()), "\n")
 	return nil
 }

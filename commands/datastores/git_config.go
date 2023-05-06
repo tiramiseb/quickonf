@@ -59,10 +59,16 @@ func (g *gitConfig) init() (err error) {
 	var out bytes.Buffer
 	if g.user.Username == FakeUserForSystem.Username {
 		if err := helper.Exec(nil, &out, "git", "config", "--system", "--list"); err != nil {
+			if strings.Contains(err.Error(), "executable file not found") {
+				return nil
+			}
 			return err
 		}
 	} else {
 		if err := helper.ExecAs(g.user.User, nil, &out, "git", "config", "--global", "--list"); err != nil {
+			if strings.Contains(err.Error(), "executable file not found") {
+				return nil
+			}
 			return err
 		}
 	}

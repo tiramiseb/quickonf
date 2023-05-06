@@ -29,26 +29,30 @@ var userSystemdEnable = &Command{
 			return nil, err.Error(), nil, StatusError, "", ""
 		}
 
-		var out bytes.Buffer
-		if err := helper.Exec(nil, &out, "systemctl", "--machine="+username+"@.host", "--user", "is-enabled", name); err != nil {
-			return nil, fmt.Sprintf("Could not check if %s is enabled: %s (%s)", name, err, out.String()), nil, StatusError, "", ""
-		}
-		outS := strings.TrimSpace(out.String())
-		if outS == "enabled" {
-			return nil, fmt.Sprintf("Service %s is already enabled", name), nil, StatusSuccess, "", ""
-		} else if outS == "disabled" || strings.Contains(outS, "No such file or directory") {
-			apply = func(out Output) bool {
-				out.Runningf("Enabling and starting service %s", name)
-				if err := helper.Exec(nil, nil, "systemctl", "--machine="+username+"@.host", "--user", "enable", "--now", name); err != nil {
-					out.Errorf("Could not enable %s: %s", name, helper.ExecErr(err))
-					return false
-				}
-				out.Successf("Enabled and started %s", name)
-				return true
+		var (
+			outBuf bytes.Buffer
+			outStr string
+		)
+		if err := helper.Exec(nil, &outBuf, "systemctl", "--machine="+username+"@.host", "--user", "is-enabled", name); err != nil {
+			if !strings.Contains(outBuf.String(), "No such file or directory") {
+				return nil, fmt.Sprintf("Could not check if %s is enabled: %s (%s)", name, err, outBuf.String()), nil, StatusError, "", ""
 			}
-			return nil, fmt.Sprintf("Need to enable service %s for user %s", name, username), apply, StatusInfo, "", ""
+		} else {
+			outStr = strings.TrimSpace(outBuf.String())
 		}
-		return nil, outS, nil, StatusError, "", ""
+		if outStr == "enabled" {
+			return nil, fmt.Sprintf("Service %s is already enabled", name), nil, StatusSuccess, "", ""
+		}
+		apply = func(out Output) bool {
+			out.Runningf("Enabling and starting service %s", name)
+			if err := helper.Exec(nil, nil, "systemctl", "--machine="+username+"@.host", "--user", "enable", "--now", name); err != nil {
+				out.Errorf("Could not enable %s: %s", name, helper.ExecErr(err))
+				return false
+			}
+			out.Successf("Enabled and started %s", name)
+			return true
+		}
+		return nil, fmt.Sprintf("Need to enable service %s for user %s", name, username), apply, StatusInfo, "", ""
 	},
 	nil,
 }
