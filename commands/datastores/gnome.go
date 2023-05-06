@@ -61,6 +61,9 @@ func (u *userGnomeExtensions) init() error {
 	if err != nil {
 		return err
 	}
+	if len(extensionsStr) == 0 {
+		return nil
+	}
 	extensionsStr = strings.ReplaceAll(extensionsStr, "'", "\"")
 	return json.Unmarshal([]byte(extensionsStr), &u.enabledExtensions)
 }
