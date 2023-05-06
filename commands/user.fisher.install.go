@@ -5,6 +5,7 @@ import (
 	"io"
 	"net/http"
 	"os"
+	"path/filepath"
 
 	"github.com/tiramiseb/quickonf/commands/datastores"
 	"github.com/tiramiseb/quickonf/commands/helper"
@@ -58,20 +59,25 @@ var userFisherInstall = &Command{
 					out.Errorf("Could not download fisher installer: %s", err)
 					return false
 				}
-				f, err := os.CreateTemp("", "quickonf-fisher-*")
+				installerPath := filepath.Join(os.TempDir(), "quickonf-fisher-installer")
+				f, err := os.Create(installerPath)
 				if err != nil {
 					resp.Body.Close()
 					out.Errorf("Could not create temporary file for fisher installer: %s", err)
 					return false
 				}
+				registerClean(func() error {
+					return os.Remove(installerPath)
+				})
 				_, err = io.Copy(f, resp.Body)
+				f.Close()
 				resp.Body.Close()
 				if err != nil {
 					out.Errorf("Could not write fisher installer to temporary file: %s", err)
 					return false
 				}
 
-				if err := helper.ExecAs(user.User, nil, nil, "fish", "-c", fmt.Sprintf("source %s && fisher install jorgebucaran/fisher", f.Name())); err != nil {
+				if err := helper.ExecAs(user.User, nil, nil, "fish", "-c", fmt.Sprintf("source %s && fisher install jorgebucaran/fisher", installerPath)); err != nil {
 					out.Errorf("Could not install fisher: %s", helper.ExecErr(err))
 					return false
 				}
