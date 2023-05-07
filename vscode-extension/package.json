@@ -1,6 +1,6 @@
 {
 	"name": "quickonf",
-	"version": "0.0.1",
+	"version": "0.0.2",
 	"displayName": "Quickonf",
 	"description": "Support for the Quickonf configuration language",
 	"publisher": "sebmacc",

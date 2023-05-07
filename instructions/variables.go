@@ -32,6 +32,13 @@ func init() {
 	}
 	codename := strings.TrimSpace(buf.String())
 	globalVars.define("oscodename", codename)
+
+	buf.Reset()
+	if err := helper.Exec(nil, &buf, "lsb_release", "--id", "--short"); err != nil {
+		panic(err)
+	}
+	distribution := strings.TrimSpace(buf.String())
+	globalVars.define("osdistribution", distribution)
 }
 
 func NewGlobalVar(key, value string) {

@@ -52,9 +52,10 @@ Except for the following global ones, variables are limited to their groups: the
 
 Some global variables are set when _Quickonf_ starts:
 
+- `confdir`: path of the directory containing the configuration file (can be used to read other files in the same directory, templates etc)
 - `hostname`: the hostname of the computer
 - `oscodename`: the codename of the current operating system version
-- `confdir`: path of the directory containing the configuration file (can be used to read other files in the same directory, templates etc)
+- `osdistribution`: the name of the current operating system distribution
 
 ## Expanding variables content
 
