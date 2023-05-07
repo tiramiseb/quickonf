@@ -1,0 +1,10 @@
+slug: install-earthly
+name: install earthly
+doc: Install Earthly
+varsdoc: {}
+instructions: |4-
+    if "<osdistribution> = Ubuntu"
+      key = http.get.var https://pkg.earthly.dev/earthly.pgp
+      apt.key earthly <key>
+      apt.source earthly "deb https://pkg.earthly.dev/deb stable main"
+      apt.install earthly

@@ -1,0 +1,10 @@
+slug: install-signal
+name: install signal
+doc: Install Signal
+varsdoc: {}
+instructions: |4-
+    if "<osdistribution> = Ubuntu"
+      key = http.get.var https://updates.signal.org/desktop/apt/keys.asc
+      apt.key signal <key>
+      apt.source signal "deb https://updates.signal.org/desktop/apt xenial main"
+      apt.install signal-desktop

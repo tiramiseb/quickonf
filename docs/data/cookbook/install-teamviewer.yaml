@@ -1,0 +1,13 @@
+slug: install-teamviewer
+name: install teamviewer
+doc: Install TeamViewer
+varsdoc: {}
+instructions: |4-
+    if "<osdistribution> = Ubuntu"
+      downloadpage = http.get.var https://www.teamviewer.com/download/linux/
+      candidate = regexp.submatch "\*\.deb package ([0-9]+\.[0-9]+\.[0-9]+)" <downloadpage>
+      current = dpkg.version teamviewer
+      if "<current> != <candidate>"
+        tmp = tempdir
+        http.get.file https://download.teamviewer.com/download/linux/teamviewer_amd64.deb <tmp>/teamviewer.deb
+        dpkg.install <tmp>/teamviewer.deb

@@ -5,49 +5,18 @@ package instructions
 import "github.com/tiramiseb/quickonf/commands"
 
 func init() {
-	recipes["all ubuntu repo"] = CookbookRecipe{
-		Doc: `Configure apt sources.list with all sections from an Ubuntu mirror (see https://launchpad.net/ubuntu/+archivemirrors)`,
-		VarsDoc: map[string]string{
-			`mirror`: `URL of the mirror (eg "http://archive.ubuntu.com/ubuntu/")`,
-		},
+	recipes["apt no automatic updates"] = CookbookRecipe{
+		Doc: `Disable periodic apt update, upgrade, autoclean`,
 		Instructions: []Instruction{
 			&Command{
-				Command: commands.UGet("http.get.var"),
+				Command: commands.UGet("file.content"),
 				Arguments: []string{
-					`<mirror>/dists/<oscodename>/Release`,
-				},
-				Targets: []string{
-					`m_rel`,
-				},
-			},
-			&Command{
-				Command: commands.UGet("regexp.submatch"),
-				Arguments: []string{
-					`Codename: (.*)`,
-					`<m_rel>`,
-				},
-				Targets: []string{
-					`m_cn`,
-				},
-			},
-			&If{
-				Operation: &Equal{Left: "<m_cn>", Right: "<oscodename>"},
-				Instructions: []Instruction{
-					&Command{
-						Command: commands.UGet("file.content"),
-						Arguments: []string{
-							`/etc/apt/sources.list`,
-							`# Sources from Quickonf
-deb <mirror> <oscodename> main restricted universe multiverse
-deb <mirror> <oscodename>-updates main restricted universe multiverse
-deb <mirror> <oscodename>-backports main restricted universe multiverse
-deb http://security.ubuntu.com/ubuntu/ <oscodename>-security main restricted universe multiverse
+					`/etc/apt/apt.conf.d/10periodic`,
+					`# Placed by Quickonf
+APT::Periodic::Update-Package-Lists 0;
+APT::Periodic::Download-Upgradeable-Packages 0;
+APT::Periodic::AutocleanInterval 0;
 `,
-						},
-					},
-					&Command{
-						Command: commands.UGet("apt.upgrade"),
-					},
 				},
 			},
 		},
@@ -82,18 +51,711 @@ deb http://security.ubuntu.com/ubuntu/ <oscodename>-security main restricted uni
 			},
 		},
 	}
-	recipes["less journalctl logs"] = CookbookRecipe{
-		Doc: `Limit journalctl logs to 100 MB`,
+	recipes["install chrome"] = CookbookRecipe{
+		Doc: `Install the Google Chrome web browser`,
 		Instructions: []Instruction{
+			&If{
+				Operation: &Equal{Left: "<osdistribution>", Right: "Ubuntu"},
+				Instructions: []Instruction{
+					&Command{
+						Command: commands.UGet("http.get.var"),
+						Arguments: []string{
+							`https://dl.google.com/linux/linux_signing_key.pub`,
+						},
+						Targets: []string{
+							`key`,
+						},
+					},
+					&Command{
+						Command: commands.UGet("apt.key"),
+						Arguments: []string{
+							`google-chrome`,
+							`<key>`,
+						},
+					},
+					&Command{
+						Command: commands.UGet("file.line"),
+						Arguments: []string{
+							`/etc/apt/sources.list.d/google-chrome.list`,
+							`deb [arch=amd64] https://dl.google.com/linux/chrome/deb/ stable main`,
+							`https://dl.google.com`,
+						},
+					},
+					&Command{
+						Command: commands.UGet("apt.install"),
+						Arguments: []string{
+							`google-chrome-stable`,
+						},
+					},
+				},
+			},
+		},
+	}
+	recipes["install diagrams.net"] = CookbookRecipe{
+		Doc: `Install Diagrams.net (formerly drawio)`,
+		Instructions: []Instruction{
+			&If{
+				Operation: &Equal{Left: "<osdistribution>", Right: "Ubuntu"},
+				Instructions: []Instruction{
+					&Command{
+						Command: commands.UGet("github.latest"),
+						Arguments: []string{
+							`jgraph/drawio-desktop`,
+							`drawio-amd64-*.deb`,
+						},
+						Targets: []string{
+							`release`,
+							`url`,
+						},
+					},
+					&Command{
+						Command: commands.UGet("dpkg.version"),
+						Arguments: []string{
+							`drawio`,
+						},
+						Targets: []string{
+							`current`,
+						},
+					},
+					&If{
+						Operation: &Different{Left: "<release>", Right: "<current>"},
+						Instructions: []Instruction{
+							&Command{
+								Command: commands.UGet("tempdir"),
+								Targets: []string{
+									`tmp`,
+								},
+							},
+							&Command{
+								Command: commands.UGet("http.get.file"),
+								Arguments: []string{
+									`<url>`,
+									`<tmp>/drawio.deb`,
+								},
+							},
+							&Command{
+								Command: commands.UGet("dpkg.install"),
+								Arguments: []string{
+									`<tmp>/drawio.deb`,
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+	}
+	recipes["install discord"] = CookbookRecipe{
+		Doc: `Install Discord`,
+		Instructions: []Instruction{
+			&If{
+				Operation: &Equal{Left: "<osdistribution>", Right: "Ubuntu"},
+				Instructions: []Instruction{
+					&Command{
+						Command: commands.UGet("dpkg.version"),
+						Arguments: []string{
+							`discord`,
+						},
+						Targets: []string{
+							`installed`,
+						},
+					},
+					&If{
+						Operation: &Equal{Left: "<installed>", Right: ""},
+						Instructions: []Instruction{
+							&Command{
+								Command: commands.UGet("tempdir"),
+								Targets: []string{
+									`tmp`,
+								},
+							},
+							&Command{
+								Command: commands.UGet("http.get.file"),
+								Arguments: []string{
+									`https://discord.com/api/download?platform=linux&format=deb`,
+									`<tmp>/discord.deb`,
+								},
+							},
+							&Command{
+								Command: commands.UGet("dpkg.install"),
+								Arguments: []string{
+									`<tmp>/discord.deb`,
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+	}
+	recipes["install earthly"] = CookbookRecipe{
+		Doc: `Install Earthly`,
+		Instructions: []Instruction{
+			&If{
+				Operation: &Equal{Left: "<osdistribution>", Right: "Ubuntu"},
+				Instructions: []Instruction{
+					&Command{
+						Command: commands.UGet("http.get.var"),
+						Arguments: []string{
+							`https://pkg.earthly.dev/earthly.pgp`,
+						},
+						Targets: []string{
+							`key`,
+						},
+					},
+					&Command{
+						Command: commands.UGet("apt.key"),
+						Arguments: []string{
+							`earthly`,
+							`<key>`,
+						},
+					},
+					&Command{
+						Command: commands.UGet("apt.source"),
+						Arguments: []string{
+							`earthly`,
+							`deb https://pkg.earthly.dev/deb stable main`,
+						},
+					},
+					&Command{
+						Command: commands.UGet("apt.install"),
+						Arguments: []string{
+							`earthly`,
+						},
+					},
+				},
+			},
+		},
+	}
+	recipes["install fish"] = CookbookRecipe{
+		Doc: `Install the Fish shell`,
+		Instructions: []Instruction{
+			&If{
+				Operation: &Equal{Left: "<osdistribution>", Right: "Ubuntu"},
+				Instructions: []Instruction{
+					&Command{
+						Command: commands.UGet("http.get.var"),
+						Arguments: []string{
+							`https://keyserver.ubuntu.com/pks/lookup?op=get&search=0x27557f056dc33ca5`,
+						},
+						Targets: []string{
+							`key`,
+						},
+					},
+					&Command{
+						Command: commands.UGet("apt.key"),
+						Arguments: []string{
+							`fish`,
+							`<key>`,
+						},
+					},
+					&Command{
+						Command: commands.UGet("apt.source"),
+						Arguments: []string{
+							`fish`,
+							`deb https://ppa.launchpadcontent.net/fish-shell/release-3/ubuntu <oscodename> main`,
+						},
+					},
+					&Command{
+						Command: commands.UGet("apt.install"),
+						Arguments: []string{
+							`fish`,
+						},
+					},
+				},
+			},
+		},
+	}
+	recipes["install go"] = CookbookRecipe{
+		Doc: `Install the compiler for the Go language`,
+		Instructions: []Instruction{
+			&If{
+				Operation: &Equal{Left: "<osdistribution>", Right: "Ubuntu"},
+				Instructions: []Instruction{
+					&Command{
+						Command: commands.UGet("http.get.var"),
+						Arguments: []string{
+							`https://go.dev/dl/`,
+						},
+						Targets: []string{
+							`downloadpage`,
+						},
+					},
+					&Command{
+						Command: commands.UGet("regexp.submatch"),
+						Arguments: []string{
+							`<a class="download downloadBox" href="/dl/go([0-9]+\.[0-9]+\.[0-9]+).linux-amd64.tar.gz">`,
+							`<downloadpage>`,
+						},
+						Targets: []string{
+							`candidate`,
+						},
+					},
+					&Command{
+						Command: commands.UGet("cmd.out"),
+						Arguments: []string{
+							`/opt/go/bin/go`,
+							`version`,
+						},
+						Targets: []string{
+							`return`,
+						},
+					},
+					&Command{
+						Command: commands.UGet("regexp.submatch"),
+						Arguments: []string{
+							`go version go([0-9]+\.[0-9]+\.[0-9]+)`,
+							`<return>`,
+						},
+						Targets: []string{
+							`current`,
+						},
+					},
+					&If{
+						Operation: &Different{Left: "<current>", Right: "<candidate>"},
+						Instructions: []Instruction{
+							&Command{
+								Command: commands.UGet("tempdir"),
+								Targets: []string{
+									`tmp`,
+								},
+							},
+							&Command{
+								Command: commands.UGet("http.get.file"),
+								Arguments: []string{
+									`https://go.dev/dl/go<candidate>.linux-amd64.tar.gz`,
+									`<tmp>/go.tar.gz`,
+								},
+							},
+							&Command{
+								Command: commands.UGet("file.absent"),
+								Arguments: []string{
+									`/opt/go`,
+								},
+							},
+							&Command{
+								Command: commands.UGet("file.extract"),
+								Arguments: []string{
+									`tar.gz`,
+									`<tmp>/go.tar.gz`,
+									`/opt`,
+								},
+							},
+						},
+					},
+					&Command{
+						Command: commands.UGet("file.symlink"),
+						Arguments: []string{
+							`/usr/local/bin/go`,
+							`/opt/go/bin/go`,
+						},
+					},
+					&Command{
+						Command: commands.UGet("file.symlink"),
+						Arguments: []string{
+							`/usr/local/bin/gofmt`,
+							`/opt/go/bin/gofmt`,
+						},
+					},
+				},
+			},
+		},
+	}
+	recipes["install nodejs"] = CookbookRecipe{
+		Doc: `Install Node.js`,
+		VarsDoc: map[string]string{
+			`version`: `Major version of Node.js to install (18, 20, etc)`,
+		},
+		Instructions: []Instruction{
+			&Command{
+				Command: commands.UGet("http.get.var"),
+				Arguments: []string{
+					`https://deb.nodesource.com/gpgkey/nodesource.gpg.key`,
+				},
+				Targets: []string{
+					`key`,
+				},
+			},
+			&Command{
+				Command: commands.UGet("apt.key"),
+				Arguments: []string{
+					`nodesource`,
+					`<key>`,
+				},
+			},
+			&Command{
+				Command: commands.UGet("apt.source"),
+				Arguments: []string{
+					`nodesource`,
+					`deb https://deb.nodesource.com/node_<version>.x <oscodename> main`,
+				},
+			},
+			&Command{
+				Command: commands.UGet("apt.install"),
+				Arguments: []string{
+					`nodejs`,
+				},
+			},
+		},
+	}
+	recipes["install obsidian"] = CookbookRecipe{
+		Doc: `Install Obsidian`,
+		Instructions: []Instruction{
+			&If{
+				Operation: &Equal{Left: "<osdistribution>", Right: "Ubuntu"},
+				Instructions: []Instruction{
+					&Command{
+						Command: commands.UGet("github.latest"),
+						Arguments: []string{
+							`obsidianmd/obsidian-releases`,
+							`obsidian_*.snap`,
+						},
+						Targets: []string{
+							`release`,
+							`url`,
+						},
+					},
+					&Command{
+						Command: commands.UGet("snap.version"),
+						Arguments: []string{
+							`obsidian`,
+						},
+						Targets: []string{
+							`current`,
+						},
+					},
+					&If{
+						Operation: &Different{Left: "<release>", Right: "<current>"},
+						Instructions: []Instruction{
+							&Command{
+								Command: commands.UGet("tempdir"),
+								Targets: []string{
+									`tmp`,
+								},
+							},
+							&Command{
+								Command: commands.UGet("http.get.file"),
+								Arguments: []string{
+									`<url>`,
+									`<tmp>/obsidian.snap`,
+								},
+							},
+							&Command{
+								Command: commands.UGet("snap.install"),
+								Arguments: []string{
+									`<tmp>/obsidian.snap`,
+									`classic,dangerous`,
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+	}
+	recipes["install signal"] = CookbookRecipe{
+		Doc: `Install Signal`,
+		Instructions: []Instruction{
+			&If{
+				Operation: &Equal{Left: "<osdistribution>", Right: "Ubuntu"},
+				Instructions: []Instruction{
+					&Command{
+						Command: commands.UGet("http.get.var"),
+						Arguments: []string{
+							`https://updates.signal.org/desktop/apt/keys.asc`,
+						},
+						Targets: []string{
+							`key`,
+						},
+					},
+					&Command{
+						Command: commands.UGet("apt.key"),
+						Arguments: []string{
+							`signal`,
+							`<key>`,
+						},
+					},
+					&Command{
+						Command: commands.UGet("apt.source"),
+						Arguments: []string{
+							`signal`,
+							`deb https://updates.signal.org/desktop/apt xenial main`,
+						},
+					},
+					&Command{
+						Command: commands.UGet("apt.install"),
+						Arguments: []string{
+							`signal-desktop`,
+						},
+					},
+				},
+			},
+		},
+	}
+	recipes["install spotify"] = CookbookRecipe{
+		Doc: `Install Spotify`,
+		Instructions: []Instruction{
+			&If{
+				Operation: &Equal{Left: "<osdistribution>", Right: "Ubuntu"},
+				Instructions: []Instruction{
+					&Command{
+						Command: commands.UGet("http.get.var"),
+						Arguments: []string{
+							`https://download.spotify.com/debian/pubkey_7A3A762FAFD4A51F.gpg`,
+						},
+						Targets: []string{
+							`key`,
+						},
+					},
+					&Command{
+						Command: commands.UGet("apt.key"),
+						Arguments: []string{
+							`spotify`,
+							`<key>`,
+						},
+					},
+					&Command{
+						Command: commands.UGet("apt.source"),
+						Arguments: []string{
+							`spotify`,
+							`deb http://repository.spotify.com stable non-free`,
+						},
+					},
+					&Command{
+						Command: commands.UGet("apt.install"),
+						Arguments: []string{
+							`spotify-client`,
+						},
+					},
+				},
+			},
+		},
+	}
+	recipes["install syncthing"] = CookbookRecipe{
+		Doc: `Install Syncthing`,
+		Instructions: []Instruction{
+			&If{
+				Operation: &Equal{Left: "<osdistribution>", Right: "Ubuntu"},
+				Instructions: []Instruction{
+					&Command{
+						Command: commands.UGet("http.get.var"),
+						Arguments: []string{
+							`https://syncthing.net/release-key.gpg`,
+						},
+						Targets: []string{
+							`key`,
+						},
+					},
+					&Command{
+						Command: commands.UGet("apt.key"),
+						Arguments: []string{
+							`syncthing`,
+							`<key>`,
+						},
+					},
+					&Command{
+						Command: commands.UGet("apt.source"),
+						Arguments: []string{
+							`syncthing`,
+							`deb https://apt.syncthing.net/ syncthing stable`,
+						},
+					},
+					&Command{
+						Command: commands.UGet("apt.install"),
+						Arguments: []string{
+							`syncthing`,
+						},
+					},
+				},
+			},
+		},
+	}
+	recipes["install teamviewer"] = CookbookRecipe{
+		Doc: `Install TeamViewer`,
+		Instructions: []Instruction{
+			&If{
+				Operation: &Equal{Left: "<osdistribution>", Right: "Ubuntu"},
+				Instructions: []Instruction{
+					&Command{
+						Command: commands.UGet("http.get.var"),
+						Arguments: []string{
+							`https://www.teamviewer.com/download/linux/`,
+						},
+						Targets: []string{
+							`downloadpage`,
+						},
+					},
+					&Command{
+						Command: commands.UGet("regexp.submatch"),
+						Arguments: []string{
+							`\*\.deb package ([0-9]+\.[0-9]+\.[0-9]+)`,
+							`<downloadpage>`,
+						},
+						Targets: []string{
+							`candidate`,
+						},
+					},
+					&Command{
+						Command: commands.UGet("dpkg.version"),
+						Arguments: []string{
+							`teamviewer`,
+						},
+						Targets: []string{
+							`current`,
+						},
+					},
+					&If{
+						Operation: &Different{Left: "<current>", Right: "<candidate>"},
+						Instructions: []Instruction{
+							&Command{
+								Command: commands.UGet("tempdir"),
+								Targets: []string{
+									`tmp`,
+								},
+							},
+							&Command{
+								Command: commands.UGet("http.get.file"),
+								Arguments: []string{
+									`https://download.teamviewer.com/download/linux/teamviewer_amd64.deb`,
+									`<tmp>/teamviewer.deb`,
+								},
+							},
+							&Command{
+								Command: commands.UGet("dpkg.install"),
+								Arguments: []string{
+									`<tmp>/teamviewer.deb`,
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+	}
+	recipes["install virtualbox"] = CookbookRecipe{
+		Doc: `Install VirtualBox`,
+		Instructions: []Instruction{
+			&If{
+				Operation: &Equal{Left: "<osdistribution>", Right: "Ubuntu"},
+				Instructions: []Instruction{
+					&Command{
+						Command: commands.UGet("debconf.set"),
+						Arguments: []string{
+							`shim-signed`,
+							`shim/enable_secureboot`,
+							`true`,
+						},
+					},
+					&Command{
+						Command: commands.UGet("apt.install"),
+						Arguments: []string{
+							`virtualbox`,
+						},
+					},
+				},
+			},
+		},
+	}
+	recipes["install vscode"] = CookbookRecipe{
+		Doc: `Install Microsoft Visual Studio Code`,
+		Instructions: []Instruction{
+			&If{
+				Operation: &Equal{Left: "<osdistribution>", Right: "Ubuntu"},
+				Instructions: []Instruction{
+					&Command{
+						Command: commands.UGet("http.head.var"),
+						Arguments: []string{
+							`https://code.visualstudio.com/sha/download?build=stable&os=linux-deb-x64`,
+							`Content-Disposition`,
+						},
+						Targets: []string{
+							`headers`,
+						},
+					},
+					&Command{
+						Command: commands.UGet("regexp.submatch"),
+						Arguments: []string{
+							`filename="code_([0-9]+.[0-9]+.[0-9]+-[0-9]+)_amd64.deb"`,
+							`<headers>`,
+						},
+						Targets: []string{
+							`candidate`,
+						},
+					},
+					&Command{
+						Command: commands.UGet("dpkg.version"),
+						Arguments: []string{
+							`code`,
+						},
+						Targets: []string{
+							`current`,
+						},
+					},
+					&If{
+						Operation: &Different{Left: "<candidate>", Right: "<current>"},
+						Instructions: []Instruction{
+							&Command{
+								Command: commands.UGet("tempdir"),
+								Targets: []string{
+									`tmp`,
+								},
+							},
+							&Command{
+								Command: commands.UGet("http.get.file"),
+								Arguments: []string{
+									`https://code.visualstudio.com/sha/download?build=stable&os=linux-deb-x64`,
+									`<tmp>/code.deb`,
+								},
+							},
+							&Command{
+								Command: commands.UGet("dpkg.install"),
+								Arguments: []string{
+									`<tmp>/code.deb`,
+								},
+							},
+						},
+					},
+				},
+			},
 			&Command{
 				Command: commands.UGet("file.content"),
 				Arguments: []string{
-					`/etc/systemd/journald.conf`,
-					`# Configured by Quickonf
-[Journal]
-SystemMaxUse=100M
-SystemMaxFileSize=10M
-`,
+					`/etc/sysctl.d/99-vscode.conf`,
+					`fs.inotify.max_user_watches=524288`,
+				},
+			},
+		},
+	}
+	recipes["install yarn"] = CookbookRecipe{
+		Doc: `Install the Yarn package manager for Node.js`,
+		Instructions: []Instruction{
+			&Command{
+				Command: commands.UGet("http.get.var"),
+				Arguments: []string{
+					`https://dl.yarnpkg.com/debian/pubkey.gpg`,
+				},
+				Targets: []string{
+					`key`,
+				},
+			},
+			&Command{
+				Command: commands.UGet("apt.key"),
+				Arguments: []string{
+					`yarnpkg`,
+					`<key>`,
+				},
+			},
+			&Command{
+				Command: commands.UGet("apt.source"),
+				Arguments: []string{
+					`yarnpkg`,
+					`deb https://dl.yarnpkg.com/debian/ stable main`,
+				},
+			},
+			&Command{
+				Command: commands.UGet("apt.install"),
+				Arguments: []string{
+					`yarn`,
 				},
 			},
 		},
@@ -108,75 +770,6 @@ SystemMaxFileSize=10M
 					`# Disabled by Quickonf
 enabled=0
 `,
-				},
-			},
-		},
-	}
-	recipes["no automatic apt updates"] = CookbookRecipe{
-		Doc: `Disable periodic apt update, upgrade, autoclean`,
-		Instructions: []Instruction{
-			&Command{
-				Command: commands.UGet("file.content"),
-				Arguments: []string{
-					`/etc/apt/apt.conf.d/10periodic`,
-					`# Placed by Quickonf
-APT::Periodic::Update-Package-Lists 0;
-APT::Periodic::Download-Upgradeable-Packages 0;
-APT::Periodic::AutocleanInterval 0;
-`,
-				},
-			},
-		},
-	}
-	recipes["ubuntu more restricted"] = CookbookRecipe{
-		Doc: `Install Ubuntu "Restricted" packages, and more: gstreamer-plugins-bad`,
-		Instructions: []Instruction{
-			&Command{
-				Command: commands.UGet("debconf.set"),
-				Arguments: []string{
-					`ttf-mscorefonts-installer`,
-					`msttcorefonts/accepted-mscorefonts-eula`,
-					`true`,
-				},
-			},
-			&Command{
-				Command: commands.UGet("debconf.set"),
-				Arguments: []string{
-					`libdvd-pkg`,
-					`libdvd-pkg/first-install`,
-					`.`,
-				},
-			},
-			&Command{
-				Command: commands.UGet("debconf.set"),
-				Arguments: []string{
-					`libdvd-pkg`,
-					`libdvd-pkg/post-invoke_hook-install`,
-					`true`,
-				},
-			},
-			&Command{
-				Command: commands.UGet("apt.install"),
-				Arguments: []string{
-					`gstreamer1.0-plugins-bad`,
-				},
-			},
-			&Command{
-				Command: commands.UGet("apt.install"),
-				Arguments: []string{
-					`ubuntu-restricted-extras`,
-				},
-			},
-			&Command{
-				Command: commands.UGet("apt.install"),
-				Arguments: []string{
-					`libdvd-pkg`,
-				},
-			},
-			&Command{
-				Command: commands.UGet("dpkg.reconfigure"),
-				Arguments: []string{
-					`libdvd-pkg`,
 				},
 			},
 		},
@@ -229,6 +822,156 @@ APT::Periodic::AutocleanInterval 0;
 					`<user>`,
 					`<dst>`,
 					`<content>`,
+				},
+			},
+		},
+	}
+	recipes["less journalctl logs"] = CookbookRecipe{
+		Doc: `Limit journalctl logs to 100 MB`,
+		Instructions: []Instruction{
+			&Command{
+				Command: commands.UGet("file.content"),
+				Arguments: []string{
+					`/etc/systemd/journald.conf`,
+					`# Configured by Quickonf
+[Journal]
+SystemMaxUse=100M
+SystemMaxFileSize=10M
+`,
+				},
+			},
+		},
+	}
+	recipes["ubuntu all repo"] = CookbookRecipe{
+		Doc: `Configure apt sources.list with all sections from an Ubuntu mirror (see https://launchpad.net/ubuntu/+archivemirrors)`,
+		VarsDoc: map[string]string{
+			`mirror`: `URL of the mirror (eg "http://archive.ubuntu.com/ubuntu/")`,
+		},
+		Instructions: []Instruction{
+			&Command{
+				Command: commands.UGet("http.get.var"),
+				Arguments: []string{
+					`<mirror>/dists/<oscodename>/Release`,
+				},
+				Targets: []string{
+					`m_rel`,
+				},
+			},
+			&Command{
+				Command: commands.UGet("regexp.submatch"),
+				Arguments: []string{
+					`Codename: (.*)`,
+					`<m_rel>`,
+				},
+				Targets: []string{
+					`m_cn`,
+				},
+			},
+			&If{
+				Operation: &Equal{Left: "<m_cn>", Right: "<oscodename>"},
+				Instructions: []Instruction{
+					&Command{
+						Command: commands.UGet("file.content"),
+						Arguments: []string{
+							`/etc/apt/sources.list`,
+							`# Sources from Quickonf
+deb <mirror> <oscodename> main restricted universe multiverse
+deb <mirror> <oscodename>-updates main restricted universe multiverse
+deb <mirror> <oscodename>-backports main restricted universe multiverse
+deb http://security.ubuntu.com/ubuntu/ <oscodename>-security main restricted universe multiverse
+`,
+						},
+					},
+					&Command{
+						Command: commands.UGet("apt.upgrade"),
+					},
+				},
+			},
+		},
+	}
+	recipes["ubuntu more restricted"] = CookbookRecipe{
+		Doc: `Install Ubuntu "Restricted" packages, and more: gstreamer-plugins-bad`,
+		Instructions: []Instruction{
+			&Command{
+				Command: commands.UGet("debconf.set"),
+				Arguments: []string{
+					`ttf-mscorefonts-installer`,
+					`msttcorefonts/accepted-mscorefonts-eula`,
+					`true`,
+				},
+			},
+			&Command{
+				Command: commands.UGet("debconf.set"),
+				Arguments: []string{
+					`libdvd-pkg`,
+					`libdvd-pkg/first-install`,
+					`.`,
+				},
+			},
+			&Command{
+				Command: commands.UGet("debconf.set"),
+				Arguments: []string{
+					`libdvd-pkg`,
+					`libdvd-pkg/post-invoke_hook-install`,
+					`true`,
+				},
+			},
+			&Command{
+				Command: commands.UGet("apt.install"),
+				Arguments: []string{
+					`gstreamer1.0-plugins-bad`,
+				},
+			},
+			&Command{
+				Command: commands.UGet("apt.install"),
+				Arguments: []string{
+					`ubuntu-restricted-extras`,
+				},
+			},
+			&Command{
+				Command: commands.UGet("apt.install"),
+				Arguments: []string{
+					`libdvd-pkg`,
+				},
+			},
+			&Command{
+				Command: commands.UGet("dpkg.version"),
+				Arguments: []string{
+					`libdvdcss2`,
+				},
+				Targets: []string{
+					`dvdcss2version`,
+				},
+			},
+			&If{
+				Operation: &Equal{Left: "<dvdcss2version>", Right: ""},
+				Instructions: []Instruction{
+					&Command{
+						Command: commands.UGet("dpkg.reconfigure"),
+						Arguments: []string{
+							`libdvd-pkg`,
+						},
+					},
+				},
+			},
+		},
+	}
+	recipes["ubuntu nvidia driver"] = CookbookRecipe{
+		Doc: `Install the NVidia "open" driver`,
+		Instructions: []Instruction{
+			&Command{
+				Command: commands.UGet("apt.search"),
+				Arguments: []string{
+					`^nvidia-driver-.*-open$`,
+				},
+				Targets: []string{
+					`nvidiapkg`,
+				},
+			},
+			&Command{
+				Command: commands.UGet("apt.install"),
+				Arguments: []string{
+					`<nvidiapkg>`,
 				},
 			},
 		},

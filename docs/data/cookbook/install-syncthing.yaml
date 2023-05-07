@@ -1,0 +1,10 @@
+slug: install-syncthing
+name: install syncthing
+doc: Install Syncthing
+varsdoc: {}
+instructions: |4-
+    if "<osdistribution> = Ubuntu"
+      key = http.get.var https://syncthing.net/release-key.gpg
+      apt.key syncthing <key>
+      apt.source syncthing "deb https://apt.syncthing.net/ syncthing stable"
+      apt.install syncthing

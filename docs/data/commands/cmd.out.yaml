@@ -1,0 +1,12 @@
+name: cmd.out
+action: Get the output of a command (use sparingly - only for simple commands when a Quickonf command does not exist) - if command does not exist, output is the empty string
+arguments:
+    - Command name
+    - Arguments...
+outputs:
+    - Output of the command
+example: |-
+    Install Go
+      out = cmd.out go version
+      version = regexp.submatch "go version go([0-9]+\.[0-9]+\.[0-9]+)" <out>
+      [...]

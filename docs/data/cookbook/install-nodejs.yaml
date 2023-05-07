@@ -1,0 +1,10 @@
+slug: install-nodejs
+name: install nodejs
+doc: Install Node.js
+varsdoc:
+    version: Major version of Node.js to install (18, 20, etc)
+instructions: |4-
+    key = http.get.var https://deb.nodesource.com/gpgkey/nodesource.gpg.key
+    apt.key nodesource <key>
+    apt.source nodesource "deb https://deb.nodesource.com/node_<version>.x <oscodename> main"
+    apt.install nodejs

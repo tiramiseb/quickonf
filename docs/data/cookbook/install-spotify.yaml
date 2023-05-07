@@ -1,0 +1,10 @@
+slug: install-spotify
+name: install spotify
+doc: Install Spotify
+varsdoc: {}
+instructions: |4-
+    if "<osdistribution> = Ubuntu"
+      key = http.get.var https://download.spotify.com/debian/pubkey_7A3A762FAFD4A51F.gpg
+      apt.key spotify <key>
+      apt.source spotify "deb http://repository.spotify.com stable non-free"
+      apt.install spotify-client

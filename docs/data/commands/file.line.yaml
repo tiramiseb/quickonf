@@ -1,0 +1,10 @@
+name: file.line
+action: Make sure a file contains a line
+arguments:
+    - Absolute path of the file
+    - Line that must be in the file
+    - Regexp for line(s) to replace
+outputs: []
+example: |-
+    Make sure localhost is in /etc/hosts
+      file.line /etc/hosts "127.0.0.1 localhost" "^127\.0\.0\.1"

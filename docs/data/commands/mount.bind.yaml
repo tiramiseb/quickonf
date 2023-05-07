@@ -1,0 +1,9 @@
+name: mount.bind
+action: Add a bind mountpoint it to the fstab file and immediately mount the partition
+arguments:
+    - Absolute path to the target
+    - Mount point absolute path
+outputs: []
+example: |-
+    Mount directory elsewhere
+      mount.bind /tmp /home/alice/temp

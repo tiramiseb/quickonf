@@ -1,0 +1,10 @@
+name: user.fish.abbr
+action: Create an abbreviation for the Fish shell
+arguments:
+    - Username
+    - Name of the abbreviation
+    - Command to bind to the abbreviation
+outputs: []
+example: |-
+    Git checkout abbreviation
+      user.fish.abbr alice gco "git checkout"

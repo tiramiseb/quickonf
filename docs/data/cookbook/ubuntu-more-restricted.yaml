@@ -9,4 +9,6 @@ instructions: |4-
     apt.install gstreamer1.0-plugins-bad
     apt.install ubuntu-restricted-extras
     apt.install libdvd-pkg
-    dpkg.reconfigure libdvd-pkg
+    dvdcss2version = dpkg.version libdvdcss2
+    if "<dvdcss2version> = "
+      dpkg.reconfigure libdvd-pkg

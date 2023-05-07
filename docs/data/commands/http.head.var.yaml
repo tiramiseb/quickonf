@@ -1,0 +1,12 @@
+name: http.head.var
+action: Download headers with a HTTP HEAD request (headers are downloaded when checking)
+arguments:
+    - URI of the content for which to download headers
+    - Name of the header
+outputs:
+    - Content of the named header
+example: |-
+    VS Code
+      headers = http.head.var https://code.visualstudio.com/sha/download?build=stable&os=linux-deb-x64 Content-Disposition
+      version = regexp.submatch "filename=\"code_([0-9]+\.[0-9]+\.[0-9]+)-.*_amd64.deb\"" <headers>
+      ...

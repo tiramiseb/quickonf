@@ -1,0 +1,10 @@
+slug: install-fish
+name: install fish
+doc: Install the Fish shell
+varsdoc: {}
+instructions: |4-
+    if "<osdistribution> = Ubuntu"
+      key = http.get.var https://keyserver.ubuntu.com/pks/lookup?op=get&search=0x27557f056dc33ca5
+      apt.key fish <key>
+      apt.source fish "deb https://ppa.launchpadcontent.net/fish-shell/release-3/ubuntu <oscodename> main"
+      apt.install fish

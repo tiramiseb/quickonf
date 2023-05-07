@@ -1,0 +1,17 @@
+slug: install-go
+name: install go
+doc: Install the compiler for the Go language
+varsdoc: {}
+instructions: |4-
+    if "<osdistribution> = Ubuntu"
+      downloadpage = http.get.var https://go.dev/dl/
+      candidate = regexp.submatch "<a class=\"download downloadBox\" href=\"/dl/go([0-9]+\.[0-9]+\.[0-9]+).linux-amd64.tar.gz\">" <downloadpage>
+      return = cmd.out /opt/go/bin/go version
+      current = regexp.submatch "go version go([0-9]+\.[0-9]+\.[0-9]+)" <return>
+      if "<current> != <candidate>"
+        tmp = tempdir
+        http.get.file https://go.dev/dl/go<candidate>.linux-amd64.tar.gz <tmp>/go.tar.gz
+        file.absent /opt/go
+        file.extract tar.gz <tmp>/go.tar.gz /opt
+      file.symlink /usr/local/bin/go /opt/go/bin/go
+      file.symlink /usr/local/bin/gofmt /opt/go/bin/gofmt

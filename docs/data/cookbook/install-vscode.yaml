@@ -1,0 +1,14 @@
+slug: install-vscode
+name: install vscode
+doc: Install Microsoft Visual Studio Code
+varsdoc: {}
+instructions: |4-
+    if "<osdistribution> = Ubuntu"
+      headers = http.head.var https://code.visualstudio.com/sha/download?build=stable&os=linux-deb-x64 Content-Disposition
+      candidate = regexp.submatch filename=\"code_([0-9]+.[0-9]+.[0-9]+-[0-9]+)_amd64.deb\" <headers>
+      current = dpkg.version code
+      if "<candidate> != <current>"
+        tmp = tempdir
+        http.get.file https://code.visualstudio.com/sha/download?build=stable&os=linux-deb-x64 <tmp>/code.deb
+        dpkg.install <tmp>/code.deb
+    file.content /etc/sysctl.d/99-vscode.conf fs.inotify.max_user_watches=524288

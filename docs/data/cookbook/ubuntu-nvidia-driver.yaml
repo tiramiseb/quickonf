@@ -1,0 +1,7 @@
+slug: ubuntu-nvidia-driver
+name: ubuntu nvidia driver
+doc: Install the NVidia "open" driver
+varsdoc: {}
+instructions: |4-
+    nvidiapkg = apt.search ^nvidia-driver-.*-open$
+    apt.install <nvidiapkg>

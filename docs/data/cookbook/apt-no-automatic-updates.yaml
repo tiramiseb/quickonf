@@ -1,0 +1,10 @@
+slug: apt-no-automatic-updates
+name: apt no automatic updates
+doc: Disable periodic apt update, upgrade, autoclean
+varsdoc: {}
+instructions: |4-
+    file.content /etc/apt/apt.conf.d/10periodic "# Placed by Quickonf
+    APT::Periodic::Update-Package-Lists 0;
+    APT::Periodic::Download-Upgradeable-Packages 0;
+    APT::Periodic::AutocleanInterval 0;
+    "

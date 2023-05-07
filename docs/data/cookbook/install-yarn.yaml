@@ -1,0 +1,9 @@
+slug: install-yarn
+name: install yarn
+doc: Install the Yarn package manager for Node.js
+varsdoc: {}
+instructions: |4-
+    key = http.get.var https://dl.yarnpkg.com/debian/pubkey.gpg
+    apt.key yarnpkg <key>
+    apt.source yarnpkg "deb https://dl.yarnpkg.com/debian/ stable main"
+    apt.install yarn

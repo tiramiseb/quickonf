@@ -1,0 +1,10 @@
+name: user.fish.variable
+action: Set an universal variable for the Fish shell
+arguments:
+    - Username
+    - Name of the variable
+    - Content of the variable...
+outputs: []
+example: |-
+    Tide time color
+      user.fish.variable alice tide_time_color 000000

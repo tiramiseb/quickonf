@@ -1,0 +1,9 @@
+name: user.fisher.install
+action: Install a fish plugin using Fisher
+arguments:
+    - Username
+    - Name/URI of the plugin
+outputs: []
+example: |-
+    Fish abbreviation tips
+      user.fisher.install alice gazorby/fish-abbreviation-tips

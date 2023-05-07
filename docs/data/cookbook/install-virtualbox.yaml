@@ -1,0 +1,8 @@
+slug: install-virtualbox
+name: install virtualbox
+doc: Install VirtualBox
+varsdoc: {}
+instructions: |4-
+    if "<osdistribution> = Ubuntu"
+      debconf.set shim-signed shim/enable_secureboot true
+      apt.install virtualbox

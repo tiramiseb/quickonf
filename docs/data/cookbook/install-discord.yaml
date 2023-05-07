@@ -1,0 +1,11 @@
+slug: install-discord
+name: install discord
+doc: Install Discord
+varsdoc: {}
+instructions: |4-
+    if "<osdistribution> = Ubuntu"
+      installed = dpkg.version discord
+      if "<installed> = "
+        tmp = tempdir
+        http.get.file https://discord.com/api/download?platform=linux&format=deb <tmp>/discord.deb
+        dpkg.install <tmp>/discord.deb

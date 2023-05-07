@@ -1,0 +1,12 @@
+name: mount
+action: Add a mountpoint it to the fstab file and immediately mount the partition (for bind mounts, use mount.bind)
+arguments:
+    - Absolute path to the partition
+    - Mount point absolute path
+    - Filesystem
+    - Options
+outputs: []
+example: |-
+    Mount data disk
+      file.directory /home/alice/data
+      mount /dev/sdb1 /home/alice/data ext4 defaults

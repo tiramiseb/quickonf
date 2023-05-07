@@ -2,7 +2,7 @@ name: make
 action: Execute the make command
 arguments:
     - Directory where to execute the command
-    - Make target
+    - Make targets...
 outputs: []
 example: |-
     Compile foobar

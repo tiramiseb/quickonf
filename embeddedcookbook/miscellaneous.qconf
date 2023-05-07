@@ -1,0 +1,21 @@
+no apport
+	doc "Disable Apport alerts"
+	file.content /etc/default/apport "# Disabled by Quickonf
+enabled=0
+"
+
+copy
+	doc "Copy the content of a file to another file owned by root"
+	vardoc src "Source file"
+	vardoc dst "Destination file"
+	content = file.read <src>
+	file.content <dst> <content>
+
+
+user copy
+	doc "Copy the content of a file to another file owned by a user"
+	vardoc user "Username for the destination file owner"
+	vardoc src "Source file"
+	vardoc dst "Destination file"
+	content = file.read <src>
+	user.file.content <user> <dst> <content>

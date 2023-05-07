@@ -1,0 +1,136 @@
+install chrome
+	doc "Install the Google Chrome web browser"
+	if <osdistribution> = Ubuntu
+		key = http.get.var https://dl.google.com/linux/linux_signing_key.pub
+		apt.key google-chrome <key>
+		file.line /etc/apt/sources.list.d/google-chrome.list "deb [arch=amd64] https://dl.google.com/linux/chrome/deb/ stable main" "https://dl.google.com"
+		apt.install google-chrome-stable
+
+install diagrams.net
+	doc "Install Diagrams.net (formerly drawio)"
+	if <osdistribution> = Ubuntu
+		release url = github.latest jgraph/drawio-desktop drawio-amd64-*.deb
+		current = dpkg.version drawio
+		if <release> != <current>
+			tmp = tempdir
+			http.get.file <url> <tmp>/drawio.deb
+			dpkg.install <tmp>/drawio.deb
+
+install discord
+	doc "Install Discord"
+	if <osdistribution> = Ubuntu
+		installed = dpkg.version discord
+		if <installed> = ""
+			tmp = tempdir
+			http.get.file https://discord.com/api/download?platform=linux&format=deb <tmp>/discord.deb
+			dpkg.install <tmp>/discord.deb
+
+install earthly
+	doc "Install Earthly"
+	if <osdistribution> = Ubuntu
+		key = http.get.var https://pkg.earthly.dev/earthly.pgp
+		apt.key earthly <key>
+		apt.source earthly "deb https://pkg.earthly.dev/deb stable main"
+		apt.install earthly
+
+
+install fish
+	doc "Install the Fish shell"
+	if <osdistribution> = Ubuntu
+		key = http.get.var https://keyserver.ubuntu.com/pks/lookup?op=get&search=0x27557f056dc33ca5
+		apt.key fish <key>
+		apt.source fish "deb https://ppa.launchpadcontent.net/fish-shell/release-3/ubuntu <oscodename> main"
+		apt.install fish
+
+install go
+	doc "Install the compiler for the Go language"
+	if <osdistribution> = Ubuntu
+		downloadpage = http.get.var https://go.dev/dl/
+		candidate = regexp.submatch "<a class=\"download downloadBox\" href=\"/dl/go([0-9]+\\.[0-9]+\\.[0-9]+).linux-amd64.tar.gz\">" <downloadpage>
+		return = cmd.out /opt/go/bin/go version
+		current = regexp.submatch "go version go([0-9]+\\.[0-9]+\\.[0-9]+)" <return>
+		if <current> != <candidate>
+			tmp = tempdir
+			http.get.file https://go.dev/dl/go<candidate>.linux-amd64.tar.gz <tmp>/go.tar.gz
+			file.absent /opt/go
+			file.extract tar.gz <tmp>/go.tar.gz /opt
+		file.symlink /usr/local/bin/go /opt/go/bin/go
+		file.symlink /usr/local/bin/gofmt /opt/go/bin/gofmt
+
+install nodejs
+	doc "Install Node.js"
+	vardoc version "Major version of Node.js to install (18, 20, etc)"
+	key = http.get.var https://deb.nodesource.com/gpgkey/nodesource.gpg.key
+	apt.key nodesource <key>
+	apt.source nodesource "deb https://deb.nodesource.com/node_<version>.x <oscodename> main"
+	apt.install nodejs
+
+install obsidian
+	doc "Install Obsidian"
+	if <osdistribution> = Ubuntu
+		release url = github.latest obsidianmd/obsidian-releases obsidian_*.snap
+		current = snap.version obsidian
+		if <release> != <current>
+			tmp = tempdir
+			http.get.file <url> <tmp>/obsidian.snap
+			snap.install <tmp>/obsidian.snap classic,dangerous
+
+install signal
+	doc "Install Signal"
+	if <osdistribution> = Ubuntu
+		key = http.get.var https://updates.signal.org/desktop/apt/keys.asc
+		apt.key signal <key>
+		apt.source signal "deb https://updates.signal.org/desktop/apt xenial main"
+		apt.install signal-desktop
+
+install spotify
+	doc "Install Spotify"
+	if <osdistribution> = Ubuntu
+		key = http.get.var https://download.spotify.com/debian/pubkey_7A3A762FAFD4A51F.gpg
+		apt.key spotify <key>
+		apt.source spotify "deb http://repository.spotify.com stable non-free"
+		apt.install spotify-client
+
+install syncthing
+	doc "Install Syncthing"
+	if <osdistribution> = Ubuntu
+		key = http.get.var https://syncthing.net/release-key.gpg
+		apt.key syncthing <key>
+		apt.source syncthing "deb https://apt.syncthing.net/ syncthing stable"
+		apt.install syncthing
+
+install teamviewer
+	doc "Install TeamViewer"
+	if <osdistribution> = Ubuntu
+		downloadpage = http.get.var https://www.teamviewer.com/download/linux/
+		candidate = regexp.submatch "\\*\\.deb package ([0-9]+\\.[0-9]+\\.[0-9]+)" <downloadpage>
+		current = dpkg.version teamviewer
+		if <current> != <candidate>
+			tmp = tempdir
+			http.get.file https://download.teamviewer.com/download/linux/teamviewer_amd64.deb <tmp>/teamviewer.deb
+			dpkg.install <tmp>/teamviewer.deb
+
+install virtualbox
+	doc "Install VirtualBox"
+	if <osdistribution> = Ubuntu
+		debconf.set shim-signed shim/enable_secureboot true
+		apt.install virtualbox
+
+install vscode
+	doc "Install Microsoft Visual Studio Code"
+	if <osdistribution> = Ubuntu
+		headers = http.head.var https://code.visualstudio.com/sha/download?build=stable&os=linux-deb-x64 Content-Disposition
+		candidate = regexp.submatch "filename=\"code_([0-9]+\.[0-9]+\.[0-9]+-[0-9]+)_amd64.deb\"" <headers>
+		current = dpkg.version code
+		if <candidate> != <current>
+			tmp = tempdir
+			http.get.file https://code.visualstudio.com/sha/download?build=stable&os=linux-deb-x64 <tmp>/code.deb
+			dpkg.install <tmp>/code.deb
+	file.content /etc/sysctl.d/99-vscode.conf fs.inotify.max_user_watches=524288
+
+install yarn
+	doc "Install the Yarn package manager for Node.js"
+	key = http.get.var https://dl.yarnpkg.com/debian/pubkey.gpg
+	apt.key yarnpkg <key>
+	apt.source yarnpkg "deb https://dl.yarnpkg.com/debian/ stable main"
+	apt.install yarn

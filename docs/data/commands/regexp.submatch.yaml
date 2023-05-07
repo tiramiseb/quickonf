@@ -1,12 +1,10 @@
 name: regexp.submatch
-action: Find submatches using a regexp
+action: Find submatches using a regexp (if there is no match, return an empty string)
 arguments:
     - Regexp
     - Source string
 outputs:
-    - First submatch
-    - Second submatch
-    - '...'
+    - Submatches...
 example: |-
     Find src
       webpage = http.get.var http://www.example.com

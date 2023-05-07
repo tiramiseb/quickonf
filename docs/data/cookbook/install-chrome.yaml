@@ -1,0 +1,10 @@
+slug: install-chrome
+name: install chrome
+doc: Install the Google Chrome web browser
+varsdoc: {}
+instructions: |4-
+    if "<osdistribution> = Ubuntu"
+      key = http.get.var https://dl.google.com/linux/linux_signing_key.pub
+      apt.key google-chrome <key>
+      file.line /etc/apt/sources.list.d/google-chrome.list "deb [arch=amd64] https://dl.google.com/linux/chrome/deb/ stable main" https://dl.google.com
+      apt.install google-chrome-stable

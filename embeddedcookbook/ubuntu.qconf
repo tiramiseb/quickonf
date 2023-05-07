@@ -1,0 +1,31 @@
+ubuntu all repo
+	doc "Configure apt sources.list with all sections from an Ubuntu mirror (see https://launchpad.net/ubuntu/+archivemirrors)"
+	vardoc mirror "URL of the mirror (eg \"http://archive.ubuntu.com/ubuntu/\")"
+	m_rel = http.get.var <mirror>/dists/<oscodename>/Release
+	m_cn = regexp.submatch "Codename: (.*)" <m_rel>
+	if <m_cn> = <oscodename>
+		file.content /etc/apt/sources.list "# Sources from Quickonf
+deb <mirror> <oscodename> main restricted universe multiverse
+deb <mirror> <oscodename>-updates main restricted universe multiverse
+deb <mirror> <oscodename>-backports main restricted universe multiverse
+deb http://security.ubuntu.com/ubuntu/ <oscodename>-security main restricted universe multiverse
+"
+		apt.upgrade
+
+ubuntu more restricted
+	doc "Install Ubuntu \"Restricted\" packages, and more: gstreamer-plugins-bad"
+	debconf.set ttf-mscorefonts-installer msttcorefonts/accepted-mscorefonts-eula true
+	debconf.set libdvd-pkg libdvd-pkg/first-install .
+	debconf.set libdvd-pkg libdvd-pkg/post-invoke_hook-install true
+	repeat apt.install
+		gstreamer1.0-plugins-bad
+		ubuntu-restricted-extras
+		libdvd-pkg
+	dvdcss2version = dpkg.version libdvdcss2
+	if <dvdcss2version> = ""
+		dpkg.reconfigure libdvd-pkg
+
+ubuntu nvidia driver
+	doc "Install the NVidia \"open\" driver"
+	nvidiapkg = apt.search ^nvidia-driver-.*-open$
+	apt.install <nvidiapkg>

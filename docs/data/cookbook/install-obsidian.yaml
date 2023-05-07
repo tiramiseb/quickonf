@@ -1,0 +1,12 @@
+slug: install-obsidian
+name: install obsidian
+doc: Install Obsidian
+varsdoc: {}
+instructions: |4-
+    if "<osdistribution> = Ubuntu"
+      release url = github.latest obsidianmd/obsidian-releases obsidian_*.snap
+      current = snap.version obsidian
+      if "<release> != <current>"
+        tmp = tempdir
+        http.get.file <url> <tmp>/obsidian.snap
+        snap.install <tmp>/obsidian.snap classic,dangerous

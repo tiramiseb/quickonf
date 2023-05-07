@@ -1,0 +1,12 @@
+slug: install-diagrams-net
+name: install diagrams.net
+doc: Install Diagrams.net (formerly drawio)
+varsdoc: {}
+instructions: |4-
+    if "<osdistribution> = Ubuntu"
+      release url = github.latest jgraph/drawio-desktop drawio-amd64-*.deb
+      current = dpkg.version drawio
+      if "<release> != <current>"
+        tmp = tempdir
+        http.get.file <url> <tmp>/drawio.deb
+        dpkg.install <tmp>/drawio.deb

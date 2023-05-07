@@ -1,0 +1,11 @@
+name: user.file.line
+action: Make sure a file, owned by a user, contains a line (if path is relative, it is relative to the user's home directory)
+arguments:
+    - Username
+    - Path of the file
+    - Line that must be in the file
+    - Regexp for line(s) to replace
+outputs: []
+example: |-
+    Have hello
+      user.file.line alice hello.txt "hello Alice!" "^hello"
